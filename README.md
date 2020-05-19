@@ -1,21 +1,31 @@
 # LNCD jspsych port of Fabulous Fruits
 
-Port of *Simplified Fabulous Fruit Game*, Sanne de Wit, 2019. Developed for remote administration. see [original manual](./SimplifiedFFG_Manual_2019.txt).
+Port of *Simplified Fabulous Fruit Game*, Sanne de Wit, 2019. Developed for remote administration. see [manual](./SimplifiedFFG_Manual_2019.txt).
+
+
 
 * 12 fruits: apple, bananas, cherries, coconut, grape, kiwi, lemon, melon, orange, pear, pineapple, strawberry
   * uniquely 6 outside paired with 6 inside
 * 12 permutations: 2 sets (A, B) over shuffle # 1 to 6
   * see [`SROmap.csv`](./SROmap.csv)
 
+## Example
+2018 ENEURO
 
-de Wit et al. JNSc, 2009;
-de Wit et al. JEP-ABPP, 2007;
+[<img src="./task2018.jpg?raw=True" height=400>](./task2018.jpg)
+
+## Papers
+[de Wit et al. JEP-ABPP, 2007](https://doi.org/10.1037/0097-7403.33.1.1);
+[de Wit et al. JNSc, 2009](https://doi.org/10.1523/JNEUROSCI.1639-09.2009);
 de Wit et al. JCNSc, 2011;
 Gillan et al. AmJPsychiatry, 2011;
 de Wit et al, JNeurosci, 2012;
-de Wit et al. Psychopharm, 2012
+de Wit et al. Psychopharm, 2012;
+[de Wit et al. ENEURO, 2018](https://dx.doi.org/10.1523%2FENEURO.0240-18.2018)
 
-## Stages
+## Task
+* uses <kbd>z</kbd> (left) and <kbd>m</kbd> (right) keys
+
 ### Training
 Instrumental Discrimination Stimulus Response-Outcome (SRO) training
 * 7-8 min total
