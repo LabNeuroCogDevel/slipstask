@@ -1,0 +1,44 @@
+[HIT Configuration]
+title = Slips Of Action
+description = Sanne de Wit, 2014
+amt_keywords = Psychology
+lifetime = 24
+us_only = true
+approve_requirement = 95
+number_hits_approved = 0
+require_master_workers = false
+contact_email_on_error = willforan@gmail.com
+ad_group = Default psiTurk
+psiturk_keywords = 
+organization_name = LNCD
+browser_exclude_rule = MSIE
+allow_repeats = false
+
+[Database Parameters]
+database_url = sqlite:///participants.db
+table_name = slips
+
+[Server Parameters]
+host = 0.0.0.0
+port = 22362
+cutoff_time = 30
+logfile = server.log
+loglevel = 2
+debug = true
+login_username = examplename
+login_pw = examplepassword
+threads = 1
+secret_key = 'this is my secret key which is hard to guess, i should change this'
+
+[Task Parameters]
+ad_location = https://slipslncd.herokuapp.com/pub
+use_psiturk_ad_server = false
+experiment_code_version = 1.0
+num_conds = 1
+num_counters = 1
+
+[Shell Parameters]
+launch_in_sandbox_mode = true
+persistent_history_file = .psiturk_history
+
+
