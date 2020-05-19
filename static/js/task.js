@@ -31,4 +31,4 @@ var get_info = {
 };
 
 
-var timeline = [get_info, instructions, trials].flat()
+var timeline = [get_info, instructions].flat()
