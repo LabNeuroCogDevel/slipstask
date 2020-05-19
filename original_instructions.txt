@@ -1,0 +1,285 @@
+The Fabulous Fruit Game
+
+Instructions for Experimenters
+
+Check:
+
+Sound is on
+
+You have prepared a (S-O-R contingency) questionnaire.
+
+Mark the “Z” and “M” keys with stickers
+
+Running the first task (training and outcome-devaluation test):
+
+Double-click on CongIncong.v5.2_noCorrection.exe
+
+You will see this console:
+
+Enter the subject number.
+
+NOTE: the pictures are permutated across the different discriminations
+for every 8 subjects. The subject number is therefore very important!
+Start controls as well as patients with number 1 (but always immediately
+rename each file with the subject code at the end of testing!)
+
+are checked, and the others unchecked. Select “Original(6B,6D)” and
+“Set1”. Press OK to start the task.
+
+Instructions for Volunteers:
+
+Initial instructions
+
+“In this game, you will get the chance to earn points by collecting
+fruit from inside a box on the screen by opening the box by pressing
+either the right ‘m’ or left ‘z’ key. If you press the correct
+key, the box will open to reveal a fruit inside and points will be added
+to you total score. However, if you press the incorrect key, the box
+will be empty and no points will be added to your total. Your task is to
+learn which is the correct key to press. Sometimes it will be the
+left-hand one and sometimes it will be the right-hand one. The picture
+on the front of the door should give you a clue about which is the
+correct response.”
+
+Show the subject the ppt with the example training picture (with drinks
+instead of fruit) and make sure the instructions are clear sofar. So at
+the beginning of the task they will be guessing but by trial-and-error
+they can gradually learn which key to press.
+
+“The quicker you make the correct response the more points will be
+added to your total. Your accumulated points will appear at the top of
+the screen.”
+
+“You should try to learn the types of fruits that are found inside the
+boxes following left-hand and right-hand responses because later on you
+will be asked to gather some types of fruit but not others”. 
+
+Show the subject the example test picture and make sure that they
+understand which key to press in the example. “So you see here 2
+drinks that were previously earned by pressing the keys. One is shown
+with a cross and one without. Your job is to press the key that leads to
+the drink that does not have a cross on it.” Then reassure them that
+they can forget about these instructions for now, but just need to
+remember that during the game it’s important to learn “not only
+which key to press for a fruit on the front door, but also which fruit
+follows it inside the box”.
+
+*OPTIONAL: You may want to print out a copy of the instructions for the
+volunteer to read along with you.
+
+
+
+Instructions during the game
+
+When they arrive at the outcome-devaluation instructions, make sure
+again that it’s clear, and if necessary offer to show them the example
+picture again.
+
+When the outcome-devaluation test is completed, the game is over!
+
+*A SEPARATE EXE FILE HAS TO BE RUN FOR THE SLIPS-OF-ACTION TEST (MAKE
+SURE TO USE THE SAME PARTICIPANT NR!
+
+Data:
+
+Please rename the csv datafile (generated in the fabulous fruit game
+folder) with the subject code + permutation number (e.g.: Sanne de Wit
+was run as a control subject with permutation C3SW), immediately after
+testing (go for the most recently generated data file).
+
+The datafiles can be kept in the program folder, as there is no danger
+of over-writing.
+
+Reading the datafiles should be quite straightforward. In the csv file
+you will find responsecorrect (false/true) and response latency for each
+trial (training: congruent/ control / incongruent, outcome-cued
+devaluation: congruent/ control/ incongruent). When plotting the data,
+calculate average accuracy and latency for each of the 6 blocks (each
+containing 2 presentation of each of the 6 stimuli). If you make any
+changes (for example by re-ordering the data) make sure to always keep a
+copy of the datafile that has not been modified! 
+
+I’m also happy to process the data for you, or if you email me the
+first couple of files (  HYPERLINK "mailto:s.dewit@uva.nl" 
+s.dewit@uva.nl ) I’ll make a macro for you so that you can do it
+yourself.
+
+Please note the permutation of each subject, date of testing and any
+notes in the experimenter log.
+
+Running the second task (slips-of-action test):
+
+Double-click on Soa5.3.exe [*this version has 2-sec test trials as in de
+Wit et al, JNeurosci, 2012]
+
+Half of the participants should first be tested with the OD
+(slips-of-action test) and then the DD (baseline test), and the other
+half the other way around. For example, subjects with an even number are
+first offered the DD version and then the OD; subjects with an uneven
+number are first offered the OD and then the DD version. 
+
+In the example below: first OD and then DD:
+
+Enter the appropriate permutation nr for each subject (this needs to be
+the same as for the CongIncong task!!!)
+
+This part of the fabulous fruit game is always the trickiest one to
+explain to your participants. Take your time, and check with the example
+picture whether they understood the instructions before you start the
+task.
+
+Slips-of-action test instructions (counterbalance order with baseline
+test!)
+
+“In the next part of the game, you’ll see a series of boxes with
+pictures of fruits on the outside and once again you can press left or
+right to open these and win points. 
+
+The pictures on the box will be the same as the ones in the first game,
+and the correct response, left or right, will also be the same as what
+you learnt in the first half of the last game. 
+
+However, unlike before, some of the fruits inside the box are no longer
+valuable, meaning you can no longer earn points for them. In fact, if
+you try and open a box which contains a non-valuable fruit inside, you
+will have points subtracted from your total!
+
+You’ll be shown a screen at the beginning of each block of trials
+which will show you which (2 out of 6) fruits inside the boxes are no
+longer valuable by superimposing a cross. Look carefully at these and
+try to remember them.  After that, the closed boxes will appear on the
+screen one after the other in quick succession, and you’ll have to
+respond very quickly to try and open them. However, if you think that
+inside that box is a devalued fruit, you should not press any key at all
+and just wait for the next box to appear.
+
+Obviously the idea is to earn as many points as possible. If the fruit
+inside is valuable and you press the correct key, you will still gain
+points. If the fruit inside is valuable and you press the incorrect key
+or fail to press any key, you neither gain nor lose points. You won’t
+receive feedback during the test, but you will be shown your final score
+at the end.”
+
+Check that the instructions are clear with the example pictures in the
+powerpoint.
+
+(Optional: For each block say during the instruction screens ‘If you
+think that the box has XXXX or XXXX inside, don’t press anything at
+all, just wait for the next box’. Repeat.) 
+
+Baseline test instructions (counterbalance order with slips-of-action
+test!)
+
+“In the next part of the game, you’ll see a series of boxes with
+pictures of fruits on the outside and once again you can press left or
+right to open these and win points. 
+
+The pictures on the box will be the same as the ones in the first game,
+and the correct response, left or right, will also be the same as what
+you learnt in the first half of the last game. 
+
+However, unlike before, some of the fruits inside the box are no longer
+valuable, meaning you can no longer earn points for them. In fact, if
+you try and open a box which contains a non-valuable fruit inside, you
+will have points subtracted from your total!
+
+You’ll be shown a screen at the beginning of each block of trials
+which will show you the (2 out of 6) clues on the outside of the boxes
+shown with a cross superimposed to signal that these no longer contain a
+valuable reward inside the boxes. Look carefully at these and try to
+remember them. After that, the closed boxes will appear on the screen
+one after the other in quick succession, and you’ll have to respond
+very quickly to try and open them. However, if you think that a
+particular box no longer contains a valuable reward, you should not
+press any key at all and just wait for the next box to appear.
+
+Obviously the idea is to earn as many points as possible. If the fruit
+inside is valuable and you press the correct key, you will gain points.
+If the fruit inside is valuable and you press the incorrect key or you
+fail to press a key, you neither gain nor lose points. You won’t
+receive feedback during the test, but you will be shown your final score
+at the end.”
+
+Check that the instructions are clear with the example pictures in the
+powerpoint.
+
+ (Optional: Then for each block say during the instruction screens ‘If
+a box has XXXX or XXXX on the outside, don’t press anything at all,
+just wait for the next box’. Repeat.) 
+
+Short explanation for experimenter:
+
+On a 10-s devaluation screen at the beginning of each of the six
+sessions, subjects are presented with an array of images on the screen
+of the six different fruit icons that functioned as outcomes during the
+initial training phase. On each devaluation screen two of the fruit
+icons have a red cross superimposed on it, such that across sessions
+each outcome is devalued twice. To ensure that subjects have memorized
+the devalued outcomes, the experimenter re-iterates every time that if
+the subject believes that either of these two foods is inside a box,
+then they should withhold their response and wait for the next box to
+appear . Following the devaluation screen, an image of a closed box with
+a stimulus fruit on the outside will be presented for 2 s. During this
+time, subjects should press the appropriate key if the outcome signaled
+by the stimulus is still valuable, or refrain from responding if the
+signaled outcome has been devalued. Regardless of their response, each
+stimulus icon is replaced after a 1-s ITI by another box with a
+different stimulus. Each of the six stimuli is presented four times per
+session in random order. This means that each participant completes 124
+trials in total.
+
+Slips-of-action test Data:
+
+Please rename the csv datafile (generated in the habit inhibition
+folders) with the subject code + permutation number + “test” (e.g.:
+Sanne de Wit was run with permutation 3: SW3.test), immediately after
+testing (go for the most recently generated data file).
+
+The datafiles can be kept in the program folder, as there is no danger
+of over-writing.
+
+Questionnaires
+
+The purpose of these questionnaires is to assess whether participants
+have learned about the S-R/S-O/R-O contingencies.
+
+Preparation: have the S-R, R-O and S-O questionnaires ready for the
+subject you’re running (preferentially printed in colour). Indicate
+the subject number on each questionnaire. There are three possible
+orders: S-R, R-O then S-O OR  S-O, S-R, then R-O OR R-O, S-O, S-R. Make
+sure you run one third of both the experimental group and controls on
+each order  (make a note of the order for every subject, so this
+information can be easily retrieved later on). 
+
+Cut each questionnaire into 6 pieces (one for each question) and offer
+the questions one at a time to prevent participants from working ‘by
+exclusion’ (e.g., ‘I’ve answered “left” already three times,
+so it can’t be that again for the current question’). So every time
+they have answered one question, they should turn it over and put it
+aside. 
+
+Make sure that participants understand what they need to do + that they
+should make good use of the confidence scale (so don’t always select
+the extreme ends of the scale). 
+
+Staple the questionnaires together for each subject.
+
+Data:
+
+Entering the questionnaire data: give a score of 0/1/2 to each
+discrimination. For example, if the orange and the banana were cues for
+the incongruent discrimination for the permutation used, and the subject
+selected the correct response for one but not for the other, then enter
+“1” for nr of correct responses. If on the other hand the subjects
+selected the correct outcomes for both cues, then enter “2” for
+correct outcome. The correct anwers are given on the word document that
+is included in the task folder.
+
+If you still have any questions, please email s.dewit@uva.nl!
+
+Fabulous Fruit Game, Sanne de Wit, 2014
+
+You could leave this one out as it’s not really crucial (in which case
+you just don’t check ‘Outcome Cued’. The most important test is
+the slips-of-action test. But up to you of course!
+

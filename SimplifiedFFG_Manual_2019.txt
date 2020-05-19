@@ -1,0 +1,108 @@
+The (simplified) Fabulous Fruit Game
+
+This task consists of (max.) five stages:
+Stage 1: demo (1instrumental training block of 12 trials, approximate duration of 1min) - optional
+Stage 2: (self-paced) instrumental discrimination training (for 8 blocks of altogether 84 trials, the approximate duration is 7-8min; the ITI throughout the task is fixed at 1.5sec)
+Stage 3: outcome-devaluation test (for 1 block of 36 trials, the average duration is around 3min)  - optional
+Stage 4: slips-of-action test and baseline test (with order counterbalanced across participants)(each test takes approximately 6min (with 1 block of 108 trials & presently with 5-sec instruction trials and 1-sec test trials))
+Stage 5: questionnaires of (S:R-O) contingency knowledge
+*The indicated durations of stage 2 and 3 are estimations as these stages are self-paced. All durations exclude the time needed to give instructions.
+**Counterbalancement: There are 2 different task versions: A and B. The difference between A and B is that the stimuli and outcome pictures are reversed (for counterbalancement purposes). It is also important to consider that the outcome pictures are permutated across every 6 subjects (this way the S/R-O assignment is automatically counterbalanced, as long as the experimenter enters consecutive numbers for each participant).The order of the baseline- and slips-of-action test should be counterbalanced. Finally, the order of the SR, RO, and SO questionnaires should be counterbalanced. (*The task folder contains both a fruit and a snack version of the task, in case a within-subject design is employed. Otherwise just stick with the fruit version.)
+
+General task description for experimenters:
+In this game, participants receive instrumental discrimination (Stimulus (S): Response (R)-Outcome ( O)) training. During this training (stage 2) they are presented with a series of boxes on the screen, with each time one of 6 fruit pictures depicted on the front door (e.g. stimulus fruit A, B, C, D, E or F). They are instructed to make a right or left button-press (e.g. response X or Y) in order to open the box and obtain another fruit (e.g. outcome fruit G, H, I, J, K or L). On each trial the fruit on the outside of the box signals which response is correct and will be rewarded with another fruit inside the box and points (e.g.: A:X-G; B:Y-H; C:X-I; D:Y-J; E:X-K; F:Y-L. When the incorrect key is pressed this will not open the box and no points are earned.
+Good performance during the training phase does not necessarily inform us whether participants encode the relationship between their actions and the outcomes or whether they rely on simple S-R habit learning. In order to assess the balance between goal-directed and habitual control, several tests are conducted (stage 3-5).
+The (instructed) outcome-devaluation test (stage 3) is designed to assess response-outcome (R-O) knowledge. On each trial, two open boxes are presented together on the screen, containing one fruit that was previously earned by a left response and one that was earned by a right response (e.g., G and H). However, one of these fruits is no longer worth any points, which is indicated by a red cross that is superimposed on the devalued fruit. Participants are instructed to press the key that previously earned the still-valuable fruit (e.g., if G is devalued, then response Y would be correct). No feedback is given during this test.
+The slips-of-action test (stage 4) has been designed to assess relative goal-directed (S-O-R) and habitual (S-R) control more directly. At the start of each test block, 2 out of 6 fruit rewards are devalued (as indicated by a red cross) and participants are instructed that they should no longer open boxes with these fruits inside as these will now lead to subtraction of points (e.g., if G is devalued, then participants should not press a key to open the box with fruit stimulus A on the front)  . Subsequently, they are shown a series of closed boxes (in rapid succession) with the fruit stimuli on the outside. 100% responding for boxes with valuable fruit inside and 0% responding for boxes with devalued fruit inside would indicate perfect goal-directed control. A ‘slip of action’ is a failure to withhold a response towards a devalued outcome, and is hypothesised to indicate S-R habitual control (e.g., via the A-X association).
+The baseline test (stage 4) is included to control for general task characteristics of the slips-of-action test. It is identical except that stimuli are devalued instead of outcomes (such that participants are instructed to withhold responses to 2 out of the 6 stimuli on the outside of the boxes; e.g., if A is devalued, then participants should not press a key to open the box with fruit stimulus A on the front).. 
+Finally, the questionnaires (stage 5) are a measure of explicit memory of the S-R, R-O and S-O contingencies (e.g., A-X, X-G, A-G).
+Instructions for Experimenters:
+Experimenter log: Please note the permutation of each subject (subject ID entered when running the task), date of testing and any notes in an experimenter log. 
+Running the Task (Stage 1 Demo):
+Check that: sound is on; you have prepared a questionnaire; you have the examples pictures (training, (outcome-devaluation test,) slips-of-action/baseline test) ready (preferably printed in colour); mark the “Z” and “M” keys with stickers. (*If the task fails to run this could be because the MCI component (included in the task folder) doesn’t yet live in the System32 folder).
+Go to the task folder >> Demo subfolder
+Double-click on SimplifiedFFG_selfpaced_speedreward_2.exe
+You will see this console:
+
+
+Enter [1] for the participant ID, and [1] instrumental discrimination (Inst Disc) blocks, and check both “Speed reward” and “Self paced”
+Press “Let’s do it!”
+The participant will receive a demo training with 2 stimulus drinks and 2 outcome drinks that will not be used in the actual task (with a total of 12 trials, so 6 repeats of each stimulus).
+At the end of the demo, participants will see a screen that shows only the final total score. Pressing the spacebar will end the task.
+Following the demo task, show subjects the powerpoint with the example pictures to instruct them about the baseline and slips-of-action tests that they will receive later on during the real game (slide 3 and 4 of “Demo-SimplifiedFFG&tests.ppt”). This way participants are aware that they should try to learn not only the S-R relationships but also S/R-O during the initial training phase).
+Note that it’s optional to use this demo task. Simply explaining the task with the example pictures in the powerpoint (slide 1-4) should also suffice (“Demo-SimplifiedFFG&tests.ppt”), and in fact that’s the approach we took in the two most recent studies (de Wit et al., 2012; Gillan et al., 2011). 
+Running the Task (Stage 2-3-4):
+Go to the task folder (VersionA/VersionB) - these versions should be counterbalanced – see suggested counterbalancement table at the end of the manual)
+Double-click on SimplifiedFFG_selfpaced_speedreward_2.exe
+You will see this console (already filled out here for participant 1 who is first tested on the OD and then on the DD):
+
+
+Enter the participant ID.
+NOTE: the pictures are permutated across the different discriminations (in order to vary the S-O assignments) for every 6 subjects. The subject number is therefore very important (and should not contain letters)! Start for example the controls with ‘1’ and the experimental subjects with ‘101’ (you could rename each data-file with the subject code at the end of testing).
+Enter [8] instrumental discrimination (Inst Disc) blocks*, and [1] block for the outcome-devaluation test (Odev).
+Half of the subjects in each group should first be tested on the slips-of-action test (Outcomes Devalued) and then on the baseline test (Stimuli Devalued), while the other half should be tested in the reverse order (see counterbalancement table for suggestion). Depending on the testing order, enter [OD] under 1st task and [DD] under 2nd task, or the other way around. Enter [1] block.
+Press “Let’s do it!” to start the task. You will now be shown an empty screen with the word “instructions”. At this point, give the instructions.
+
+*In most previous studies with the congruence version of this task, training consisted of six blocks, see de Wit et al. (Psychopharm, 2012); Gillan et al. (AmJPsychiatry, 2011); de Wit et al. (JNSc, 2009). In contrast, 4 blocks were used in the original study with young, healthy participants (de Wit et al., JEP-ABPP, 2007) and 8 blocks were used in a study with Parkinson patients (de Wit et al., JCNSc, 2011).
+
+
+Instructions for Volunteers:
+Stage 1 Demo instructions (computer demo + powerpoint instruction):
+*Each stage of the task starts with a screen that says “instructions”. At that point, the experimenter gives the instructions for the next stage. At the end, the experimenter presses the spacebar to start the next stage.
+	“In this game, you will get the chance to earn points by collecting fruit from inside a box on the screen by opening the box by pressing either the right ‘m’ or left ‘z’ key. If you press the correct key, the box will open to reveal fruit inside and points will be added to you total score. However, if you press the incorrect key, the box will be empty and no points will be added to your total.  
+	Your task is to learn which is the correct key to press. Sometimes it will be the left-hand one and sometimes it will be the right-hand one. The fruit picture on the front of the door should give you a clue about which is the correct response.”
+	 “The quicker you make the correct response the more points will be added to your total (ranging from 1 to 5 points). Your accumulated points will appear at the top of the screen.”
+	“You should also try to learn which types of fruit  you find inside the boxes following right- and left-key presses for each fruit on the outside of the boxes, because later in the game you will be asked to gather some rewards but not others”. 
+	Run the demo task (with drinks instead of food) and make sure the instructions are clear so far. So at the beginning of the task they will be guessing but by trial-and-error they can gradually learn which key to press… Make sure that it’s clear that the clue pictures are on the outside of the box and the rewards on the inside. 
+	Following the computer demo, show participants the powerpoint with the example pictures of the outcome-devaluation test (slide 2). Make sure that they understand which key to press in the example. “So you see here 2 drinks that were previously earned by pressing the keys. One is shown with a cross and one without. The cross indicates that this drink is no longer worth any points. So your job is to press the key that leads to the drink that does not have a cross on it.” Ask the subject which key they should press in the example, to check that the instructions were clear. 
+	Show participants the powerpoint with the example pictures of the baseline and slips-of-action tests (slide 3 and 4). “In the real game, you will receive two tests following the initial learning phase, which I will now briefly explain”. Read the instructions on those slides aloud, and have subjects answer the question at the bottom of each slide (about which keys to press) to check that they have fully understood the instructions (if necessary you can use slide 1 to explain the task). “The second [slips of action] test is a bit more challenging as you will have to remember which reward was on the inside of each box. So later on during the game it is important to not only learn which key to press for a clue on the front door, but also which reward follows it inside the box”.
+	Finally, reassure participants that they can forget about these instructions for now, as they will still receive reminders of the instructions during the real game.
+Note: Make sure that your subjects understand the instructions, so rephrase and explain as much as necessary (and refer to the example pictures)!
+OPTIONAL: You may want to print out a copy of the instructions for the volunteer to read along with you.
+OPTIONAL MONETARY REWARD: To make the task more motivating the credits earned could stand for an additional financial bonus at the end of the game (based on the total score)
+Stage 2: Instrumental discrimination training instructions 
+	“As you learned during the demo, in this game, you will get the chance to earn points by collecting fruit from inside a box on the screen by opening the box by pressing either the right ‘m’ or left ‘z’ key. In the beginning of the game you will have to guess, but gradually you can learn the correct response for each fruit picture on the outside of the box. And remember, the quicker you make a correct response, the more points you will earn. Finally, you should also try to learn which type of fruit can be found inside of each box, because you will be tested on this knowledge later on.”
+	If necessary, refer to the example pictures in the powerpoint.
+	When the participant has completed the instrumental discrimination training, there will be an empty screen that shows their final total score. Pressing the spacebar leads to another empty screen with the word “instructions”.
+
+Stage 3: Outcome-devaluation test instructions
+“Now two open boxes will appear on the screen with different types of fruit inside them. One fruit was earned by a left response in the previous stage and the other by a right response. Although both types of fruit were valuable previously, one of them is now devalued and earns no points, whereas the other is still valuable and gains points. The devalued fruit will have a cross on it”.  You should respond by pressing the key that earns the valuable fruit. The points you earn now will not be shown on the screen but you will see your final total at the end of the game”.
+	When the participant has completed the outcome-devaluation test, there will be an empty screen that shows their final total score. Pressing the spacebar leads to another empty screen with the word “instructions”.
+
+Stage 4: Slips-of-action test instructions (counterbalance order with baseline test!)
+	“In the next part of the game, you’ll see a series of boxes with pictures of fruit on the outside and once again you can press left or right to open these and win points. 
+	The pictures on the box will be the same as the ones in the first game, and the correct response, left or right, will also be the same as what you learnt in the first half of the last game. 
+	However, unlike before, some of the fruits inside the box are no longer valuable, meaning you can no longer earn points for them. In fact, if you try and open a box which contains a non-valuable fruit inside, you will have points subtracted from your total!
+	You’ll be shown a screen at the beginning of each block of trials which will show you which (2 out of 6) fruits inside the boxes are no longer valuable by superimposing a cross. Look carefully at these and try to remember them.  After that, the closed boxes will appear on the screen one after the other in quick succession, and you’ll have to respond very quickly to try and open them. However, if you think that inside that box is a devalued fruit you should not press anything at all and just wait for the next box to appear.
+	Obviously the idea is to earn as many points as possible. If the fruit inside is valuable and you press the correct key, you will still gain points. If the fruit inside is valuable and you press the incorrect key or fail to press any key, you neither gain nor lose points. You won’t receive feedback during the test, but you will be shown your final score at the end.”
+	If necessary, refer to the example pictures in the powerpoint.
+	(Optional: For each block say during the instruction screens ‘If you think that the box has XXXX or XXXX inside, don’t press anything at all, just wait for the next box’. Repeat.) 
+
+Stage 4: Baseline test instructions (counterbalance order with slips-of-action test!)
+	“In the next part of the game, you’ll see a series of boxes with pictures of fruit on the outside and you press left or right to open it and win points. 
+	The pictures on the box will be the same as the ones in the first game, and the correct response, left or right, will also be the same as what you learnt in the first half of the last game. 
+	However, unlike before, some of the boxes no longer contain valuable fruit rewards, meaning you can no longer earn points by opening these boxes. In fact, if you try and open one of these boxes, you will have points subtracted from your total!
+	You’ll be shown a screen at the beginning of each block of trials which will show you the (2 out of 6) clues on the outside of the boxes shown with a cross superimposed to signal that these no longer contain a valuable reward. Look carefully at these and try to remember them. After that, the closed boxes will appear on the screen one after the other in quick succession, and you’ll have to respond very quickly to try and open them. However, if you think that a particular box no longer contains a valuable reward, you should not press any key all and just wait for the next box to appear.
+	Obviously the idea is to earn as many points as possible. If the fruit inside is valuable and you press the correct key, you will gain points. If the fruit inside is valuable and you press the incorrect key or you fail to press a key, you neither gain nor lose points. You won’t receive feedback during the test, but you will be shown your final score at the end.”
+	(Optional: Then for each block say during the instruction screens ‘If a box has XXXX or XXXX on the outside, don’t press anything at all, just wait for the next box’. Repeat.) 
+Stage 5: Questionnaires: 
+Preparation: have the S-R, R-O and S-O questionnaires ready for the subject you’re running (printed in colour). Indicate the subject number on each questionnaire. There are three possible orders: S-R, R-O then S-O OR  S-O, S-R, then R-O OR R-O, S-O, S-R. Make sure you run one third of both the experimental group and controls on each order (see counterbalancement table for suggested order) (make a note of the order for every subject, so this information can be easily retrieved later on). 
+Cut each questionnaire into 6 pieces (one for each question) and offer the questions one at a time to prevent participants from working ‘by exclusion’ (e.g., ‘I’ve answered “left” already three times, so it can’t be that again for the current question’). So every time they have answered one question, they should turn it over and put it aside. 
+Make sure that participants understand what they need to do + that they make good use of the confidence scale (so don’t always select the extreme ends of the scale). 
+Staple the questionnaires together for each subject.
+
+Data:
+The csv datafiles can be kept in the task folder, as there is no danger of over-writing (you may wish to rename them with a clear individual subject code).
+You can either email the data to me and I will enter them for you (s.dewit@uva.nl) or I can prepare an excel macro so you can enter the data yourself (but always keep a copy of your original datafiles).
+The questionnaire data can be entered manually: give a score ranging between 0 and 6 for each association type (so 1 point for each correct answer): S-O/R-O/S-O. In the excel file ‘SROMappings’ you can find the correct answers for each participant number (1-6, with 1 = 7 = 13, etc.) per task version (A or B). Also enter the average confidence rating for each association type (scores vary from 0 to 10, you can determine this with a ruler).
+
+
+
+
+
+
+
+
+
+Simplified Fabulous Fruit Game, Sanne de Wit, 2019
+
