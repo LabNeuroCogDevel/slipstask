@@ -3,7 +3,6 @@
 
  */
 
-const task_settings = {'TASKVER': '20200518.1-init'};
 
 var instructions = {       
     type: 'instructions',     

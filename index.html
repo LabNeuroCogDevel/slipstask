@@ -26,31 +26,19 @@ see https://labneurocogdevel.github.io/cardtask
 
     <script type="text/javascript">
 
-var frts = fruits();
-console.log(frts)
-console.log(frts['apple'])
-console.log(frts['kiwi'])
-var b = mkBox(frts['apple'], frts['kiwi'], "Left")
-const LEFT_KEY = 37; const RIGHT_KEY = 39;   
-var t = {
-    type: 'html-keyboard-response',
-    stimulus: b.S.render(false),
-    choices: ['z','m'],
-    //post_trial_gap: SCOREANIMATEDUR,
-    //trial_duration: trialdur,
-    prompt: "<p>left or right</p>",
-    on_start: function(trial) {},
-    on_load: function(trial) {},
-    on_finish: function(data){}
-}
-
+var FRTS = fruits();
+var boxes = [mkBox(FRTS['apple'], FRTS['kiwi'], "Left"), mkBox(FRTS['grape'], FRTS['lemon'], "Right")];
+var stim1 = mkTrainTrial(boxes[0]);
+var stim2 = mkTrainTrial(boxes[1]);
+var fbk = mkTrainFbk();
 
 function fulltrial() {
    //get_info, instructions
-   jsPsych.init({timeline: [t], display_element: jsp,
-                 // restart from the begining 
-                 on_finish: function() {fulltrial()}
-                });
+   jsPsych.init({
+        timeline: [stim1, fbk, stim2, fbk], display_element: jsp,
+	// restart from the begining 
+	on_finish: function() {fulltrial()}
+    });
 }
 
 function init(){ fulltrial(); }
@@ -60,8 +48,8 @@ function init(){ fulltrial(); }
 
   <body onload="init()">
     <div> links:
-      <a href="https://github.com/LabNeuroCogDevel/sliptask"> repo</a> |
-      <a href="https://sliplncd.herokuapp.com/"> heroku</a>
+      <a href="https://github.com/LabNeuroCogDevel/slipstask"> repo</a> |
+      <a href="https://sliplncd.herokuapp.com/"> heroku (DNE!)</a>
     </div>
     <div> trials:
       <a href="#" onclick="fulltrial()"> fulltrial</a> |
