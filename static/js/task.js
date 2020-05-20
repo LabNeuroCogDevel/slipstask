@@ -1,19 +1,15 @@
 /* define timeline to be used by jspsych 
+ * see utils.ts for most
    20200518WF - init
 
  */
 
+var INSTRUCTIONS_DATA = {}; 
+$.getJSON('/static/js/instructions.json', function(data) {
+   INSTRUCTIONS_DATA = data;
+});
 
-var instructions = {       
-    type: 'instructions',     
-    pages: [
-    '<div>Fabulous Fruits</div>',
-
-    '<div>Ready? <br>The game starts after this page<br><br>' +
-    '</div>',
-    ],        
-    show_clickable_nav: true      
-}    
+var instructions = [mkInstruction(INSTRUCTIONS_DATA["DD_wf"])];
 
 var get_info = {
   type: 'survey-text',
@@ -23,9 +19,7 @@ var get_info = {
   ],
   on_finish: function(data){
       // add task version
-      resp = JSON.parse(data.responses)
-      resp.taskver = task_settings['TASKVER']
-      data.responses=JSON.stringify(resp)
+     data.responses= add_version(data.responses)
   }
 };
 

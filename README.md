@@ -10,6 +10,9 @@ Port of *Simplified Fabulous Fruit Game*, Sanne de Wit, 2019. Developed for remo
   * see [`SROmap.csv`](./SROmap.csv)
 
 ## Example
+in parts: https://labneurocogdevel.github.io/slipstask/
+
+
 2018 ENEURO
 
 [<img src="./task2018.jpg?raw=True" height=400>](./task2018.jpg)
@@ -24,9 +27,10 @@ de Wit et al. Psychopharm, 2012;
 [de Wit et al. ENEURO, 2018](https://dx.doi.org/10.1523%2FENEURO.0240-18.2018)
 
 ## Task
-* uses <kbd>z</kbd> (left) and <kbd>m</kbd> (right) keys
+* originally used <kbd>z</kbd> (left) and <kbd>m</kbd> (right) keys
+* now  <kbd>←</kbd> and <kbd>→</kbd>
 
-### Training
+### ID: Instrumental Discrimination (Training)
 Instrumental Discrimination Stimulus Response-Outcome (SRO) training
 * 7-8 min total
 * 6 SROs to learn.

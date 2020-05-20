@@ -1,0 +1,36 @@
+{
+ "ID":
+   ["In this game, you will get the chance to earn points by collecting fruit from inside a box on the screen by opening the box by pressing either the right '←' or left '→' key. If you press the correct key, the box will open to reveal fruit inside and points will be added to you total score. However, if you press the incorrect key, the box will be empty and no points will be added to your total.<br> Your task is to learn which is the correct key to press. Sometimes it will be the left-hand one and sometimes it will be the right-hand one. The fruit picture on the front of the door should give you a clue about which is the correct response.",
+	 "The quicker you make the correct response the more points will be added to your total (ranging from 1 to 5 points). Your accumulated points will appear at the top of the screen.",
+    "You should also try to learn which types of fruit you find inside the boxes following right and left key presses for each fruit on the outside of the boxes, because later in the game you will be asked to gather some rewards but not others"
+   ],
+ "OD": [
+   "Now two open boxes will appear on the screen with different types of fruit inside them. One fruit was earned by a left response in the previous stage and the other by a right response. Although both types of fruit were valuable previously, one of them is now devalued and earns no points, whereas the other is still valuable and gains points. The devalued fruit will have a cross on it”.  You should respond by pressing the key that earns the valuable fruit. The points you earn now will not be shown on the screen but you will see your final total at the end of the game"
+],
+ "SOA": [	"In the next part of the game, you’ll see a series of boxes with pictures of fruit on the outside and once again you can press left or right to open these and win points.",
+	"The pictures on the box will be the same as the ones in the first game, and the correct response, left or right, will also be the same as what you learnt in the first half of the last game.<br> However, unlike before, some of the fruits inside the box are no longer valuable, meaning you can no longer earn points for them. In fact, if you try and open a box which contains a non-valuable fruit inside, you will have points subtracted from your total!",
+	"You’ll be shown a screen at the beginning of each block of trials which will show you which (2 out of 6) fruits inside the boxes are no longer valuable by superimposing a cross. Look carefully at these and try to remember them.",
+   "After that, the closed boxes will appear on the screen one after the other in quick succession, and you’ll have to respond very quickly to try and open them. However, if you think that inside that box is a devalued fruit you should not press anything at all and just wait for the next box to appear.",
+	"Obviously the idea is to earn as many points as possible. If the fruit inside is valuable and you press the correct key, you will still gain points. If the fruit inside is valuable and you press the incorrect key or fail to press any key, you neither gain nor lose points. You won’t receive feedback during the test, but you will be shown your final score at the end." ],
+ "DD": [
+   "In the next part of the game, you’ll see a series of boxes with pictures of fruit on the outside and you press left or right to open it and win points.",
+	"The pictures on the box will be the same as the ones in the first game, and the correct response, left or right, will also be the same as what you learnt in the first half of the last game.",
+	"However, unlike before, some of the boxes no longer contain valuable fruit rewards, meaning you can no longer earn points by opening these boxes. In fact, if you try and open one of these boxes, you will have points subtracted from your total!",
+	"You’ll be shown a screen at the beginning of each block of trials which will show you the (2 out of 6) clues on the outside of the boxes shown with a cross superimposed to signal that these no longer contain a valuable reward. Look carefully at these and try to remember them. After that, the closed boxes will appear on the screen one after the other in quick succession, and you’ll have to respond very quickly to try and open them. However, if you think that a particular box no longer contains a valuable reward, you should not press any key all and just wait for the next box to appear.",
+	"Obviously the idea is to earn as many points as possible. If the fruit inside is valuable and you press the correct key, you will gain points. If the fruit inside is valuable and you press the incorrect key or you fail to press a key, you neither gain nor lose points. You won’t receive feedback during the test, but you will be shown your final score at the end."
+ ],
+ "ID_wf": [
+    "In this game, you will open secret fruit boxes. They open from both the left and right. <br>But the boxes have a trick to hide what's inside. If you pick the wrong side, the box will appear empty.",
+    "You will get points for picking the correct side to open. <br>You will get more points the faster you pick the correct side.",
+    "Boxes labeled with the same fruit on the outside always open from the same side.",
+    "There is still one more trick. The fruit on the inside is different from the outside label!<br>Pay attention to this! Later you will get points for knowing what outside fruit label gives you the inside fruit."],
+ "OD_wf": [
+   "The tricky boxes have now all been opened! But we have too many of some of the inside fruits. Get more points by picking only the inside fruits without an X over them.<br><b>Pick a fruit by using the same side that opened the box</b><br>Go faster for more points."],
+ "SOA_wf": [
+    "We are getting secret box shipments from all over, but some of the fruits on the inside have gone bad.", 
+    "For each shipment, we will get a chart showing good and bad fruits.<br> Only open boxes with unspoiled fruits in them. Don't pick those with an X on them.",
+    "You will still get points for opening boxes with good fruits inside<br>But don't even try to open a box with a spoiled fruit. If you open the box correctly, you'll lose points!", "Just like before, the faster you get unspoiled inside fruits, the more points you get" ],
+ "DD_wf": [
+    "Someone tried to intercept our shipments of secret boxes, but didn't know how to open them.", "For each shipment, we have a chart of what boxes were damaged", 
+    "You will still get points for opening boxes with good fruits inside<br>But don't even try to open a damaged box. If you open the box correctly, you'll lose points!", "Just like before, the faster you correctly open undamaged boxes, the more points you get" ]
+}

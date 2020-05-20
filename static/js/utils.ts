@@ -1,5 +1,7 @@
 declare var jsPsych: any;
-declare var FRTS: any;
+declare var FRTS: any; // fruits as they were ordered
+//declare var $: any;   //jquery
+
 const SETTINGS = {
     'version': '20200519.1-nothingyet',
     'ITI': 1000,
@@ -27,6 +29,26 @@ function key_to_side(pushed: number): Dir {
     if (pushed === undefined || pushed === null || side === null)
         return (Dir.None)
     return (side)
+}
+/** wrap array in instruction dict for timeline
+ * @param pagedate array of insturctions
+ * @return jsPsych timeline ready dict object
+*/
+function mkInstruction(pagedata: string[]){
+   return({       
+      type: 'instructions',     
+      pages: pagedata,        
+      show_clickable_nav: true      
+   })
+}
+/** add task version to whatever object is passed in
+ * @param data JSON string.
+ * @return JSON string with 'taskver' add
+*/
+function add_version(data: string) : string {
+      var d = JSON.parse(data);
+      d.taskver = SETTINGS['version'];
+      return(JSON.stringify(d))
 }
 
 /** Fruits have a one-to-one mapping to the inside or outside of a box */

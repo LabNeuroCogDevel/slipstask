@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- 
 This file for github pages
-see https://labneurocogdevel.github.io/cardtask
+see https://labneurocogdevel.github.io/slipstask
 -->
 <html>
   <head>
@@ -44,6 +44,7 @@ var OD2 = mkODTrial(FRTS['kiwi'], FRTS['lemon']);
 var soa = [mkSOAgrid(Object.values(FRTS), 1, "Outcome")];
 var dd  = [mkSOAgrid(Object.values(FRTS), 1, "Stim")];
 
+
 fullTL=[stim1, fbk, stim2, fbk, OD1, OD2];
 trainTL=[stim1, fbk, stim2, fbk];
 ODTL=[OD1, OD2];
@@ -53,6 +54,14 @@ function trials(timeline){
 		on_finish: function() {
 		    trials(timeline)}});
 }
+
+function showInstructions(inst){
+   const inst_str = INSTRUCTIONS_DATA[inst];
+   console.log(inst_str)
+   var inst_t = mkInstruction(inst_str);
+   trials([inst_t]);
+}
+
 
 function init(){ trials(fullTL); }
     </script>
@@ -70,6 +79,17 @@ function init(){ trials(fullTL); }
       <a href="#" onclick="trials(ODTL)"> OD</a> |
       <a href="#" onclick="trials(soa)"> SOA</a> |
       <a href="#" onclick="trials(dd)"> DD</a> |
+    </div>
+    <div> instructions:
+      <a href="#" onclick="showInstructions('ID')"> ID</a> |
+      <a href="#" onclick="showInstructions('OD')"> OD</a> |
+      <a href="#" onclick="showInstructions('SOA')"> SOA</a> |
+      <a href="#" onclick="showInstructions('DD')"> DD</a> |
+      <br> WF:
+      <a href="#" onclick="showInstructions('ID_wf')"> ID</a> |
+      <a href="#" onclick="showInstructions('OD_wf')"> OD</a> |
+      <a href="#" onclick="showInstructions('SOA_wf')"> SOA</a> |
+      <a href="#" onclick="showInstructions('DD_wf')"> DD</a> |
     </div>
     <br><br>
     <div>

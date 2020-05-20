@@ -32,6 +32,25 @@ function key_to_side(pushed) {
         return (Dir.None);
     return (side);
 }
+/** wrap array in instruction dict for timeline
+ * @param pagedate array of insturctions
+*/
+function mkInstruction(pagedata) {
+    return ({
+        type: 'instructions',
+        pages: pagedata,
+        show_clickable_nav: true
+    });
+}
+/** add task version to whatever object is passed in
+ * @param data JSON string.
+ * @return JSON string with 'taskver' add
+*/
+function add_version(data) {
+    var d = JSON.parse(data);
+    d.taskver = SETTINGS['version'];
+    return (JSON.stringify(d));
+}
 /** Fruits have a one-to-one mapping to the inside or outside of a box */
 var Fruit = /** @class */ (function () {
     function Fruit(name) {
