@@ -6,8 +6,8 @@ var SETTINGS = {
 /** Stimulus (outside box) or Outcome (inside box) */
 var SO;
 (function (SO) {
-    SO[SO["Stim"] = 0] = "Stim";
-    SO[SO["Outcome"] = 1] = "Outcome";
+    SO["Stim"] = "Stim";
+    SO["Outcome"] = "Outcome";
 })(SO || (SO = {}));
 /** Key direction */
 var Dir;
@@ -48,6 +48,12 @@ var Fruit = /** @class */ (function () {
         var disabled_class = disabled ? "disabled" : "";
         return ("<div class='box " + boxtype + " " + disabled_class + "'><img class=\"fruit\" src=" + this.img + "></div>");
     };
+    /** render html for soa grid
+     * @param soa_block block number (see if in devalued_blocks)
+    */
+    Fruit.prototype.renderSOA = function (soa_block) {
+        return (this.render(this.devalued_blocks.indexOf(soa_block) > -1));
+    };
     /** show empty box or reveal fruit
      * @param score previous trials score (correct key push>0)
      */
@@ -84,8 +90,9 @@ var Fruit = /** @class */ (function () {
  * @param d direction to get outcome from stim
  * @return Box
 */
-function mkBox(s, o, d) {
+function mkBox(s, o, d, devalued_blocks) {
     // update Fruit info -- one a box is made, the fruit is exhausted (shouldn't be used elsewhere)
+    s.devalued_blocks = o.devalued_blocks = devalued_blocks;
     o.direction = s.direction = d;
     s.SO = SO.Stim;
     o.SO = SO.Outcome;
@@ -173,3 +180,26 @@ function mkODTrial(devalued, valued) {
     });
 }
 // NB. no OD feedback
+/** devalue grid for SOA or DD (baseline test)
+  * @param fruits     list of all fruits
+  * @param sea_block  block (devalue if within devalued_blocks)
+  * @param SorO       use Stim (DD) or Outcome (SOA) fruit?
+*/
+function mkSOAgrid(fruits, soa_block, SorO) {
+    var grid_fruits = fruits.filter(function (x) { return x.SO == SorO; });
+    var grid = "";
+    for (var i in grid_fruits) {
+        var ii = parseInt(i);
+        grid += grid_fruits[i].renderSOA(soa_block);
+        if (ii % 3 == 0 && ii > 0) {
+            grid += "\n<br>";
+        }
+    }
+    console.log(grid);
+    return ({
+        type: 'html-keyboard-response',
+        stimulus: grid,
+        choices: accept_keys,
+        post_trial_gap: SETTINGS['ITI']
+    });
+}

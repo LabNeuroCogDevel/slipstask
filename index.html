@@ -27,12 +27,22 @@ see https://labneurocogdevel.github.io/cardtask
     <script type="text/javascript">
 
 var FRTS = fruits();
-var boxes = [mkBox(FRTS['apple'], FRTS['kiwi'], "Left"), mkBox(FRTS['grape'], FRTS['lemon'], "Right")];
+
+var boxes = [mkBox(FRTS['apple'],   FRTS['kiwi'],      "Left",  [1,2]),
+	     mkBox(FRTS['grape'],   FRTS['lemon'],     "Right", [2,3]),
+	     mkBox(FRTS['bananas'], FRTS['coconut'],   "Right", [3,4]),
+	     mkBox(FRTS['melon'],   FRTS['cherries'],  "Left",  [4,5]),
+	     mkBox(FRTS['orange'],  FRTS['pineapple'], "Left",  [5,6]),
+	     mkBox(FRTS['pear'],    FRTS['strawberry'],"Right", [1,6])];
+
 var stim1 = mkBoxTrial(boxes[0]);
 var stim2 = mkBoxTrial(boxes[1]);
 var fbk = mkTrainFbk();
 var OD1 = mkODTrial(FRTS['lemon'], FRTS['kiwi']);
 var OD2 = mkODTrial(FRTS['kiwi'], FRTS['lemon']);
+
+var soa = [mkSOAgrid(Object.values(FRTS), 1, "Outcome")];
+var dd  = [mkSOAgrid(Object.values(FRTS), 1, "Stim")];
 
 fullTL=[stim1, fbk, stim2, fbk, OD1, OD2];
 trainTL=[stim1, fbk, stim2, fbk];
@@ -58,6 +68,8 @@ function init(){ trials(fullTL); }
       <a href="#" onclick="trials(fullTL)"> fulltrial</a> |
       <a href="#" onclick="trials(trainTL)"> Train</a> |
       <a href="#" onclick="trials(ODTL)"> OD</a> |
+      <a href="#" onclick="trials(soa)"> SOA</a> |
+      <a href="#" onclick="trials(dd)"> DD</a> |
     </div>
     <br><br>
     <div>
