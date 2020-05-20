@@ -1,4 +1,12 @@
 .fruit { height: 70px;}
 .box   {display: inline-block; width: 181px; height: 187px; padding-top: 90px; }
-.box.open    {background: url('/static/images/box_open_sm.gif')}
-.box.closed  {background: url('/static/images/box_closed_sm.gif')}
+.box.open    {background: url('../images/box_open_sm.gif')}
+.box.closed  {background: url('../images/box_closed_sm.gif')}
+/*x over devalued*/
+.disabled::after {
+    content: url('../images/devalue.png');
+    position: absolute;
+    opacity: 50%;
+    margin-left: -100px;
+    margin-top: -50px;
+}
