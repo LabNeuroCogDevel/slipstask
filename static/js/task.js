@@ -5,7 +5,9 @@
  */
 
 var INSTRUCTIONS_DATA = {}; 
-$.getJSON('/static/js/instructions.json', function(data) {
+// expect to be run from root, but cannot use / for github pages
+// TODO: instructions.json into .js file?
+$.getJSON('static/js/instructions.json', function(data) {
    INSTRUCTIONS_DATA = data;
 });
 
