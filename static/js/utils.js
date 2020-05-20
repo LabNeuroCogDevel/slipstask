@@ -38,6 +38,7 @@ var Fruit = /** @class */ (function () {
         this.name = name;
         this.img = "static/images/" + name + ".gif";
         this.direction = Dir.None;
+        this.devalued_blocks = [];
     }
     /** render html for fruit (inside or outside)
      * @param disabled True draw X over fruit
@@ -48,22 +49,32 @@ var Fruit = /** @class */ (function () {
         return ("<div class='box " + boxtype + " " + disabled_class + "'><img class=\"fruit\" src=" + this.img + "></div>");
     };
     /** show empty box or reveal fruit
-     * @param pushed numeric value of key pushed. should be in KEYS*/
-    Fruit.prototype.train_feedback = function (pushed_keynum) {
-        var push_side = key_to_side(pushed_keynum);
+     * @param score previous trials score (correct key push>0)
+     */
+    Fruit.prototype.feedback = function (score) {
         //console.log('feedback', pushed_keynum, 'is', push_side, 'v', this.direction);
-        var img = (push_side === this.direction) ? "<img class=\"fruit\" src=" + this.img + ">" : "";
+        var img = (score > 0) ? "<img class=\"fruit\" src=" + this.img + ">" : "";
         return ("<div class='box open'>" + img + "</div>");
     };
-    /** score (only for stim)
-     * @param pushed_dir participant pushed Left/Right
-     * @param rt  reaction time in ms. not used
-     * @return score (0 or 1). consider higher for rt
+    /** slips of action score. works for Discrimination Devalue (baseline test) too
+      * @param pushed_keynum  keycode pushed by participant
+      * @param soa_block      current slips of action block. check against Fruit.devalued_blocks
+      * @param rt             unused. could amplify points if fast
+      * @return score (0 or 1). consider higher for rt
     */
-    Fruit.prototype.score = function (pushed_keynum, rt) {
+    Fruit.prototype.score = function (pushed_keynum, rt, soa_block) {
+        // is devalued any keypush is bad
+        var devalued = this.devalued_blocks.indexOf(soa_block) > -1;
         var push_side = key_to_side(pushed_keynum);
-        //console.log('score', pushed_keynum, 'is', push_side, 'v', this.direction);
-        return ((push_side === this.direction) ? 1 : 0);
+        if (devalued && push_side != Dir.None) {
+            return (-1);
+        }
+        else if (!devalued && push_side == this.direction) {
+            return (1);
+        }
+        else { // devalued no push, valued incorrect push
+            return (0);
+        }
     };
     return Fruit;
 }());
@@ -97,16 +108,18 @@ function fruits() {
     }
     return (fruits);
 }
-function mkTrainTrial(b) {
+/** make a trial that is a box selection
+  * @param b box to use (has stimulus and outcome fruit)
+  * @param soa_block optional slip of action block number (for devaluation)
+*/
+function mkBoxTrial(b, soa_block) {
     return ({
         type: 'html-keyboard-response',
         stimulus: b.S.render(false),
         choices: accept_keys,
-        //post_trial_gap: SCOREANIMATEDUR,
-        //trial_duration: trialdur,
         prompt: "<p>left or right</p>",
         on_finish: function (data) {
-            data.score = b.S.score(data.key_press, data.rt);
+            data.score = b.S.score(data.key_press, data.rt, soa_block);
             data.chose = key_to_side(data.key_press);
             data.stim = b.S.name;
             data.outcome = b.O.name;
@@ -126,7 +139,7 @@ function mkTrainFbk() {
         stimulus: function (trial) {
             // setup win vs nowin feedback color and message
             var prev = jsPsych.data.get().last().values()[0];
-            return (FRTS[prev.outcome].train_feedback(prev.key_press));
+            return (FRTS[prev.outcome].feedback(prev.score));
         },
         on_load: function (trial) { },
         on_finish: function (data) {
@@ -142,8 +155,6 @@ function mkTrainFbk() {
 */
 function mkODTrial(devalued, valued) {
     var outcomes = [devalued.render(true), valued.render(false)];
-    console.log(outcomes);
-    console.log(outcomes.join("<br>"));
     // TODO shuffle outcome strings?
     return ({
         type: 'html-keyboard-response',
@@ -153,7 +164,7 @@ function mkODTrial(devalued, valued) {
         prompt: "<p>left or right</p>",
         on_finish: function (data) {
             data.block = 'OD';
-            data.score = valued.score(data.key_press, data.rt);
+            data.score = valued.score(data.key_press, data.rt, 0);
             data.chose = key_to_side(data.key_press);
             data.devalued = devalued.name;
             data.valued = valued.name;

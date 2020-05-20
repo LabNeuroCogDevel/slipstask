@@ -28,8 +28,8 @@ see https://labneurocogdevel.github.io/cardtask
 
 var FRTS = fruits();
 var boxes = [mkBox(FRTS['apple'], FRTS['kiwi'], "Left"), mkBox(FRTS['grape'], FRTS['lemon'], "Right")];
-var stim1 = mkTrainTrial(boxes[0]);
-var stim2 = mkTrainTrial(boxes[1]);
+var stim1 = mkBoxTrial(boxes[0]);
+var stim2 = mkBoxTrial(boxes[1]);
 var fbk = mkTrainFbk();
 var OD1 = mkODTrial(FRTS['lemon'], FRTS['kiwi']);
 var OD2 = mkODTrial(FRTS['kiwi'], FRTS['lemon']);

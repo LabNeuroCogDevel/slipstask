@@ -37,9 +37,11 @@ class Fruit {
     direction: Dir;
     pair: Fruit;
     box: Box; // recursive cycle - used for drawing
+    devalued_blocks: number[]; // on which Slips Block to devalue
     constructor(public name: string) {
         this.img = `static/images/${name}.gif`;
         this.direction = Dir.None;
+        this.devalued_blocks = [];
     }
 
     /** render html for fruit (inside or outside) 
@@ -51,23 +53,31 @@ class Fruit {
         return (`<div class='box ${boxtype} ${disabled_class}'><img class="fruit" src=${this.img}></div>`)
     }
     /** show empty box or reveal fruit
-     * @param pushed numeric value of key pushed. should be in KEYS*/
-    train_feedback(pushed_keynum: number): string {
-        const push_side = key_to_side(pushed_keynum);
+     * @param score previous trials score (correct key push>0)
+     */
+    feedback(score: number): string {
         //console.log('feedback', pushed_keynum, 'is', push_side, 'v', this.direction);
-        const img = (push_side === this.direction) ? `<img class="fruit" src=${this.img}>` : ""
+        const img = (score > 0) ? `<img class="fruit" src=${this.img}>` : ""
         return (`<div class='box open'>${img}</div>`)
     }
 
-    /** score (only for stim)
-     * @param pushed_dir participant pushed Left/Right 
-     * @param rt  reaction time in ms. not used
-     * @return score (0 or 1). consider higher for rt
+    /** slips of action score. works for Discrimination Devalue (baseline test) too
+      * @param pushed_keynum  keycode pushed by participant
+      * @param soa_block      current slips of action block. check against Fruit.devalued_blocks
+      * @param rt             unused. could amplify points if fast
+      * @return score (0 or 1). consider higher for rt
     */
-    score(pushed_keynum: number, rt: number): number {
+    score(pushed_keynum: number, rt: number, soa_block: number): number {
+        // is devalued any keypush is bad
+        const devalued: boolean = this.devalued_blocks.indexOf(soa_block) > -1
         const push_side = key_to_side(pushed_keynum);
-        //console.log('score', pushed_keynum, 'is', push_side, 'v', this.direction);
-        return ((push_side === this.direction) ? 1 : 0)
+        if (devalued && push_side != Dir.None) {
+            return (-1)
+        } else if (!devalued && push_side == this.direction) {
+            return (1)
+        } else { // devalued no push, valued incorrect push
+            return (0)
+        }
     }
 }
 
@@ -101,16 +111,18 @@ function fruits(): { [key: string]: Fruit; } {
 }
 
 
-function mkTrainTrial(b: Box) {
+/** make a trial that is a box selection
+  * @param b box to use (has stimulus and outcome fruit)
+  * @param soa_block optional slip of action block number (for devaluation)
+*/
+function mkBoxTrial(b: Box, soa_block: number) {
     return ({
         type: 'html-keyboard-response',
         stimulus: b.S.render(false),
         choices: accept_keys,
-        //post_trial_gap: SCOREANIMATEDUR,
-        //trial_duration: trialdur,
         prompt: "<p>left or right</p>",
         on_finish: function(data) {
-            data.score = b.S.score(data.key_press, data.rt);
+            data.score = b.S.score(data.key_press, data.rt, soa_block);
             data.chose = key_to_side(data.key_press)
             data.stim = b.S.name;
             data.outcome = b.O.name;
@@ -130,7 +142,7 @@ function mkTrainFbk() {
         stimulus: function(trial) {
             // setup win vs nowin feedback color and message
             let prev = jsPsych.data.get().last().values()[0];
-            return (FRTS[prev.outcome].train_feedback(prev.key_press))
+            return (FRTS[prev.outcome].feedback(prev.score))
         },
         on_load: function(trial) { },
         on_finish: function(data) {
@@ -156,7 +168,7 @@ function mkODTrial(devalued: Fruit, valued: Fruit) {
         prompt: "<p>left or right</p>",
         on_finish: function(data) {
             data.block = 'OD';
-            data.score = valued.score(data.key_press, data.rt);
+            data.score = valued.score(data.key_press, data.rt, 0);
             data.chose = key_to_side(data.key_press)
             data.devalued = devalued.name;
             data.valued = valued.name;
