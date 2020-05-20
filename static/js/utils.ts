@@ -45,14 +45,14 @@ class Fruit {
     /** render html for fruit (inside or outside) 
      * @param disabled True draw X over fruit
     */
-    render(disabled: boolean) {
+    render(disabled: boolean): string {
         let boxtype = (this.SO == SO.Stim) ? "closed" : "open";
         let disabled_class = disabled ? "disabled" : "";
         return (`<div class='box ${boxtype} ${disabled_class}'><img class="fruit" src=${this.img}></div>`)
     }
     /** show empty box or reveal fruit
      * @param pushed numeric value of key pushed. should be in KEYS*/
-    train_feedback(pushed_keynum: number) {
+    train_feedback(pushed_keynum: number): string {
         const push_side = key_to_side(pushed_keynum);
         //console.log('feedback', pushed_keynum, 'is', push_side, 'v', this.direction);
         const img = (push_side === this.direction) ? `<img class="fruit" src=${this.img}>` : ""
@@ -66,7 +66,7 @@ class Fruit {
     */
     score(pushed_keynum: number, rt: number): number {
         const push_side = key_to_side(pushed_keynum);
-        console.log('score', pushed_keynum, 'is', push_side, 'v', this.direction);
+        //console.log('score', pushed_keynum, 'is', push_side, 'v', this.direction);
         return ((push_side === this.direction) ? 1 : 0)
     }
 }
@@ -90,9 +90,9 @@ function mkBox(s: Fruit, o: Fruit, d: Dir): Box {
 /** Make dictionary of all fruits */
 function fruits(): { [key: string]: Fruit; } {
     // build dictionary of fruits
-    const fruits_string = ["apple", "bananas", "cherries", "coconut", "grape",
-        "kiwi", "lemon", "melon", "openbox", "orange", "pear",
-        "pineapple", "strawberry"];
+    const fruits_string = ["apple", "bananas", "cherries", "coconut",
+        "grape", "kiwi", "lemon", "melon",
+        "orange", "pear", "pineapple", "strawberry"];
     var fruits: { [key: string]: Fruit; } = {}
     for (const f of fruits_string) {
         fruits[f] = new Fruit(f);
@@ -114,10 +114,12 @@ function mkTrainTrial(b: Box) {
             data.chose = key_to_side(data.key_press)
             data.stim = b.S.name;
             data.outcome = b.O.name;
-            // update psiTurk if exists
+            data.block = 'Train1';
         }
     })
 }
+/** Feedback for Train Trials
+*/
 function mkTrainFbk() {
     return ({
         type: 'html-keyboard-response',
@@ -131,6 +133,36 @@ function mkTrainFbk() {
             return (FRTS[prev.outcome].train_feedback(prev.key_press))
         },
         on_load: function(trial) { },
-        on_finish: function(data) { }
+        on_finish: function(data) {
+            data.block = 'Train1';
+            // TODO: update psiTurk if not null
+        }
     })
 }
+/** Outcome Devaluation
+  * @param devalued - Fruit to devalue
+  * @param valued   - Fruit to value
+  devalued and valued should not have the same side response!
+*/
+function mkODTrial(devalued: Fruit, valued: Fruit) {
+    const outcomes: string[] = [devalued.render(true), valued.render(false)];
+    // TODO shuffle outcome strings?
+
+    return ({
+        type: 'html-keyboard-response',
+        stimulus: outcomes.join("<br>"),
+        choices: accept_keys,
+        post_trial_gap: SETTINGS['ITI'],
+        prompt: "<p>left or right</p>",
+        on_finish: function(data) {
+            data.block = 'OD';
+            data.score = valued.score(data.key_press, data.rt);
+            data.chose = key_to_side(data.key_press)
+            data.devalued = devalued.name;
+            data.valued = valued.name;
+            console.log(`picked ${data.chose} for ${valued.name},`,
+                `should be ${valued.direction} => ${data.score}`)
+        }
+    })
+}
+// NB. no OD feedback

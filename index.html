@@ -31,17 +31,20 @@ var boxes = [mkBox(FRTS['apple'], FRTS['kiwi'], "Left"), mkBox(FRTS['grape'], FR
 var stim1 = mkTrainTrial(boxes[0]);
 var stim2 = mkTrainTrial(boxes[1]);
 var fbk = mkTrainFbk();
+var OD1 = mkODTrial(FRTS['lemon'], FRTS['kiwi']);
+var OD2 = mkODTrial(FRTS['kiwi'], FRTS['lemon']);
 
-function fulltrial() {
-   //get_info, instructions
-   jsPsych.init({
-        timeline: [stim1, fbk, stim2, fbk], display_element: jsp,
-	// restart from the begining 
-	on_finish: function() {fulltrial()}
-    });
+fullTL=[stim1, fbk, stim2, fbk, OD1, OD2];
+trainTL=[stim1, fbk, stim2, fbk];
+ODTL=[OD1, OD2];
+function trials(timeline){
+  jsPsych.init({timeline: timeline,
+		display_element: jsp,
+		on_finish: function() {
+		    trials(timeline)}});
 }
 
-function init(){ fulltrial(); }
+function init(){ trials(fullTL); }
     </script>
 
   </head>
@@ -52,7 +55,9 @@ function init(){ fulltrial(); }
       <a href="https://sliplncd.herokuapp.com/"> heroku (DNE!)</a>
     </div>
     <div> trials:
-      <a href="#" onclick="fulltrial()"> fulltrial</a> |
+      <a href="#" onclick="trials(fullTL)"> fulltrial</a> |
+      <a href="#" onclick="trials(trainTL)"> Train</a> |
+      <a href="#" onclick="trials(ODTL)"> OD</a> |
     </div>
     <br><br>
     <div>

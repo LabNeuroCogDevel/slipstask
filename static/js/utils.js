@@ -62,7 +62,7 @@ var Fruit = /** @class */ (function () {
     */
     Fruit.prototype.score = function (pushed_keynum, rt) {
         var push_side = key_to_side(pushed_keynum);
-        console.log('score', pushed_keynum, 'is', push_side, 'v', this.direction);
+        //console.log('score', pushed_keynum, 'is', push_side, 'v', this.direction);
         return ((push_side === this.direction) ? 1 : 0);
     };
     return Fruit;
@@ -87,9 +87,9 @@ function mkBox(s, o, d) {
 /** Make dictionary of all fruits */
 function fruits() {
     // build dictionary of fruits
-    var fruits_string = ["apple", "bananas", "cherries", "coconut", "grape",
-        "kiwi", "lemon", "melon", "openbox", "orange", "pear",
-        "pineapple", "strawberry"];
+    var fruits_string = ["apple", "bananas", "cherries", "coconut",
+        "grape", "kiwi", "lemon", "melon",
+        "orange", "pear", "pineapple", "strawberry"];
     var fruits = {};
     for (var _i = 0, fruits_string_1 = fruits_string; _i < fruits_string_1.length; _i++) {
         var f = fruits_string_1[_i];
@@ -110,10 +110,12 @@ function mkTrainTrial(b) {
             data.chose = key_to_side(data.key_press);
             data.stim = b.S.name;
             data.outcome = b.O.name;
-            // update psiTurk if exists
+            data.block = 'Train1';
         }
     });
 }
+/** Feedback for Train Trials
+*/
 function mkTrainFbk() {
     return ({
         type: 'html-keyboard-response',
@@ -127,6 +129,36 @@ function mkTrainFbk() {
             return (FRTS[prev.outcome].train_feedback(prev.key_press));
         },
         on_load: function (trial) { },
-        on_finish: function (data) { }
+        on_finish: function (data) {
+            data.block = 'Train1';
+            // TODO: update psiTurk if not null
+        }
     });
 }
+/** Outcome Devaluation
+  * @param devalued - Fruit to devalue
+  * @param valued   - Fruit to value
+  devalued and valued should not have the same side response!
+*/
+function mkODTrial(devalued, valued) {
+    var outcomes = [devalued.render(true), valued.render(false)];
+    console.log(outcomes);
+    console.log(outcomes.join("<br>"));
+    // TODO shuffle outcome strings?
+    return ({
+        type: 'html-keyboard-response',
+        stimulus: outcomes.join("<br>"),
+        choices: accept_keys,
+        post_trial_gap: SETTINGS['ITI'],
+        prompt: "<p>left or right</p>",
+        on_finish: function (data) {
+            data.block = 'OD';
+            data.score = valued.score(data.key_press, data.rt);
+            data.chose = key_to_side(data.key_press);
+            data.devalued = devalued.name;
+            data.valued = valued.name;
+            console.log("picked " + data.chose + " for " + valued.name + ",", "should be " + valued.direction + " => " + data.score);
+        }
+    });
+}
+// NB. no OD feedback
