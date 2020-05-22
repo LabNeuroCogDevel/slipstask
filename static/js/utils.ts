@@ -43,6 +43,13 @@ enum SO { Stim = "Stim", Outcome = "Outcome" }
 enum Dir { None = "None", Left = "Left", Right = "Right" }
 /** Box has a 'S' stimulus outside, and 'O' outcome on the inside */
 interface Box { S: Fruit; O: Fruit; }
+// jsPsych timeline event. contains a lot more than 'type' but its the only required field
+interface PsychEvent {
+    type: string;
+    stimulus?; trial_duration?; on_finish?;
+    choices?; prompt?; post_trial_gap?;
+    pages?; show_clickable_nav?;
+}
 // Keys to direction
 const KEYS: { [key: number]: Dir; } = {
     // https://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
@@ -71,7 +78,7 @@ function key_to_side(pushed: number): Dir {
  * @param pagedate array of insturctions
  * @return jsPsych timeline ready dict object
 */
-function mkInstruction(pagedata: string[]) {
+function mkInstruction(pagedata: string[]): PsychEvent {
     return ({
         type: 'instructions',
         pages: pagedata,
@@ -181,11 +188,11 @@ function fruits(): { [key: string]: Fruit; } {
   * @param b box to use (has stimulus and outcome fruit)
   * @param soa_block optional slip of action block number (for devaluation)
 */
-function mkBoxTrial(b: Box, soa_block: number, block: string) {
+function mkBoxTrial(b: Box, soa_block: number, block: string): PsychEvent {
     // ID and SOA/DD may have diffeernt ITIS
-    const ITI = soa_block == 0 ? null : SETTINGS['ITI_SOA'];
+    const ITI = soa_block < 0 ? null : SETTINGS['ITI_SOA'];
     // if SOA, wait 1 second
-    const dur = soa_block == 0 ? null : SETTINGS['dur_SOA'];
+    const dur = soa_block < 0 ? null : SETTINGS['dur_SOA'];
     return ({
         type: 'html-keyboard-response',
         stimulus: b.S.render(false),
@@ -205,7 +212,7 @@ function mkBoxTrial(b: Box, soa_block: number, block: string) {
 }
 /** Feedback for Train Trials
 */
-function mkIDFbk() {
+function mkIDFbk(): PsychEvent {
     return ({
         type: 'html-keyboard-response',
         //choices: ['z','m'],
@@ -233,7 +240,7 @@ function sum_points(): number {
 
 /** mkScoreFbk 
   * @return jspsych timeline obj to dispaly total score */
-function mkScoreFbk() {
+function mkScoreFbk(): PsychEvent {
     return ({
         type: 'html-keyboard-response',
         //choices: ['z','m'],
@@ -277,10 +284,35 @@ function mkODTrial(devalued: Fruit, valued: Fruit) {
 }
 // NB. no OD feedback
 
+/** make all OD trials - all permutations: 1L & 1R of inside(outcome) fruits
+  * @param frts all fruits (to filter on left and right and only inside (Outcome)
+  * @return array for timeline (ends with score)
+*/
+function mkODblock(frts: Fruit[]): PsychEvent[] {
+    const OD_left = Object.values(frts).filter(x => x.direction == Dir.Left && x.SO == SO.Outcome);
+    const OD_right = Object.values(frts).filter(x => x.direction == Dir.Right && x.SO == SO.Outcome);
+    // 1 block, 36 trials: each 6 R matched to each 6 L
+    // generate factorized L and R 
+    // and randomly assign top and bottom to either L, or R
+    const OD_fac = jsPsych.randomization.factorial({ L: OD_left, R: OD_right }, 1);
+    var OD_order = [];
+    for (let i = 0; i < OD_fac.length; i++) OD_order.push(jsPsych.randomization.repeat(['L', 'R'], 1));
+    var allOD = []
+    for (let i = 0; i < OD_fac.length; i++) {
+        const sides = OD_order[i];
+        const fruits_by_side = OD_fac[i];
+        const top = sides[0]; const bot = sides[1];
+        allOD.push(mkODTrial(fruits_by_side[top], fruits_by_side[bot]));
+    }
+    allOD.push(mkScoreFbk());
+    return (allOD)
+}
+
+
 /** devalue grid for SOA or DD (baseline test)
   * @param fruits     list of all fruits
   * @param sea_block  block (devalue if within devalued_blocks)
-  * @param SorO       use Stim (DD) or Outcome (SOA) fruit?
+  * @param SorO       use outside Stim (DD) or inside Outcome (SOA) fruit?
 */
 function mkSOAgrid(fruits: Fruit[], soa_block: number, SorO: SO) {
     const grid_fruits: Fruit[] = fruits.filter(x => x.SO == SorO);
@@ -290,13 +322,69 @@ function mkSOAgrid(fruits: Fruit[], soa_block: number, SorO: SO) {
         grid += grid_fruits[i].renderSOA(soa_block);
         if (ii % 3 == 0 && ii > 0) { grid += "\n<br>" }
     }
-    console.log(grid);
     return ({
         type: 'html-keyboard-response',
         stimulus: grid,
         trial_duration: SETTINGS['dur_SOAcue'],
         choices: jsPsych.NO_KEYS,
+        prompt: "starting after 5 seconds",
         //choices: jsPsych.ANY_KEYS,
         //post_trial_gap: SETTINGS['ITI'],
     })
+}
+
+/** generate assignments for SOA - slips of action
+  9 blocks w/ 12 trials each (2 outcomes per bloc), 108 trials total. (N.B. `6C2 == 15`)
+  each outcome devalued 3 times (36 devalued, 72 valued)
+  TODO: setup devalue per fruit in box creation
+  * @param nblocks - number of blocks where 2/6 are randomly devalued (9)
+  * @param nbox - number of boxes (6)
+  * @param reps - number of repeats for each box (3)
+  * @param choose - number of blocks per box (2)
+  * @return per box devalued indexes e.g. [[0,5], [1,3], [0,1], ...] = first box devalued at block 0 and 5, 2nd @ 1&3, ...
+  */
+function soa_assign(nblocks: number, nbox: number, reps: number, choose: number): number[][] {
+    /* would like to do something like
+    const soaallbocks = jsPsych.randomization.repeat(Array.from({ length: 6 }, (_, i) => i), 3);
+    const soaidx = jsPsych.randomization.shuffleNoRepeats(soaallbocks);
+    var SOA_blist = [];
+    for (i = 0; i < soaidx.length; i = i + 2) { SOA_blist = [soaidx[i], soaidx[i + 1]]; }
+    but this may have e.g. 0,5 and then 5,0
+    */
+    var block_deval: number[] = Array<number>(nblocks).fill(0); // # devalued boxes in each block (max `choose`)
+    var bx_deval_on: number[][] = Array<number[]>(nbox).fill([]); // box X devalued block [[block,block,block], [...], ...]
+    for (let bn = 0; bn < nbox; bn++) {
+        if (bx_deval_on[bn].length >= reps) { continue; }
+        const avail_slots = block_deval.map((x, i) => [x, i]).filter(x => x[0] < choose).map(x => x[1]);
+        const into = jsPsych.randomization.sampleWithoutReplacement(avail_slots, reps);
+        bx_deval_on[bn] = into;
+        for (let i of into) {
+            block_deval[i]++;
+        }
+    }
+    return (bx_deval_on)
+}
+/** make all of slips of action/devalue discrimination
+  * @param frts all the fruits
+  * @param boxes all the boxes
+  * @param so which part to show: outside=Stimulus(DD) or inside=Outcome(SOA)
+  * @param nblocks how many blocks (9)
+  * @param nreps how many repeats of each box per block (2)
+  */
+function mkSOAblocks(frts: Fruit[], boxes: Box[], so: SO, nblocks: number, nreps: number): PsychEvent[] {
+    var allSOA = [];
+    // for psiturk, record what type of event this was
+    const desc = so == SO.Outcome ? "SOA" : "DD";
+    const score = mkScoreFbk();
+    for (let bn = 0; bn < nblocks; bn++) {
+        allSOA.push(mkSOAgrid(Object.values(frts), bn, so));
+        // each box seen twice. consider adding shuffleNoRepeats
+        const boxreps = jsPsych.randomization.repeat(boxes, nreps)
+        for (let bx of boxreps) {
+            allSOA.push(mkBoxTrial(bx, bn, desc + "_" + bn));
+        }
+        // after the end of a block, show score
+        allSOA.push(score);
+    }
+    return (allSOA)
 }
