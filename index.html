@@ -35,19 +35,58 @@ var boxes = [mkBox(FRTS['apple'],   FRTS['kiwi'],      "Left",  [1,2]),
 	     mkBox(FRTS['orange'],  FRTS['pineapple'], "Left",  [5,6]),
 	     mkBox(FRTS['pear'],    FRTS['strawberry'],"Right", [1,6])];
 
-var stim1 = mkBoxTrial(boxes[0]);
-var stim2 = mkBoxTrial(boxes[1]);
-var fbk = mkTrainFbk();
-var OD1 = mkODTrial(FRTS['lemon'], FRTS['kiwi']);
-var OD2 = mkODTrial(FRTS['kiwi'], FRTS['lemon']);
+/* feedbacks - not random. don't care about what came before */
+var fbk = mkIDFbk();
+const scoretl = mkScoreFbk(); // tl = timeline
 
-var soa = [mkSOAgrid(Object.values(FRTS), 1, "Outcome")];
-var dd  = [mkSOAgrid(Object.values(FRTS), 1, "Stim")];
+/* 1. Instructed Discrimination. (6 boxes * 2 reps)*8 blocks */
+const IDidx = random_IDidx(boxes.length);
+const allID = [].concat(IDidx.map( (i, ii) => [mkBoxTrial(boxes[i],0,'ID_' + Math.floor(ii/12) ), fbk])).flat()
+
+/* 2. OD - outcome devaluation */
+const OD_left = Object.values(FRTS).filter(x => x.direction == Dir.Left && x.SO == SO.Outcome);
+const OD_right = Object.values(FRTS).filter(x => x.direction == Dir.Right && x.SO == SO.Outcome);
+// 1 block, 36 trials: each 6 R matched to each 6 L
+// generate factorized L and R 
+// and randomly assign top and bottom to either L, or R
+const OD_fac = jsPsych.randomization.factorial({L: OD_left, R: OD_right}, 1);
+var OD_order = [];
+for(i=0; i<OD_fac.length;i++) OD_order.push(jsPsych.randomization.repeat(['L','R'], 1));
+var allOD = []
+for(i=0; i<OD_fac.length; i++) {
+   const sides=OD_order[i];
+   const fruits_by_side = OD_fac[i];
+   const top=sides[0]; const bot=sides[1];
+   allOD.push(mkODTrial(fruits_by_side[top], fruits_by_side[bot]));
+}
 
 
-fullTL=[stim1, fbk, stim2, fbk, OD1, OD2];
-trainTL=[stim1, fbk, stim2, fbk];
-ODTL=[OD1, OD2];
+/* 3. SOA - slips of action */
+// 9 blocks w/ 12 trials each (2 outcomes per bloc), 108 trials total. (N.B. `6C2 == 15`)
+// each outcome devalued 3 times (36 devalued, 72 valued)
+//TODO: setup devalue per fruit in box creation
+//TODO: 1-6. repeat 3 times. match to another (but not the same)
+const soaallbocks = jsPsych.randomization.repeat(Array.from({length: 8}, (_, i) => i));
+console.log(soaallbocks)
+const soaidx = jsPsych.randomization.shuffleNoRepeats(soaallbocks);
+console.log(soaidx)
+var SOA_blist = [];
+
+var soa = mkSOAgrid(Object.values(FRTS), 1, "Outcome");
+var soa1 = mkBoxTrial(boxes[0], 1, 'SOA');
+var soa2 = mkBoxTrial(boxes[1], 1, 'SOA');
+
+var dd  = mkSOAgrid(Object.values(FRTS), 1, "Stim");
+var dd1 = mkBoxTrial(boxes[0], 1, 'DD');
+var dd2 = mkBoxTrial(boxes[1], 1, 'DD');
+
+
+IDTL   = allID.slice(0,4);
+ODTL   = [allOD.slice(0,2), scoretl].flat();
+SOATL  = [soa, soa1, soa2, scoretl];
+DDTL   = [dd, dd1, dd2, scoretl];
+fullTL = [allID, ODTL, SOATL, DDTL].flat()
+
 function trials(timeline){
   jsPsych.init({timeline: timeline,
 		display_element: jsp,
@@ -74,18 +113,18 @@ function init(){ trials(fullTL); }
       <a href="https://sliplncd.herokuapp.com/"> heroku (DNE!)</a>
     </div>
     <div> trials:
-      <a href="#" onclick="trials(fullTL)"> fulltrial</a> |
-      <a href="#" onclick="trials(trainTL)"> Train</a> |
+      <a href="#" onclick="trials(fullTL)"> fulltask </a> |
+      <a href="#" onclick="trials(IDTL)"> ID</a> |
       <a href="#" onclick="trials(ODTL)"> OD</a> |
-      <a href="#" onclick="trials(soa)"> SOA</a> |
-      <a href="#" onclick="trials(dd)"> DD</a> |
+      <a href="#" onclick="trials(SOATL)"> SOA</a> |
+      <a href="#" onclick="trials(DDTL)"> DD</a> |
     </div>
     <div> instructions:
       <a href="#" onclick="showInstructions('ID')"> ID</a> |
       <a href="#" onclick="showInstructions('OD')"> OD</a> |
       <a href="#" onclick="showInstructions('SOA')"> SOA</a> |
       <a href="#" onclick="showInstructions('DD')"> DD</a> |
-      <br> WF:
+       WF ver:
       <a href="#" onclick="showInstructions('ID_wf')"> ID</a> |
       <a href="#" onclick="showInstructions('OD_wf')"> OD</a> |
       <a href="#" onclick="showInstructions('SOA_wf')"> SOA</a> |

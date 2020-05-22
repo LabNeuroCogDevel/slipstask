@@ -1,8 +1,35 @@
+//declare var $: any;   //jquery
 var SETTINGS = {
-    'version': '20200519.1-nothingyet',
-    'ITI': 1000,
-    'train_fbkdur': 1000
+    'version': '20200521.0-ITIs',
+    'ITI_ID': 1000,
+    'ITI_OD': 1000,
+    'ITI_SOA': 1000,
+    'dur_ID_fbk': 1000,
+    'dur_SOAcue': 5000,
+    'dur_SOA': 1000,
+    'dur_score': 1500,
+    // Instructed discrimination
+    //  8 blocks of 12 trials (96 total). each of the 6 fruit boxes seen 16 times.
+    'ID_reps': 2,
+    'ID_blocks': 8
 };
+function random_IDidx(n) {
+    // repeat 0-5 twice
+    var idxs = [];
+    for (var j = 0; j < SETTINGS['ID_reps']; j++) {
+        for (var i = 0; i < n; i++) {
+            idxs.push(i);
+        }
+    }
+    // shuffle for number of blocks
+    // typescript issue - without init to empty array, get DNE error
+    var idxlist = [];
+    for (var i = 0; i < SETTINGS['ID_blocks']; i++) {
+        idxlist.push(jsPsych.randomization.shuffle(idxs));
+    }
+    //flatten and return
+    return ([].concat.apply([], idxlist));
+}
 /** Stimulus (outside box) or Outcome (inside box) */
 var SO;
 (function (SO) {
@@ -25,6 +52,16 @@ var KEYS = {
     39: Dir.Right
 };
 var accept_keys = Object.keys(KEYS).map(function (x) { return parseInt(x); });
+//** save data if psiturk's uniqueId is defined and not null */
+function save_data() {
+    if (typeof uniqueId === 'undefined') {
+        return;
+    }
+    if (uniqueId === null) {
+        return;
+    }
+    psiturk.saveData({ success: function () { return; } });
+}
 /** warp around KEYS to return None if empty */
 function key_to_side(pushed) {
     var side = KEYS[pushed];
@@ -34,6 +71,7 @@ function key_to_side(pushed) {
 }
 /** wrap array in instruction dict for timeline
  * @param pagedate array of insturctions
+ * @return jsPsych timeline ready dict object
 */
 function mkInstruction(pagedata) {
     return ({
@@ -138,39 +176,70 @@ function fruits() {
   * @param b box to use (has stimulus and outcome fruit)
   * @param soa_block optional slip of action block number (for devaluation)
 */
-function mkBoxTrial(b, soa_block) {
+function mkBoxTrial(b, soa_block, block) {
+    // ID and SOA/DD may have diffeernt ITIS
+    var ITI = soa_block == 0 ? null : SETTINGS['ITI_SOA'];
+    // if SOA, wait 1 second
+    var dur = soa_block == 0 ? null : SETTINGS['dur_SOA'];
     return ({
         type: 'html-keyboard-response',
         stimulus: b.S.render(false),
         choices: accept_keys,
+        //post_trial_gap: ITI,
+        trial_duration: dur,
         prompt: "<p>left or right</p>",
         on_finish: function (data) {
             data.score = b.S.score(data.key_press, data.rt, soa_block);
             data.chose = key_to_side(data.key_press);
             data.stim = b.S.name;
             data.outcome = b.O.name;
-            data.block = 'Train1';
+            data.block = block;
+            save_data();
         }
     });
 }
 /** Feedback for Train Trials
 */
-function mkTrainFbk() {
+function mkIDFbk() {
     return ({
         type: 'html-keyboard-response',
         //choices: ['z','m'],
-        post_trial_gap: SETTINGS['ITI'],
-        trial_duration: SETTINGS['train_fbkdur'],
+        //post_trial_gap: SETTINGS['ITI'],
+        choices: jsPsych.NO_KEYS,
+        trial_duration: SETTINGS['dur_ID_fbk'],
+        post_trial_gap: SETTINGS['ITI_SOA'],
         prompt: "<p></p>",
         stimulus: function (trial) {
             // setup win vs nowin feedback color and message
             var prev = jsPsych.data.get().last().values()[0];
             return (FRTS[prev.outcome].feedback(prev.score));
         },
-        on_load: function (trial) { },
+        //update
+        //on_load: save_data(),
         on_finish: function (data) {
-            data.block = 'Train1';
-            // TODO: update psiTurk if not null
+            data.block = '1.ID_score';
+        }
+    });
+}
+/** total all points score */
+function sum_points() {
+    return (jsPsych.data.get().select('score').sum());
+}
+/** mkScoreFbk
+  * @return jspsych timeline obj to dispaly total score */
+function mkScoreFbk() {
+    return ({
+        type: 'html-keyboard-response',
+        //choices: ['z','m'],
+        //post_trial_gap: SETTINGS['ITI'],
+        // only show for fixed duration
+        trial_duration: SETTINGS['dur_score'],
+        stimulus: function (trial) {
+            var score = sum_points();
+            return ("<h2>Score: " + score + "</h2>");
+        },
+        on_finish: function (data) {
+            data.block = 'score';
         }
     });
 }
@@ -180,16 +249,16 @@ function mkTrainFbk() {
   devalued and valued should not have the same side response!
 */
 function mkODTrial(devalued, valued) {
-    var outcomes = [devalued.render(true), valued.render(false)];
+    var outcomes = jsPsych.randomization.sampleWithoutReplacement([devalued.render(true), valued.render(false)], 2);
     // TODO shuffle outcome strings?
     return ({
         type: 'html-keyboard-response',
         stimulus: outcomes.join("<br>"),
         choices: accept_keys,
-        post_trial_gap: SETTINGS['ITI'],
+        post_trial_gap: SETTINGS['ITI_OD'],
         prompt: "<p>left or right</p>",
         on_finish: function (data) {
-            data.block = 'OD';
+            data.block = '2.OD';
             data.score = valued.score(data.key_press, data.rt, 0);
             data.chose = key_to_side(data.key_press);
             data.devalued = devalued.name;
@@ -218,7 +287,7 @@ function mkSOAgrid(fruits, soa_block, SorO) {
     return ({
         type: 'html-keyboard-response',
         stimulus: grid,
-        choices: accept_keys,
-        post_trial_gap: SETTINGS['ITI']
+        trial_duration: SETTINGS['dur_SOAcue'],
+        choices: jsPsych.NO_KEYS
     });
 }
