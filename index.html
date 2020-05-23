@@ -26,42 +26,25 @@ see https://labneurocogdevel.github.io/slipstask
 
     <script type="text/javascript">
 
-var FRTS = fruits();
-// 9 blocks of 6 boxes each repeated 3 times. 2 devalued per block
-// devaule for on Slips Of Action and Discrimination Devaluation 
-const soa_boxes = soa_assign(9, 6, 3, 2);
+// combine all for full timeline
+fullTL = [
+    //mkInstruction(INSTRUCTIONS_DATA["ID_wf"]),
+    allID,
+    //mkInstruction(INSTRUCTIONS_DATA["OD_wf"]),
+    allOD,
+    //mkInstruction(INSTRUCTIONS_DATA["SOA_wf"]),
+    allSOA,
+   // mkInstruction(INSTRUCTIONS_DATA["DD_wf"]),
+    allDD].flat()
 
-var boxes = [mkBox(FRTS['apple'],   FRTS['kiwi'],      "Left",  soa_boxes[0]),
-	     mkBox(FRTS['grape'],   FRTS['lemon'],     "Right", soa_boxes[1]),
-	     mkBox(FRTS['bananas'], FRTS['coconut'],   "Right", soa_boxes[2]),
-	     mkBox(FRTS['melon'],   FRTS['cherries'],  "Left",  soa_boxes[3]),
-	     mkBox(FRTS['orange'],  FRTS['pineapple'], "Left",  soa_boxes[4]),
-	     mkBox(FRTS['pear'],    FRTS['strawberry'],"Right", soa_boxes[5])];
+//var timeline = [get_info, fullTL].flat()
 
-/* feedbacks - not random. don't care about what came before */
-var fbk = mkIDFbk();
-
-/* 1. Instructed Discrimination. (6 boxes * 2 reps)*8 blocks */
-const IDidx = random_IDidx(boxes.length);
-const allID = [].concat(IDidx.map( (i, ii) => [mkBoxTrial(boxes[i], -1, 'ID_' + Math.floor(ii/12) ), fbk])).flat()
-
-/* 2. OD - outcome devaluation */
-allOD = mkODblock(FRTS);
-
-/* 3. SOA - slips of action
-      9 blocks w/ 12 trials each (2 outcomes per bloc), 108 trials total. (N.B. `6C2 == 15`)
-*/
-allSOA = mkSOAblocks(FRTS, boxes, SO.Outcome,  9, 2);
-/* 4. DD - devalued discrimination */
-allDD  = mkSOAblocks(FRTS, boxes, SO.Stimulus, 9, 1);
-
+/* small versions for exploring */
 const scoretl = mkScoreFbk(); // tl = timeline
-IDTL   = allID.slice(0,4);
+IDTL   = [allID.slice(0,4), scoretl].flat();
 ODTL   = [allOD.slice(0,2), scoretl].flat();
 SOATL  = [allSOA.slice(0,3), scoretl].flat();
 DDTL  =  [allDD.slice(0,3), scoretl].flat();
-
-fullTL = [allID, allOD, allSOA, allDD].flat()
 
 function trials(timeline){
   jsPsych.init({timeline: timeline,

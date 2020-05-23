@@ -13,6 +13,30 @@ var SETTINGS = {
     'ID_reps': 2,
     'ID_blocks': 8
 };
+/** generate boxes
+   * @param frts dictionary fruitname=>Fruit
+   * @param soa_boxes output of soa_assign (block index on which to be devalued)
+   SIDE-EFFECT: update each fruit with soa_boxes and direction.
+   * @return list of created boxes: outside fruit + inside fruit (with fruits now having devalue block number and direction)
+*/
+function allBoxes(frts, soa_boxes) {
+    var fruit_names = Object.keys(frts);
+    var nboxes = soa_boxes.length;
+    if (nboxes != fruit_names.length / 2)
+        alert("nboxes != nfruits/2");
+    var sides = jsPsych.randomization.shuffle(jsPsych.randomization.repeat([Dir.Left, Dir.Right], nboxes / 2));
+    var boxes = soa_boxes.map(function (devalidxs, i) { return mkBox(frts[fruit_names[i]], frts[fruit_names[nboxes + i]], sides[i], devalidxs); });
+    return (boxes);
+    /*
+  const boxes = [mkBox(FRTS['apple'],   FRTS['kiwi'],      "Left",  soa_boxes[0]),
+             mkBox(FRTS['grape'],   FRTS['lemon'],     "Right", soa_boxes[1]),
+             mkBox(FRTS['bananas'], FRTS['coconut'],   "Right", soa_boxes[2]),
+             mkBox(FRTS['melon'],   FRTS['cherries'],  "Left",  soa_boxes[3]),
+             mkBox(FRTS['orange'],  FRTS['pineapple'], "Left",  soa_boxes[4]),
+             mkBox(FRTS['pear'],    FRTS['strawberry'],"Right", soa_boxes[5])];
+
+    */
+}
 function random_IDidx(n) {
     // repeat 0-5 twice
     var idxs = [];
@@ -29,6 +53,22 @@ function random_IDidx(n) {
     }
     //flatten and return
     return ([].concat.apply([], idxlist));
+}
+/** Instructed Discrimianation (first block)
+  * @param boxes boxes (6)
+  * @return timeline ready array of ID events
+*/
+// TODO: merge random_IDidx so we can add score
+function mkIDblocks(boxes) {
+    var fbk = mkIDFbk();
+    var IDidx = random_IDidx(boxes.length);
+    var IDblocknum = -1; // -1 b/c this is not soa/dd
+    // add feedback
+    var allID = [].concat(IDidx.map(function (i, ii) { return [
+        mkBoxTrial(boxes[i], IDblocknum, '1.ID_' + Math.floor(ii / 12)),
+        fbk
+    ]; })).flat();
+    return (allID);
 }
 /** Stimulus (outside box) or Outcome (inside box) */
 var SO;
@@ -313,7 +353,7 @@ function mkSOAgrid(fruits, soa_block, SorO) {
         stimulus: grid,
         trial_duration: SETTINGS['dur_SOAcue'],
         choices: jsPsych.NO_KEYS,
-        prompt: "starting after 5 seconds"
+        prompt: "Remember which fruits are bad"
     });
 }
 /** generate assignments for SOA - slips of action
@@ -360,7 +400,7 @@ function soa_assign(nblocks, nbox, reps, choose) {
 function mkSOAblocks(frts, boxes, so, nblocks, nreps) {
     var allSOA = [];
     // for psiturk, record what type of event this was
-    var desc = so == SO.Outcome ? "SOA" : "DD";
+    var desc = so == SO.Outcome ? "3.SOA" : "4.DD";
     var score = mkScoreFbk();
     for (var bn = 0; bn < nblocks; bn++) {
         allSOA.push(mkSOAgrid(Object.values(frts), bn, so));
