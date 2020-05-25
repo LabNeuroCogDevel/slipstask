@@ -173,7 +173,8 @@ class Fruit {
     feedback(score: number): string {
         //console.log('feedback', pushed_keynum, 'is', push_side, 'v', this.direction);
         const img = (score > 0) ? `<img class="fruit" src=${this.img}>` : ""
-        return (`<div class='box open'>${img}</div>`)
+        return (`<div class='feedback'>
+                <div class='score'>${score}</div><div class='box open'>${img}</div></div>`)
     }
 
     /** slips of action score. works for Discrimination Devalue (baseline test) too

@@ -10,3 +10,12 @@
     margin-left: -100px;
     margin-top: -50px;
 }
+.feedback {text-align: center;} /* unnecessary */
+.feedback>.score {
+   border: solid 2px black; background: yellow;
+   position:absolute;
+   text-align:center;
+   width:70px;
+   margin-left:55px;
+   margin-top:-10px;
+}

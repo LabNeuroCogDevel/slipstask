@@ -65,6 +65,9 @@
          /* start the experiment */
          jsPsych.init({      
             timeline: timeline,
+            preload_images: ['static/images/box_closed_sm.gif',
+               'static/images/box_open_sm.gif',
+               Object.values(FRTS).map(f=>f.img)].flat(),
             on_finish: function() {
                psiturk.saveData({
                   success: function() { psiturk.completeHIT(); }

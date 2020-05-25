@@ -50,6 +50,9 @@ DDTL  =  [allDD.slice(0,3), scoretl].flat();
 function trials(timeline){
   jsPsych.init({timeline: timeline,
 		display_element: jsp,
+      preload_images: ['static/images/box_closed_sm.gif',
+         'static/images/box_open_sm.gif',
+         Object.values(FRTS).map(f=>f.img)].flat(),
 		on_finish: function() {
 		    trials(timeline)}});
 }
@@ -62,7 +65,25 @@ function showInstructions(inst){
 }
 
 
-function init(){ trials(fullTL); }
+function fdbktl(score) {
+   const p = {
+      type: 'html-keyboard-response',
+      stimulus: 'temp',
+      trial_duration: 0.01,
+      choices: jsPsych.ANY_KEY,
+      on_finish: function(data) {
+         data.score=score;
+         data.outcome='apple' },
+   };
+  var f=mkIDFbk();
+  f.trial_duration = 99999;
+  trials([p, f]);
+}
+
+function init(){
+   fdbktl(1);
+   //trials(fullTL);
+}
     </script>
 
   </head>
@@ -78,6 +99,10 @@ function init(){ trials(fullTL); }
       <a href="#" onclick="trials(ODTL)"> OD</a> |
       <a href="#" onclick="trials(SOATL)"> SOA</a> |
       <a href="#" onclick="trials(DDTL)"> DD</a> |
+    </div>
+    <div>ID feedback:
+      <a href="#" onclick="fdbktl(0)">0</a> |
+      <a href="#" onclick="fdbktl(1)">1</a> |
     </div>
     <div> instructions:
       <a href="#" onclick="showInstructions('ID')"> ID</a> |

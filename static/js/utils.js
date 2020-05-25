@@ -157,7 +157,7 @@ var Fruit = /** @class */ (function () {
     Fruit.prototype.feedback = function (score) {
         //console.log('feedback', pushed_keynum, 'is', push_side, 'v', this.direction);
         var img = (score > 0) ? "<img class=\"fruit\" src=" + this.img + ">" : "";
-        return ("<div class='box open'>" + img + "</div>");
+        return ("<div class='feedback'>\n                <div class='score'>" + score + "</div><div class='box open'>" + img + "</div></div>");
     };
     /** slips of action score. works for Discrimination Devalue (baseline test) too
       * @param pushed_keynum  keycode pushed by participant
