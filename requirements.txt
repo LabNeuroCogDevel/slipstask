@@ -1,0 +1,3 @@
+#PsiTurk
+git+https://github.com/NYUCCL/psiTurk
+psycopg2-binary

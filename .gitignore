@@ -1,1 +1,5 @@
 .#*
+.psiturk_history
+__pycache__/
+participants.db
+server.log
