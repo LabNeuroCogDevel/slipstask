@@ -1,4 +1,4 @@
-{
+const INSTRUCTIONS_DATA = {
  "ID": [
    "In this game, you will get the chance to earn points by collecting fruit from inside a box on the screen by opening the box by pressing either the right '←' or left '→' key. If you press the correct key, the box will open to reveal fruit inside and points will be added to you total score. However, if you press the incorrect key, the box will be empty and no points will be added to your total.<br> Your task is to learn which is the correct key to press. Sometimes it will be the left-hand one and sometimes it will be the right-hand one. The fruit picture on the front of the door should give you a clue about which is the correct response.",
 	"The quicker you make the correct response the more points will be added to your total (ranging from 1 to 5 points). Your accumulated points will appear at the top of the screen.",

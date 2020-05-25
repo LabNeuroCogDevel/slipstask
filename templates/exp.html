@@ -33,8 +33,9 @@
 
 
       <script src="/static/js/psiturk.js" type="text/javascript"> </script>
-      <script src="/static/js/task.js" type="text/javascript"> </script>
+      <script src="/static/js/instructions.js" type="text/javascript"> </script>
       <script src="/static/js/utils.js" type="text/javascript"> </script>
+      <script src="/static/js/task.js" type="text/javascript"> </script>
 
 		<script type="text/javascript">
 			// These fields provided by the psiTurk Server
@@ -47,11 +48,16 @@
 			var mode = "{{ mode }}";
 
 
-         // if task failed to load
-         if(timeline == undefined) {
-            alert('no timeline!');
-            timeline=[];
-         }
+        // combine all for full timeline
+        timeline = [
+            mkInstruction(INSTRUCTIONS_DATA["ID_wf"]),
+            allID,
+            mkInstruction(INSTRUCTIONS_DATA["OD_wf"]),
+            allOD,
+            mkInstruction(INSTRUCTIONS_DATA["SOA_wf"]),
+            allSOA,
+            mkInstruction(INSTRUCTIONS_DATA["DD_wf"]),
+            allDD].flat()
 
          /* load psiturk */
          var psiturk = new PsiTurk(uniqueId, adServerLoc, mode);

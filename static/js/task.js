@@ -26,7 +26,8 @@ const allSOA = mkSOAblocks(FRTS, boxes, SO.Outcome,  9, 2);
 const allDD  = mkSOAblocks(FRTS, boxes, SO.Stimulus, 9, 1);
 
 /* Instructions */
-
+// 20200525 - defined in instructions.js
+/*
 var INSTRUCTIONS_DATA = {}; 
 // expect to be run from root, but cannot use / for github pages
 // TODO: instructions.json into .js file?
@@ -34,8 +35,9 @@ var INSTRUCTIONS_DATA = {};
 $.getJSON('static/js/instructions.json', function(data) {
    INSTRUCTIONS_DATA = data;
 });
-
 var instructions = [mkInstruction(INSTRUCTIONS_DATA["DD_wf"])];
+*/
+
 
 var get_info = {
   type: 'survey-text',
