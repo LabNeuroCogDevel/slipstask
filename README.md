@@ -117,3 +117,6 @@ Discrimination Devaluation (?): Devalue stimulus instead of outcome to test. oth
 * `utils.ts` contains mkBox and Fruit class/prototype (typescript compiled to `utils.js`)
  - `Fruit` has properties and drawing/rendering functions
  - `mkBox` modifies 2 fruits to be pairs, sets correct response, and which SOA blocks are devalued for the fruit
+
+ ### Heroku
+ see `$HOME/.psiturkconfig` w/ `[AWS Access]` containing `aws_access_key_id` and `aws_secret_access_key`. also `psiturk-heroku-config`
