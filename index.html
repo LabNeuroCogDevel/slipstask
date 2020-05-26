@@ -21,8 +21,8 @@ see https://labneurocogdevel.github.io/slipstask
     <script src="static/js/jspsych/plugins/jspsych-html-keyboard-response.js" type="text/javascript"></script>
     <script src="static/js/jspsych/plugins/jspsych-survey-text.js" type="text/javascript"></script>
     <script src="static/js/jspsych/plugins/jspsych-survey-multi-choice.js" type="text/javascript"></script>
-    <script src="static/js/instructions.js" type="text/javascript"> </script>
     <script src="static/js/utils.js" type="text/javascript"> </script>
+    <script src="static/js/instructions.js" type="text/javascript"> </script>
     <script src="static/js/task.js" type="text/javascript"> </script>
 
     <script type="text/javascript">
@@ -81,8 +81,10 @@ function fdbktl(score) {
 }
 
 function init(){
-   fdbktl(1);
+   //fdbktl(1);
+   showInstructions('ID_wf');
    //trials(fullTL);
+   
 }
     </script>
 

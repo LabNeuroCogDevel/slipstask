@@ -1,3 +1,21 @@
+var inst_o = new Fruit('olive');
+var inst_b = new Fruit('blueberry');
+var inst_box = mkBox(inst_o, inst_b, Dir.Left, [2]);
+
+function IDexample(leftin, rightin){
+    const empty="<font size=30>?</font>"
+    const left = (leftin===null)?empty:leftin
+    const right = (rightin===null)?empty:rightin
+    return(
+      "<table align='center' style='margin-top: 20px;'><tr>"+
+      "<td>"+left+"</td>"+
+      "<td><font size=30> 🠘 </font></td>"+
+      "<td>"+inst_o.render(false) + "</td>" +
+      "<td><font size=30> 🠚 </font></td>"+
+      "<td>"+right+"</td>" +
+      "</tr><table>");
+}
+
 const INSTRUCTIONS_DATA = {
  "ID": [
    "In this game, you will get the chance to earn points by collecting fruit from inside a box on the screen by opening the box by pressing either the right '←' or left '→' key. If you press the correct key, the box will open to reveal fruit inside and points will be added to you total score. However, if you press the incorrect key, the box will be empty and no points will be added to your total.<br> Your task is to learn which is the correct key to press. Sometimes it will be the left-hand one and sometimes it will be the right-hand one. The fruit picture on the front of the door should give you a clue about which is the correct response.",
@@ -22,12 +40,22 @@ const INSTRUCTIONS_DATA = {
 	"Obviously the idea is to earn as many points as possible. If the fruit inside is valuable and you press the correct key, you will gain points. If the fruit inside is valuable and you press the incorrect key or you fail to press a key, you neither gain nor lose points. You won’t receive feedback during the test, but you will be shown your final score at the end."
  ],
  "ID_wf": [
-    "In this game, you will open secret fruit boxes. They open from both the left and right. <br>But the boxes have a trick to hide what's inside. If you pick the wrong side, the box will appear empty.",
-    "You will get points for picking the correct side to open. <br>You will get more points the faster you pick the correct side.",
-    "Boxes labeled with the same fruit on the outside always open from the same side.",
-    "The boxes have another trick. The fruit on the inside is different from fruit label on the outside.<br>Pay attention to this! Later you will get points for knowing what outside fruit label gives you the inside fruit."],
+    "In this game, you will open tricky fruit boxes.<br> The boxes look like this: <br>" +
+    inst_o.render(false),
+    // http://xahlee.info/comp/unicode_arrows.html
+    "All boxes open from both the left and right. <br>You can pick which way to open the box using the left (<kbd>🠘</kbd>) or right (<kbd>🠚</kbd>) arrow keys<br>" + IDexample(null,null),
+    "<br>But the boxes have a trick to hide what's inside. <br> If you pick the wrong side, the box will appear empty and have no points.<br>" + IDexample(null, inst_b.feedback(0)),
+     "You will get points for picking the correct side to open."+
+    // "<br>You will get more points the faster you pick the correct side." +
+    "<br>Boxes labeled with the same fruit on the outside always open from the same side.",
+    "The boxes have another trick. The fruit on the inside is different from fruit label on the outside.<br>Pay attention to this! Later you will get points for knowing what outside fruit label gives you the inside fruit." +
+    IDexample(inst_b.feedback(1),inst_b.feedback(0)),
+   "Learn how to open all the boxes and get the most points! <br>Remember what fruits are inside the boxes too.<br>Ready to play!?<br> We'll start when you hit next."
+ ],
  "OD_wf": [
-   "You opened all the boxes we have! But we have too many of some of the inside fruits. You can get now get points by picking only the inside fruits without an X over them.<br><b>Pick a fruit by using the same side that opened the box</b><br>Go faster for more points."],
+   "You opened all the boxes we have! But we have too many of some of the inside fruits. You can get now get points by picking only the inside fruits without an X over them.<br><b>Pick a fruit by using the same side that opened the box</b>"
+    //<br>Go faster for more points."
+ ],
  "SOA_wf": [
     "We are getting new box shipments from all over, but some of the fruits on the inside have gone bad.", 
     "For each shipment, we will get a chart showing good and bad fruits.<br> Only open boxes with unspoiled fruits in them. Don't pick those with an X on them.",

@@ -1,5 +1,5 @@
 declare var jsPsych: any;
-declare var FRTS: any; // fruits as they were ordered
+declare var FRTS: {[key: string]: Fruit; }[]; // e.g. 'apple' => Fruit. see fruits()
 declare var uniqueId: any;
 declare var psiturk: any;
 //declare var $: any;   //jquery
