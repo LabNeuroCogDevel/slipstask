@@ -417,19 +417,19 @@ function soa_assign(nblocks: number, nbox: number, reps: number, choose: number)
   * @param nreps how many repeats of each box per block (2)
   */
 function mkSOAblocks(frts: Fruit[], boxes: Box[], so: SO, nblocks: number, nreps: number): PsychEvent[] {
-    var allSOA = [];
+    var allbocks = [];
     // for psiturk, record what type of event this was
     const desc = so == SO.Outcome ? "3.SOA" : "4.DD";
     const score = mkScoreFbk();
     for (let bn = 0; bn < nblocks; bn++) {
-        allSOA.push(mkSOAgrid(Object.values(frts), bn, so));
+        allbocks.push(mkSOAgrid(Object.values(frts), bn, so));
         // each box seen twice. consider adding shuffleNoRepeats
         const boxreps = jsPsych.randomization.repeat(boxes, nreps)
         for (let bx of boxreps) {
-            allSOA.push(mkBoxTrial(bx, bn, desc + "_" + bn));
+            allbocks.push(mkBoxTrial(bx, bn, desc + "_" + bn));
         }
         // after the end of a block, show score
-        allSOA.push(score);
+        allbocks.push(score);
     }
-    return (allSOA)
+    return (allbocks)
 }
