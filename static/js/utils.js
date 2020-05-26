@@ -1,6 +1,5 @@
 //declare var $: any;   //jquery
 var SETTINGS = {
-    'version': '20200521.0-ITIs',
     'ITI_ID': 1000,
     'ITI_OD': 1000,
     'ITI_SOA': 1000,
@@ -167,7 +166,7 @@ var Fruit = /** @class */ (function () {
     */
     Fruit.prototype.score = function (pushed_keynum, rt, soa_block) {
         // is devalued any keypush is bad
-        var devalued = this.devalued_blocks.indexOf(soa_block) > -1;
+        var devalued = this.isdevalued(soa_block);
         var push_side = key_to_side(pushed_keynum);
         if (devalued && push_side != Dir.None) {
             return (-1);
@@ -178,6 +177,14 @@ var Fruit = /** @class */ (function () {
         else { // devalued no push, valued incorrect push
             return (0);
         }
+    };
+    /** do we value the box containing this fruit?
+    * @param soa_block - block number
+    * @return true if not valued on this block
+    */
+    Fruit.prototype.isdevalued = function (soa_block) {
+        var devalued = this.devalued_blocks.indexOf(soa_block) > -1;
+        return (devalued);
     };
     return Fruit;
 }());
@@ -229,11 +236,12 @@ function mkBoxTrial(b, soa_block, block) {
         trial_duration: dur,
         prompt: "<p>left or right</p>",
         on_finish: function (data) {
-            data.score = b.S.score(data.key_press, data.rt, soa_block);
-            data.chose = key_to_side(data.key_press);
             data.stim = b.S.name;
             data.outcome = b.O.name;
             data.block = block;
+            data.isdevalued = b.S.isdevalued(soa_block);
+            data.chose = key_to_side(data.key_press);
+            data.score = b.S.score(data.key_press, data.rt, soa_block);
             save_data();
         }
     });
@@ -300,27 +308,32 @@ function mkODTrial(devalued, valued) {
         prompt: "<p>left or right</p>",
         on_finish: function (data) {
             data.block = '2.OD';
-            data.score = valued.score(data.key_press, data.rt, 0);
+            var soa_block = -1; // not soa, no neg points for wrong
+            data.score = valued.score(data.key_press, data.rt, soa_block);
             data.chose = key_to_side(data.key_press);
             data.devalued = devalued.name;
             data.valued = valued.name;
-            console.log("picked " + data.chose + " for " + valued.name + ",", "should be " + valued.direction + " => " + data.score);
+            // TODO: should we get -1 for bad choice?
+            if (DEBUG)
+                console.log("picked " + data.chose + " for " + valued.name + ",", "should be " + valued.direction + " => " + data.score);
         }
     });
 }
 // NB. no OD feedback
 /** make all OD trials - all permutations: 1L & 1R of inside(outcome) fruits
   * @param frts all fruits (to filter on left and right and only inside (Outcome)
+  * @param nreps number of times to repeat all(9) combinations(3 x 3). probably 4 => 36 total
   * @return array for timeline (ends with score)
 */
-function mkODblock(frts) {
+function mkODblock(frts, nreps) {
     var OD_left = Object.values(frts).filter(function (x) { return x.direction == Dir.Left && x.SO == SO.Outcome; });
     var OD_right = Object.values(frts).filter(function (x) { return x.direction == Dir.Right && x.SO == SO.Outcome; });
-    // 1 block, 36 trials: each 6 R matched to each 6 L
+    // 1 block, 36 trials: each 3 R matched to each 3 L
     // generate factorized L and R 
     // and randomly assign top and bottom to either L, or R
-    var OD_fac = jsPsych.randomization.factorial({ L: OD_left, R: OD_right }, 1);
+    var OD_fac = jsPsych.randomization.factorial({ L: OD_left, R: OD_right }, nreps);
     var OD_order = [];
+    // 9 combinations (expecting 36!)
     for (var i = 0; i < OD_fac.length; i++)
         OD_order.push(jsPsych.randomization.repeat(['L', 'R'], 1));
     var allOD = [];
@@ -332,6 +345,7 @@ function mkODblock(frts) {
         allOD.push(mkODTrial(fruits_by_side[top_1], fruits_by_side[bot]));
     }
     allOD.push(mkScoreFbk());
+    console.log(OD_left, OD_right, OD_fac, OD_order, allOD);
     return (allOD);
 }
 /** devalue grid for SOA or DD (baseline test)

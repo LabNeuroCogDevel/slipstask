@@ -16,7 +16,7 @@ const boxes = allBoxes(FRTS, soa_boxes);
 const allID = mkIDblocks(boxes);
 
 /* 2. OD - outcome devaluation */
-const allOD = mkODblock(FRTS);
+const allOD = mkODblock(FRTS, 4); // 4 repeats of 3Lx3R = 36 trials
 
 /* 3. SOA - slips of action
       9 blocks w/ 12 trials each (2 outcomes per bloc), 108 trials total. (N.B. `6C2 == 15`)
@@ -50,4 +50,3 @@ var get_info = {
      data.responses= add_version(data.responses)
   }
 };
-

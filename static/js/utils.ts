@@ -2,10 +2,10 @@ declare var jsPsych: any;
 declare var FRTS: {[key: string]: Fruit; }; // e.g. 'apple' => Fruit. see fruits()
 declare var uniqueId: any;
 declare var psiturk: any;
+declare var DEBUG: boolean;
 //declare var $: any;   //jquery
 
 const SETTINGS = {
-    'version': '20200521.0-ITIs',
     'ITI_ID': 1000,
     'ITI_OD': 1000,
     'ITI_SOA': 1000, // SOA and DD
@@ -185,7 +185,7 @@ class Fruit {
     */
     score(pushed_keynum: number, rt: number, soa_block: number): number {
         // is devalued any keypush is bad
-        const devalued: boolean = this.devalued_blocks.indexOf(soa_block) > -1
+        const devalued: boolean = this.isdevalued(soa_block)
         const push_side = key_to_side(pushed_keynum);
         if (devalued && push_side != Dir.None) {
             return (-1)
@@ -194,6 +194,14 @@ class Fruit {
         } else { // devalued no push, valued incorrect push
             return (0)
         }
+    }
+    /** do we value the box containing this fruit?
+	* @param soa_block - block number
+	* @return true if not valued on this block
+    */
+    isdevalued(soa_block: number) : boolean {
+        const devalued: boolean = this.devalued_blocks.indexOf(soa_block) > -1
+	return(devalued)
     }
 }
 
@@ -245,11 +253,12 @@ function mkBoxTrial(b: Box, soa_block: number, block: string): PsychEvent {
         trial_duration: dur,
         prompt: "<p>left or right</p>",
         on_finish: function(data) {
-            data.score = b.S.score(data.key_press, data.rt, soa_block);
-            data.chose = key_to_side(data.key_press)
             data.stim = b.S.name;
             data.outcome = b.O.name;
             data.block = block;
+	    data.isdevalued = b.S.isdevalued(soa_block);
+            data.chose = key_to_side(data.key_press);
+            data.score = b.S.score(data.key_press, data.rt, soa_block);
             save_data()
         }
     })
@@ -318,11 +327,14 @@ function mkODTrial(devalued: Fruit, valued: Fruit) {
         prompt: "<p>left or right</p>",
         on_finish: function(data) {
             data.block = '2.OD';
-            data.score = valued.score(data.key_press, data.rt, 0);
-            data.chose = key_to_side(data.key_press)
+	    const soa_block=-1; // not soa, no neg points for wrong
+            data.score = valued.score(data.key_press, data.rt, soa_block);
+            data.chose = key_to_side(data.key_press);
             data.devalued = devalued.name;
             data.valued = valued.name;
-            console.log(`picked ${data.chose} for ${valued.name},`,
+            // TODO: should we get -1 for bad choice?
+            if(DEBUG)
+		console.log(`picked ${data.chose} for ${valued.name},`,
                 `should be ${valued.direction} => ${data.score}`)
         }
     })
@@ -331,16 +343,18 @@ function mkODTrial(devalued: Fruit, valued: Fruit) {
 
 /** make all OD trials - all permutations: 1L & 1R of inside(outcome) fruits
   * @param frts all fruits (to filter on left and right and only inside (Outcome)
+  * @param nreps number of times to repeat all(9) combinations(3 x 3). probably 4 => 36 total
   * @return array for timeline (ends with score)
 */
-function mkODblock(frts: Fruit[]): PsychEvent[] {
+function mkODblock(frts: Fruit[], nreps: number): PsychEvent[] {
     const OD_left = Object.values(frts).filter(x => x.direction == Dir.Left && x.SO == SO.Outcome);
     const OD_right = Object.values(frts).filter(x => x.direction == Dir.Right && x.SO == SO.Outcome);
-    // 1 block, 36 trials: each 6 R matched to each 6 L
+    // 1 block, 36 trials: each 3 R matched to each 3 L
     // generate factorized L and R 
     // and randomly assign top and bottom to either L, or R
-    const OD_fac = jsPsych.randomization.factorial({ L: OD_left, R: OD_right }, 1);
+    const OD_fac = jsPsych.randomization.factorial({ L: OD_left, R: OD_right }, nreps);
     var OD_order = [];
+    // 9 combinations (expecting 36!)
     for (let i = 0; i < OD_fac.length; i++) OD_order.push(jsPsych.randomization.repeat(['L', 'R'], 1));
     var allOD = []
     for (let i = 0; i < OD_fac.length; i++) {
@@ -350,6 +364,7 @@ function mkODblock(frts: Fruit[]): PsychEvent[] {
         allOD.push(mkODTrial(fruits_by_side[top], fruits_by_side[bot]));
     }
     allOD.push(mkScoreFbk());
+    console.log(OD_left,OD_right,OD_fac, OD_order, allOD)
     return (allOD)
 }
 
@@ -433,3 +448,4 @@ function mkSOAblocks(frts: Fruit[], boxes: Box[], so: SO, nblocks: number, nreps
     }
     return (allbocks)
 }
+
