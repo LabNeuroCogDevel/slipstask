@@ -3,12 +3,12 @@
 .box.open    {background: url('../images/box_open_sm.gif')}
 .box.closed  {background: url('../images/box_closed_sm.gif')}
 /*x over devalued*/
-.disabled::after {
-    content: url('../images/devalue.png');
+.disabled::before {
+    content: url('../images/X.png');
     position: absolute;
-    opacity: 50%;
-    margin-left: -100px;
-    margin-top: -50px;
+    opacity: 90%;
+    margin-left: -70px;
+    margin-top: -77px;
 }
 .feedback {text-align: center;} /* unnecessary */
 .feedback>.score {

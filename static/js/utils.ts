@@ -1,5 +1,5 @@
 declare var jsPsych: any;
-declare var FRTS: {[key: string]: Fruit; }[]; // e.g. 'apple' => Fruit. see fruits()
+declare var FRTS: {[key: string]: Fruit; }; // e.g. 'apple' => Fruit. see fruits()
 declare var uniqueId: any;
 declare var psiturk: any;
 //declare var $: any;   //jquery
@@ -241,7 +241,7 @@ function mkBoxTrial(b: Box, soa_block: number, block: string): PsychEvent {
         type: 'html-keyboard-response',
         stimulus: b.S.render(false),
         choices: accept_keys,
-        //post_trial_gap: ITI,
+        post_trial_gap: ITI, // 20200526 - ITI helpful for knowning when fruit changed
         trial_duration: dur,
         prompt: "<p>left or right</p>",
         on_finish: function(data) {
@@ -268,7 +268,8 @@ function mkIDFbk(): PsychEvent {
         stimulus: function(trial) {
             // setup win vs nowin feedback color and message
             let prev = jsPsych.data.get().last().values()[0];
-            return (FRTS[prev.outcome].feedback(prev.score))
+	    let frt : Fruit = FRTS[prev.outcome]
+            return (frt.feedback(prev.score))
         },
         //update
         //on_load: save_data(),

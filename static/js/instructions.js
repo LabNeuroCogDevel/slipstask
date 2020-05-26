@@ -44,7 +44,7 @@ const INSTRUCTIONS_DATA = {
     inst_o.render(false),
     // http://xahlee.info/comp/unicode_arrows.html
     "All boxes open from both the left and right. <br>You can pick which way to open the box using the left (<kbd>🠘</kbd>) or right (<kbd>🠚</kbd>) arrow keys<br>" + IDexample(null,null),
-    "<br>But the boxes have a trick to hide what's inside. <br> If you pick the wrong side, the box will appear empty and have no points.<br>" + IDexample(null, inst_b.feedback(0)),
+    "<br>But the boxes have a trick to hide what's inside. <br> If you pick the wrong side, the inside will appear empty and have no points.<br>" + IDexample(null, inst_b.feedback(0)),
      "You will get points for picking the correct side to open."+
     // "<br>You will get more points the faster you pick the correct side." +
     "<br>Boxes labeled with the same fruit on the outside always open from the same side.",
@@ -53,17 +53,23 @@ const INSTRUCTIONS_DATA = {
    "Learn how to open all the boxes and get the most points! <br>Remember what fruits are inside the boxes too.<br>Ready to play!?<br> We'll start when you hit next."
  ],
  "OD_wf": [
-   "You opened all the boxes we have! But we have too many of some of the inside fruits. You can get now get points by picking only the inside fruits without an X over them.<br><b>Pick a fruit by using the same side that opened the box</b>"
+   "You opened all the boxes we have! But we have too many of some of the inside fruits. <br>You can get now get points by picking only the inside fruits without an <font color=red><b>X</b></font> over them.<br><b>Pick a fruit by using the same side that opened the box the fruit was inside of</b>",
+   "We'll tally up your score at the end. You wont know if you're right or wrong until then<br>When you're ready to start, click next.",
     //<br>Go faster for more points."
  ],
  "SOA_wf": [
     "We are getting new box shipments from all over, but some of the fruits on the inside have gone bad.", 
     "For each shipment, we will get a chart showing good and bad fruits.<br> Only open boxes with unspoiled fruits in them. Don't pick those with an X on them.",
-    "You will still get points for opening boxes with good fruits inside<br>But don't even try to open a box with a spoiled fruit. If you correctly open a box with spoiled fruit inside, you'll lose points!",
-    "Just like before, the faster you get unspoiled inside fruits, the more points you get" ],
+    "You will still get points for opening boxes with good fruits inside<br>But <b>do not even try to open a box with a spoiled fruit</b>. If you correctly open a box with spoiled fruit inside, you'll lose points!",
+     "You'll have 5 seconds to memorize the good/bad chart for each shipment. <br>Then, you will only have a second to open the box or let it pass.",
+     "You'll see how well you did at the end of each shipment, but you wont know if you're right or wrong until then.<br>When you're ready, click next.",
+    //"Just like before, the faster you get unspoiled inside fruits, the more points you get"
+ ],
  "DD_wf": [
     "Someone tried to intercept our shipments of secret boxes, but didn't know how to open them.",
     "For each shipment, we have a chart of what boxes were damaged.", 
     "You will still get points for opening boxes with good fruits inside<br>But don't even try to open a damaged box. If you open a damanged box correctly, you'll lose points!",
-    "Just like before, the faster you correctly open undamaged boxes, the more points you get" ]
+     "You'll see how well you did at the end of each shipment, but you wont know if you're right or wrong until then.<br>When you're ready, click next.",
+    //"Just like before, the faster you correctly open undamaged boxes, the more points you get"
+ ]
 }

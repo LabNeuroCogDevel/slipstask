@@ -225,7 +225,7 @@ function mkBoxTrial(b, soa_block, block) {
         type: 'html-keyboard-response',
         stimulus: b.S.render(false),
         choices: accept_keys,
-        //post_trial_gap: ITI,
+        post_trial_gap: ITI,
         trial_duration: dur,
         prompt: "<p>left or right</p>",
         on_finish: function (data) {
@@ -252,7 +252,8 @@ function mkIDFbk() {
         stimulus: function (trial) {
             // setup win vs nowin feedback color and message
             var prev = jsPsych.data.get().last().values()[0];
-            return (FRTS[prev.outcome].feedback(prev.score));
+            var frt = FRTS[prev.outcome];
+            return (frt.feedback(prev.score));
         },
         //update
         //on_load: save_data(),
