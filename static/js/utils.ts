@@ -148,7 +148,7 @@ class Fruit {
     box: Box; // recursive cycle - used for drawing
     devalued_blocks: number[]; // on which Slips Block to devalue
     constructor(public name: string) {
-        this.img = `static/images/${name}.gif`;
+        this.img = `static/images/${name}.png`;
         this.direction = Dir.None;
         this.devalued_blocks = [];
     }

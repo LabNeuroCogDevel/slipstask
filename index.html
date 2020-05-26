@@ -51,7 +51,7 @@ DDTL  =  [allDD.slice(0,3), scoretl].flat();
 function trials(timeline){
   jsPsych.init({timeline: timeline,
 		display_element: jsp,
-      preload_images: ['static/images/box_closed_sm.gif',
+      preload_images: ['static/images/box_closed.png',
          'static/images/box_open_sm.gif',
          Object.values(FRTS).map(f=>f.img)].flat(),
 		on_finish: function() {

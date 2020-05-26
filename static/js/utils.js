@@ -132,7 +132,7 @@ function add_version(data) {
 var Fruit = /** @class */ (function () {
     function Fruit(name) {
         this.name = name;
-        this.img = "static/images/" + name + ".gif";
+        this.img = "static/images/" + name + ".png";
         this.direction = Dir.None;
         this.devalued_blocks = [];
     }

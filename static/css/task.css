@@ -1,10 +1,10 @@
 .fruit { height: 70px;}
 .box   {display: inline-block; width: 181px; height: 187px; padding-top: 90px; }
-.box.open    {background: url('../images/box_open_sm.gif')}
-.box.closed  {background: url('../images/box_closed_sm.gif')}
+.box.open    {background: url('../images/box_open.png')}
+.box.closed  {background: url('../images/box_closed.png')}
 /*x over devalued*/
 .disabled::before {
-    content: url('../images/X.png');
+    content: url('../images/devalue.png');
     position: absolute;
     opacity: 90%;
     margin-left: -70px;
