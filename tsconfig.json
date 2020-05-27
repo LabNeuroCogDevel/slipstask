@@ -3,7 +3,7 @@
     "target": "es2015",
     "allowSyntheticDefaultImports": true,
     "noEmit": true,
-    "lib": [ "dom", "esnext"],
+    "lib": [ "dom", "ESNext", "es2017.object"],
     "moduleResolution": "node"
   }
 }

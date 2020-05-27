@@ -81,7 +81,7 @@ function fdbktl(score) {
 }
 
 function init(){
-    console.log(showSRO(boxes).map(x=>x[0]+":"+x[1]+"-"+x[2]).join("\n"))
+   if(DEBUG) console.log(showSRO(boxes).map(x=>x[0]+":"+x[1]+"-"+x[2]).join("\n"))
    //fdbktl(1);
    showInstructions('OD_wf');
    //trials(fullTL);

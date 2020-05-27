@@ -19,7 +19,7 @@ var SETTINGS = {
    * @return list of created boxes: outside fruit + inside fruit (with fruits now having devalue block number and direction)
 */
 function allBoxes(frts, soa_boxes) {
-    var fruit_names = Object.keys(frts);
+    var fruit_names = jsPsych.randomization.shuffle(Object.keys(frts));
     var nboxes = soa_boxes.length;
     if (nboxes != fruit_names.length / 2)
         alert("nboxes != nfruits/2");
@@ -440,5 +440,10 @@ function showSRO(boxes) {
 }
 // cheaters way of making the module
 if (typeof module !== "undefined") {
-    module.exports = { Fruit: Fruit, mkSOAblocks: mkSOAblocks, mkODblock: mkODblock, mkIDblocks: mkIDblocks, mkBoxTrial: mkBoxTrial, mkIDFbk: mkIDFbk, mkBox: mkBox, Dir: Dir, SO: SO, KEYS: KEYS };
+    module.exports = {
+        mkSOAblocks: mkSOAblocks, mkODblock: mkODblock, mkIDblocks: mkIDblocks,
+        mkBoxTrial: mkBoxTrial, mkIDFbk: mkIDFbk, mkBox: mkBox,
+        fruits: fruits, soa_assign: soa_assign, allBoxes: allBoxes, showSRO: showSRO,
+        Fruit: Fruit, Dir: Dir, SO: SO, KEYS: KEYS
+    };
 }

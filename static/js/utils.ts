@@ -3,6 +3,7 @@ declare var FRTS: {[key: string]: Fruit; }; // e.g. 'apple' => Fruit. see fruits
 declare var uniqueId: any;
 declare var psiturk: any;
 declare var DEBUG: boolean;
+declare var module: any;
 //declare var $: any;   //jquery
 
 const SETTINGS = {
@@ -26,7 +27,7 @@ const SETTINGS = {
    * @return list of created boxes: outside fruit + inside fruit (with fruits now having devalue block number and direction)
 */
 function allBoxes(frts:{ [key: string]: Fruit; }[], soa_boxes: number[][]) : Box[]{
-    const fruit_names : string[] = Object.keys(frts)
+    const fruit_names : string[] = jsPsych.randomization.shuffle(Object.keys(frts));
     const nboxes = soa_boxes.length;
     if(nboxes != fruit_names.length/2) alert("nboxes != nfruits/2")
     const sides = jsPsych.randomization.shuffle(jsPsych.randomization.repeat([Dir.Left, Dir.Right], nboxes/2));
@@ -461,5 +462,10 @@ function showSRO(boxes: Box[]) : [string, Dir, string][]{
 
 // cheaters way of making the module
 if(typeof module !== "undefined") {
-    module.exports = { Fruit, mkSOAblocks, mkODblock, mkIDblocks, mkBoxTrial, mkIDFbk, mkBox, Dir, SO, KEYS};
+    module.exports = {
+	mkSOAblocks, mkODblock, mkIDblocks,
+	mkBoxTrial, mkIDFbk, mkBox,
+	fruits, soa_assign, allBoxes, showSRO,
+        Fruit, Dir, SO, KEYS
+   };
 }
