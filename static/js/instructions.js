@@ -9,9 +9,9 @@ function IDexample(leftin, rightin){
     return(
       "<table align='center' style='margin-top: 20px;'><tr>"+
       "<td>"+left+"</td>"+
-      "<td><font size=30> 🠘 </font></td>"+
+      "<td><font size=30>←</font></td>"+
       "<td>"+inst_o.render(false) + "</td>" +
-      "<td><font size=30> 🠚 </font></td>"+
+      "<td><font size=30>→</font></td>"+
       "<td>"+right+"</td>" +
       "</tr><table>");
 }
@@ -40,36 +40,75 @@ const INSTRUCTIONS_DATA = {
 	"Obviously the idea is to earn as many points as possible. If the fruit inside is valuable and you press the correct key, you will gain points. If the fruit inside is valuable and you press the incorrect key or you fail to press a key, you neither gain nor lose points. You won’t receive feedback during the test, but you will be shown your final score at the end."
  ],
  "ID_wf": [
-    "In this game, you will open tricky fruit boxes.<br> The boxes look like this: <br>" +
-    inst_o.render(false),
-    // http://xahlee.info/comp/unicode_arrows.html
-    "All boxes open from both the left and right. <br>You can pick which way to open the box using the left (<kbd>🠘</kbd>) or right (<kbd>🠚</kbd>) arrow keys<br>" + IDexample(null,null),
-    "<br>But the boxes have a trick to hide what's inside. <br> If you pick the wrong side, the inside will appear empty and have no points.<br>" + IDexample(null, inst_b.feedback(0)),
-     "You will get points for picking the correct side to open."+
-    // "<br>You will get more points the faster you pick the correct side." +
-    "<br>Boxes labeled with the same fruit on the outside always open from the same side.",
-    "The boxes have another trick. The fruit on the inside is different from fruit label on the outside.<br>Pay attention to this! Later you will get points for knowing what outside fruit label gives you the inside fruit." +
-    IDexample(inst_b.feedback(1),inst_b.feedback(0)),
-   "Learn how to open all the boxes and get the most points! <br>Remember what fruits are inside the boxes too.<br>Ready to play!?<br> We'll start when you hit next."
+    "In this game, you will open tricky fruit boxes.<br>"+
+      "The boxes look like this: <br>" +
+      inst_o.render(false),
+
+    "All boxes open from both the left and right. <br>"+
+       "You can pick which way to open the box using the left (<kbd>←</kbd>) or right (<kbd>→</kbd>) arrow keys.<br>" +
+       IDexample(null,null),
+
+    "But the boxes have a trick to hide what's inside. <br>" +
+       "If you pick the wrong side, the inside will appear empty and have no points.<br>" +
+       IDexample(null, inst_b.feedback(0)),
+
+    "You will get points for picking the correct side to open.<br>"+
+       // "<br>You will get more points the faster you pick the correct side." +
+       "Boxes labeled with the same fruit on the outside always open from the same side.",
+
+    "The boxes have another trick.<br>"+
+      "The fruit on the inside is different from fruit label on the outside.<br>"+
+      "<b>Pay attention to this!</b>Later, you will get points for knowing what outside fruit label gives you the inside fruit." +
+      IDexample(inst_b.feedback(1),inst_b.feedback(0)),
+
+   "Learn how to open all the boxes and get the most points!<br>"+
+      "Remember what fruits are inside the boxes too.<br>"+
+      "Ready to play!?<br>"+
+      "We'll start when you hit next."
  ],
  "OD_wf": [
-   "You opened all the boxes we have! But we have too many of some of the inside fruits. <br>You can get now get points by picking only the inside fruits without an <font color=red><b>X</b></font> over them.<br><b>Pick a fruit by using the same side that opened the box the fruit was inside of</b>",
-   "We'll tally up your score at the end. You wont know if you're right or wrong until then<br>When you're ready to start, click next.",
-    //<br>Go faster for more points."
+   "You opened all the boxes we have! But we have too many of some of the inside fruits. <br>"+
+     "You can now get points by picking only the inside fruits without an <font color=red><b>X</b></font> over them.<br>"+
+    "<b>Pick a fruit by using the same side that opened the box the fruit was inside of</b>",
+
+   "We'll tally up your score at the end. You wont know if you're right or wrong until then<br>"+
+     "When you're ready to start, click next.",
+     // <br>Go faster for more points."
  ],
  "SOA_wf": [
-    "We are getting new box shipments from all over, but some of the fruits on the inside have gone bad.", 
-    "For each shipment, we will get a chart showing good and bad fruits.<br> Only open boxes with unspoiled fruits in them. Don't pick those with an X on them.",
-    "You will still get points for opening boxes with good fruits inside<br>But <b>do not even try to open a box with a spoiled fruit</b>. If you correctly open a box with spoiled fruit inside, you'll lose points!",
-     "You'll have 5 seconds to memorize the good/bad chart for each shipment. <br>Then, you will only have a second to open the box or let it pass.",
-     "You'll see how well you did at the end of each shipment, but you wont know if you're right or wrong until then.<br>When you're ready, click next.",
+    "New box shipments are coming in, but some of the fruits inside have gone bad!<br>",
+       "For each shipment, we have a chart showing good and bad fruits.<br>"+
+       "Only open boxes with unspoiled fruits in them. Don't pick those with an <font color=red><b>X</b></font>  on them.",
+
+    "You will still get points for opening boxes with good fruits inside<br>"+
+      "But <b>do not even try to open a box with a spoiled fruit</b>.<br>"+
+      "If you correctly open a box with spoiled fruit inside, you'll lose points!",
+
+   "You'll have 5 seconds to memorize the good/bad chart for each shipment.<br>"+
+      "Then, you will only have a second to open or pass each box in the shipment.<br>",
+      "You'll see how well you did at the end of each shipment,<br>"+
+      "but you wont know if you're right or wrong until then.",
+
+    "Remember:<ul style='text-align:left'>" +
+      "<li>5 seconds to memorize the chart for this shipment</li>" + 
+      "<li>1 second to to pick or pass</li>" + 
+      "<li>Don't open boxes with <font color=red><b>X</b></font>'ed fruits inside</li>" + 
+      "</ul>When you're ready, click next.",
     //"Just like before, the faster you get unspoiled inside fruits, the more points you get"
  ],
  "DD_wf": [
-    "Someone tried to intercept our shipments of secret boxes, but didn't know how to open them.",
-    "For each shipment, we have a chart of what boxes were damaged.", 
-    "You will still get points for opening boxes with good fruits inside<br>But don't even try to open a damaged box. If you open a damanged box correctly, you'll lose points!",
-     "You'll see how well you did at the end of each shipment, but you wont know if you're right or wrong until then.<br>When you're ready, click next.",
+    "Someone tried to intercept our shipments of tricky boxes and damanged some of them!<br>" +
+      "For each shipment, we have a chart of what boxes were damaged.", 
+    "You will still get points for opening boxes with good fruits inside<br>"+
+      "Like before, <b>don't even try to open a damaged box</b>.<br>" +
+      "If you open a damanged box correctly, you'll lose points!",
+    "You'll see how well you did at the end of each shipment,<br>" +
+      "but you wont know if you're right or wrong until then.",
+    "Remember:<ul style='text-align:left'>" +
+      "<li>5 seconds to memorize the chart</li>" + 
+      "<li>1 second to to pick or pass</li>" + 
+      "<li>Don't open boxes where the outside label is <font color=red><b>X</b></font>'ed out</li>" + 
+      "</ul>When you're ready, click next.",
     //"Just like before, the faster you correctly open undamaged boxes, the more points you get"
  ]
 }

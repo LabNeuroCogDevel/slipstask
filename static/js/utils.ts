@@ -93,6 +93,7 @@ interface PsychEvent {
     stimulus?; trial_duration?; on_finish?;
     choices?; prompt?; post_trial_gap?;
     pages?; show_clickable_nav?;
+    labels?;
 }
 // Keys to direction
 const KEYS: { [key: number]: Dir; } = {
@@ -455,6 +456,43 @@ function mkSOAblocks(frts: Fruit[], boxes: Box[], so: SO, nblocks: number, nreps
     return (allbocks)
 }
 
+
+/** make confidence slider trial
+   prev trials should have data with
+    - conf_prompt 
+    - conf_show
+    - survey_type
+   @return trial
+*/
+function mkSurvey(frt: Fruit) : PsychEvent {
+    
+}
+function mkConfSlider() : PsychEvent {
+   return({
+    type: 'html-slider-response',
+    stimulus: function(trial){
+      let prev = jsPsych.data.get().last().values()[0];
+      return(prev.conf_prompt + prev.conf_show)
+    },
+    labels: ['Not at all', 'Extremely'],
+    prompt: "<p>How confident are you about your answer</p>"
+    },
+    on_finish: function(date) {
+        let prev = jsPsych.data.get().last().values()[0];
+	// recapitulate previous here for easy data parsing (just need this row)
+	data.survey_type   = prev.survey_type;
+	data.survey_prompt = prev.survey_prompt;
+	data.survey_chose  = prev.survey_chose;
+	data.correct       = prev.correct;
+	// TODO: calculate summary stats
+    });
+
+}  
+
+/** quickly get info about the box/fruit associations Stim-Response:Outcome
+  * @param boxes boxes with fruits
+  * @return stim name, direction, and outcome name
+*/
 function showSRO(boxes: Box[]) : [string, Dir, string][]{
     return(boxes.map(x=>[x.S.name, x.S.direction, x.O.name]))
 }

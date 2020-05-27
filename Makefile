@@ -4,7 +4,7 @@ static/js/utils.js: static/js/utils.ts
 	tsc -m es2015 --lib esnext,dom -d $<
 	tsc -b 
 
-res: analysis/txt/res.tsv
+res:  analysis/txt/res.tsv
 analysis/txt/res.tsv: 
 	 analysis/fetch.bash > $@
 
