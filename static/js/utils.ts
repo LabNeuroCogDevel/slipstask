@@ -259,6 +259,10 @@ function mkBoxTrial(b: Box, soa_block: number, block: string): PsychEvent {
 	    data.isdevalued = b.S.isdevalued(soa_block);
             data.chose = key_to_side(data.key_press);
             data.score = b.S.score(data.key_press, data.rt, soa_block);
+	    data.cor_dir = data.isdevalued?Dir.None:b.S.direction;
+	    if(DEBUG)
+		console.log(`${data.stim}/${data.outcome} is devl ${data.isdevalued}: `+
+		    `chose ${data.chose} should be ${data.cor_dir}. score ${data.score} w/rt ${data.rt}`)
             save_data()
         }
     })
