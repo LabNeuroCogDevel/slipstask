@@ -168,7 +168,8 @@ var Fruit = /** @class */ (function () {
         // is devalued any keypush is bad
         var devalued = this.isdevalued(soa_block);
         var push_side = key_to_side(pushed_keynum);
-        if (devalued && push_side != Dir.None) {
+        //if (devalued && push_side != Dir.None) { // if any response is bad
+        if (devalued && push_side == this.direction) {
             return (-1);
         }
         else if (!devalued && push_side == this.direction) {
@@ -433,4 +434,11 @@ function mkSOAblocks(frts, boxes, so, nblocks, nreps) {
         allbocks.push(score);
     }
     return (allbocks);
+}
+function showSRO(boxes) {
+    return (boxes.map(function (x) { return [x.S.name, x.S.direction, x.O.name]; }));
+}
+// cheaters way of making the module
+if (typeof module !== "undefined") {
+    module.exports = { Fruit: Fruit, mkSOAblocks: mkSOAblocks, mkODblock: mkODblock, mkIDblocks: mkIDblocks, mkBoxTrial: mkBoxTrial, mkIDFbk: mkIDFbk, mkBox: mkBox, Dir: Dir, SO: SO, KEYS: KEYS };
 }

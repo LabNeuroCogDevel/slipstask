@@ -3,8 +3,6 @@
     "target": "es2015",
     "allowSyntheticDefaultImports": true,
     "noEmit": true,
-    "allowJs": true,
-    "checkJs": true,
     "lib": [ "dom", "esnext"],
     "moduleResolution": "node"
   }

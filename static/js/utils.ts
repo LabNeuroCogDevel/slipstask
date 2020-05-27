@@ -187,7 +187,8 @@ class Fruit {
         // is devalued any keypush is bad
         const devalued: boolean = this.isdevalued(soa_block)
         const push_side = key_to_side(pushed_keynum);
-        if (devalued && push_side != Dir.None) {
+        //if (devalued && push_side != Dir.None) { // if any response is bad
+        if (devalued && push_side == this.direction) {
             return (-1)
         } else if (!devalued && push_side == this.direction) {
             return (1)
@@ -453,3 +454,12 @@ function mkSOAblocks(frts: Fruit[], boxes: Box[], so: SO, nblocks: number, nreps
     return (allbocks)
 }
 
+function showSRO(boxes: Box[]) : [string, Dir, string][]{
+    return(boxes.map(x=>[x.S.name, x.S.direction, x.O.name]))
+}
+
+
+// cheaters way of making the module
+if(typeof module !== "undefined") {
+    module.exports = { Fruit, mkSOAblocks, mkODblock, mkIDblocks, mkBoxTrial, mkIDFbk, mkBox, Dir, SO, KEYS};
+}
