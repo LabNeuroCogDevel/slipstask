@@ -14,11 +14,11 @@ trap 'e=$?; [ $e -ne 0 ] && echo "$0 exited in error"' EXIT
 [ -z "$DATABASE_URL" ] && echo "missing DATABASE_URL cannot fetch data! fix: export DATABASE_URL=\$(heroku config:get DATABASE_URL)" && exit 1
 
 columns="block trial_index time_elapsed trial_type internal_node_id stim key_press rt outcome valued devalued cor_dir isdevalued chose score"
-jsoncol=$(echo "$columns"|sed 's/^\| /&./g;s/ /, /g;')
+jsoncol=$(echo "$columns"|perl -pe 's/(^| )/\1./g;s/ /, /g;')
 # .block, .trial_index, ...
 
 # header
-echo "subjID $columns" | sed 's/ /\t/g'
+echo "subjID $columns" | perl -pe 's/ /\t/g'
 
 # parse nested json
 # TODO: get codeversion into jq
