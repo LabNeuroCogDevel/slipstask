@@ -58,7 +58,7 @@ const INSTRUCTIONS_DATA = {
 
     "The boxes have another trick.<br>"+
       "The fruit on the inside is different from fruit label on the outside.<br>"+
-      "<b>Pay attention to this!</b>Later, you will get points for knowing what outside fruit label gives you the inside fruit." +
+      "<b>Pay attention to this!</b> Later, you will get points for knowing what outside fruit label gives you the inside fruit." +
       IDexample(inst_b.feedback(1),inst_b.feedback(0)),
 
    "Learn how to open all the boxes and get the most points!<br>"+
