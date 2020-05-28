@@ -394,6 +394,7 @@ function soa_assign(nblocks, nbox, reps, choose) {
     for (i = 0; i < soaidx.length; i = i + 2) { SOA_blist = [soaidx[i], soaidx[i + 1]]; }
     but this may have e.g. 0,5 and then 5,0
     */
+    var need_redo = false;
     var block_deval = Array(nblocks).fill(0); // # devalued boxes in each block (max `choose`)
     var bx_deval_on = Array(nbox).fill([]); // box X devalued block [[block,block,block], [...], ...]
     for (var bn = 0; bn < nbox; bn++) {
@@ -401,6 +402,10 @@ function soa_assign(nblocks, nbox, reps, choose) {
             continue;
         }
         var avail_slots = block_deval.map(function (x, i) { return [x, i]; }).filter(function (x) { return x[0] < choose; }).map(function (x) { return x[1]; });
+        if (avail_slots.length < reps) {
+            need_redo = true;
+            break; // dont need to continue, draw was bad
+        }
         var into = jsPsych.randomization.sampleWithoutReplacement(avail_slots, reps);
         bx_deval_on[bn] = into;
         for (var _i = 0, into_1 = into; _i < into_1.length; _i++) {
@@ -408,6 +413,10 @@ function soa_assign(nblocks, nbox, reps, choose) {
             block_deval[i]++;
         }
     }
+    // if we had a bad draw, we need to rerun
+    // N.B. there is no check to not recursise forever!
+    if (need_redo)
+        bx_deval_on = soa_assign(nblocks, nbox, reps, choose);
     return (bx_deval_on);
 }
 /** make all of slips of action/devalue discrimination
@@ -435,6 +444,40 @@ function mkSOAblocks(frts, boxes, so, nblocks, nreps) {
     }
     return (allbocks);
 }
+/** make confidence slider trial
+   prev trials should have data with
+    - conf_prompt
+    - conf_show
+    - survey_type
+   @return trial
+*/
+function mkSurvey(frt) {
+    return ({ type: '' });
+}
+function mkConfSlider() {
+    return ({
+        type: 'html-slider-response',
+        stimulus: function (trial) {
+            var prev = jsPsych.data.get().last().values()[0];
+            return (prev.conf_prompt + prev.conf_show);
+        },
+        labels: ['Not at all', 'Extremely'],
+        prompt: "<p>How confident are you about your answer</p>",
+        on_finish: function (data) {
+            var prev = jsPsych.data.get().last().values()[0];
+            // recapitulate previous here for easy data parsing (just need this row)
+            data.survey_type = prev.survey_type;
+            data.survey_prompt = prev.survey_prompt;
+            data.survey_chose = prev.survey_chose;
+            data.correct = prev.correct;
+            // TODO: calculate summary stats
+        }
+    });
+}
+/** quickly get info about the box/fruit associations Stim-Response:Outcome
+  * @param boxes boxes with fruits
+  * @return stim name, direction, and outcome name
+*/
 function showSRO(boxes) {
     return (boxes.map(function (x) { return [x.S.name, x.S.direction, x.O.name]; }));
 }

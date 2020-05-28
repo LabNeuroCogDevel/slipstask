@@ -11,6 +11,14 @@ function a_box(){
     return(u.mkBox(a, k, u.Dir.Right, [1]))
 }
 
+/** count how many are devalued in each soa phase*/
+function cnt_soa_phase(soa, nphase){
+   // soa = soa_assign(9,6,3,2)
+  var cnt=Array(nphase).fill(0);
+  for(e of soa) for(i of e)  ++cnt[i];
+  return(cnt)
+}
+
 
 describe("Boxes", function() {
   test("make fruit", function(){
@@ -53,6 +61,14 @@ describe("Boxes", function() {
 
 
 describe("randomized?", function() {
+  test("devalued in phase", function() {
+    expectarr = Array(9).fill(2);
+    // run 10 times to try to catch random errors
+    for(let i=0; i<10; i++){
+      boxassign = cnt_soa_phase(u.soa_assign(9,6,3,2), 9);
+      expect(boxassign).toStrictEqual(expectarr);
+    }
+  });
   test("boxes", function(){
     const soa = u.soa_assign(9, 6, 3, 2);
     var frts1 = u.fruits(); // boxes side effects will change values inside here
@@ -85,3 +101,4 @@ describe("randomized?", function() {
     
   });
 });
+

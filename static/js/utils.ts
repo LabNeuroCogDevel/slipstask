@@ -418,17 +418,26 @@ function soa_assign(nblocks: number, nbox: number, reps: number, choose: number)
     for (i = 0; i < soaidx.length; i = i + 2) { SOA_blist = [soaidx[i], soaidx[i + 1]]; }
     but this may have e.g. 0,5 and then 5,0
     */
+    var need_redo = false;
     var block_deval: number[] = Array<number>(nblocks).fill(0); // # devalued boxes in each block (max `choose`)
     var bx_deval_on: number[][] = Array<number[]>(nbox).fill([]); // box X devalued block [[block,block,block], [...], ...]
     for (let bn = 0; bn < nbox; bn++) {
         if (bx_deval_on[bn].length >= reps) { continue; }
         const avail_slots = block_deval.map((x, i) => [x, i]).filter(x => x[0] < choose).map(x => x[1]);
+	if(avail_slots.length < reps) {
+	    need_redo=true;
+	    break; // dont need to continue, draw was bad
+        }
         const into = jsPsych.randomization.sampleWithoutReplacement(avail_slots, reps);
         bx_deval_on[bn] = into;
         for (let i of into) {
             block_deval[i]++;
         }
     }
+
+    // if we had a bad draw, we need to rerun
+    // N.B. there is no check to not recursise forever!
+    if(need_redo) bx_deval_on=soa_assign(nblocks, nbox, reps, choose);
     return (bx_deval_on)
 }
 /** make all of slips of action/devalue discrimination
@@ -465,7 +474,7 @@ function mkSOAblocks(frts: Fruit[], boxes: Box[], so: SO, nblocks: number, nreps
    @return trial
 */
 function mkSurvey(frt: Fruit) : PsychEvent {
-    
+   return({type:''}) 
 }
 function mkConfSlider() : PsychEvent {
    return({
@@ -475,9 +484,8 @@ function mkConfSlider() : PsychEvent {
       return(prev.conf_prompt + prev.conf_show)
     },
     labels: ['Not at all', 'Extremely'],
-    prompt: "<p>How confident are you about your answer</p>"
-    },
-    on_finish: function(date) {
+    prompt: "<p>How confident are you about your answer</p>",
+    on_finish: function(data) {
         let prev = jsPsych.data.get().last().values()[0];
 	// recapitulate previous here for easy data parsing (just need this row)
 	data.survey_type   = prev.survey_type;
@@ -485,7 +493,7 @@ function mkConfSlider() : PsychEvent {
 	data.survey_chose  = prev.survey_chose;
 	data.correct       = prev.correct;
 	// TODO: calculate summary stats
-    });
+    }});
 
 }  
 
