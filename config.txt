@@ -32,7 +32,7 @@ secret_key = 'this is my secret key which is hard to guess, i should change this
 
 [Task Parameters]
 ; do not put quotes! will show up as e.g. '&#34;'
-experiment_code_version = .94-20200528-2s_and_images
+experiment_code_version = .95-20200528-IDscore
 ad_location = https://ff-lncd.herokuapp.com/pub
 use_psiturk_ad_server = false
 num_conds = 1
