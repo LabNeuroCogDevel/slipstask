@@ -23,7 +23,7 @@ const allOD = mkODblock(FRTS, 4); // 4 repeats of 3Lx3R = 36 trials
 */
 const allSOA = mkSOAblocks(FRTS, boxes, SO.Outcome,  9, 2);
 /* 4. DD - devalued discrimination */
-const allDD  = mkSOAblocks(FRTS, boxes, SO.Stim, 9, 1);
+const allDD  = mkSOAblocks(FRTS, boxes, SO.Stim,     9, 2);
 
 /* Instructions */
 // 20200525 - defined in instructions.js
