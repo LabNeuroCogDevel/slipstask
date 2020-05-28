@@ -62,12 +62,19 @@ describe("Boxes", function() {
 
 describe("randomized?", function() {
   test("devalued in phase", function() {
-    expectarr = Array(9).fill(2);
+    const expectarr = Array(9).fill(2);
+    var box_deval_phase = Array(6).fill([]).map(x=>Array(9).fill(0));
     // run 10 times to try to catch random errors
-    for(let i=0; i<10; i++){
-      boxassign = cnt_soa_phase(u.soa_assign(9,6,3,2), 9);
+    for(let i=0; i<20; i++){
+      const assigned = u.soa_assign(9,6,3,2);
+      const boxassign = cnt_soa_phase(assigned, 9);
       expect(boxassign).toStrictEqual(expectarr);
+      for(ii in assigned) for(e of assigned[ii]) box_deval_phase[ii][e]=1;
     }
+    // after 20 iterations all boxes should have been devalued at least once on each phase
+    const all_devalued=Array(6).fill(Array(9).fill(1))
+    expect(box_deval_phase).toStrictEqual(all_devalued);
+    
   });
   test("boxes", function(){
     const soa = u.soa_assign(9, 6, 3, 2);

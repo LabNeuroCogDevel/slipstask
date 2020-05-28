@@ -69,7 +69,7 @@ const INSTRUCTIONS_DATA = {
 
     "Remember:<ul style='text-align:left'>" +
       "<li>5 seconds to memorize the chart for this shipment</li>" + 
-      "<li>1 second to to pick or pass</li>" + 
+      "<li>1 second to pick or pass</li>" + 
       "<li>Don't open boxes with <font color=red><b>X</b></font>'ed fruits inside</li>" + 
       "</ul>When you're ready, click next.",
     //"Just like before, the faster you get unspoiled inside fruits, the more points you get"
@@ -84,7 +84,7 @@ const INSTRUCTIONS_DATA = {
       "but you wont know if you're right or wrong until then.",
     "Remember:<ul style='text-align:left'>" +
       "<li>5 seconds to memorize the chart</li>" + 
-      "<li>1 second to to pick or pass</li>" + 
+      "<li>1 second to pick or pass</li>" + 
       "<li>Don't open boxes where the outside label is <font color=red><b>X</b></font>'ed out</li>" + 
       "</ul>When you're ready, click next.",
     //"Just like before, the faster you correctly open undamaged boxes, the more points you get"

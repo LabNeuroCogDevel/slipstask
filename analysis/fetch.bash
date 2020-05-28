@@ -18,16 +18,14 @@ jsoncol=$(echo "$columns"|perl -pe 's/(^| )/\1./g;s/ /, /g;')
 # .block, .trial_index, ...
 
 # header
-echo "subjID $columns" | perl -pe 's/ /\t/g'
+echo "subjID version $columns" | perl -pe 's/ /\t/g'
 
-# parse nested json
-# TODO: get codeversion into jq
-psql "$DATABASE_URL" -AtF$'\t' -c  'select datastring from slips' |
+# parse nested json. add coversion like ["codeversion", datastring]
+psql "$DATABASE_URL" -AtF$'\t' -c  "select '[\"'||codeversion||'\",'||datastring||']' from slips"|
  jq -r '
-  . as $r |
-  .data[0].trialdata.responses as $q |
-  .data[] |
+  .[0] as $v | .[1] as $r |
+  .[1].data[] |
   .trialdata |
   select(.score != null) |
-  [$r.workerId, '"$jsoncol"'] |
+  [$r.workerId, $v, '"$jsoncol"'] |
   @tsv'
