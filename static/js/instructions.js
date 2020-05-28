@@ -92,6 +92,17 @@ const INSTRUCTIONS_DATA = {
       "</ul>When you're ready, click next.",
     //"Just like before, the faster you correctly open undamaged boxes, the more points you get"
  ],
+ "survey": [
+    "You are almost done!<br>"+
+      "We just have a few questions we want to ask you about the game.<br>"+
+      "We want to know how well you feel like you learned about the tricky boxes.",
+    "In this section, we'll ask you about <ol style='text-align:left'>"+
+      "<li>the way to open the box labeled with or containing each fruit</li>"+
+      "<li>and how confident you are about it.</li></ol>",
+    "To answer left or right, push the arrow keys as you have been. <br>" +
+      "To rank your confidence, move the slider to approprate spot and click continue.<br><br>"+
+      "When you're ready to start, press next.",
+ ],
  "ID": [
    "In this game, you will get the chance to earn points by collecting fruit from inside a box on the screen by opening the box by pressing either the right '←' or left '→' key. If you press the correct key, the box will open to reveal fruit inside and points will be added to you total score. However, if you press the incorrect key, the box will be empty and no points will be added to your total.<br> Your task is to learn which is the correct key to press. Sometimes it will be the left-hand one and sometimes it will be the right-hand one. The fruit picture on the front of the door should give you a clue about which is the correct response.",
 	"The quicker you make the correct response the more points will be added to your total (ranging from 1 to 5 points). Your accumulated points will appear at the top of the screen.",

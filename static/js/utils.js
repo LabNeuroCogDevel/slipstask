@@ -86,6 +86,7 @@ var Dir;
     Dir["Left"] = "Left";
     Dir["Right"] = "Right";
 })(Dir || (Dir = {}));
+var NUMKEYS = [49, 50, 51, 52, 53, 54]; // keycodes for 1-6
 // Keys to direction
 var KEYS = {
     // https://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
@@ -164,8 +165,8 @@ var Fruit = /** @class */ (function () {
     };
     /** slips of action score. works for Discrimination Devalue (baseline test) too
       * @param pushed_keynum  keycode pushed by participant
-      * @param soa_block      current slips of action block. check against Fruit.devalued_blocks
       * @param rt             unused. could amplify points if fast
+      * @param soa_block      current slips of action block. check against Fruit.devalued_blocks. -1 to always value
       * @return score (0 or 1). consider higher for rt
     */
     Fruit.prototype.score = function (pushed_keynum, rt, soa_block) {
@@ -239,11 +240,11 @@ function mkBoxTrial(b, soa_block, block) {
         choices: accept_keys,
         post_trial_gap: ITI,
         trial_duration: dur,
+        block: block,
         prompt: "<p>left or right</p>",
         on_finish: function (data) {
             data.stim = b.S.name;
             data.outcome = b.O.name;
-            data.block = block;
             data.isdevalued = b.S.isdevalued(soa_block);
             data.chose = key_to_side(data.key_press);
             data.score = b.S.score(data.key_press, data.rt, soa_block);
@@ -471,6 +472,75 @@ function mkSOAblocks(frts, boxes, so, nblocks, nreps) {
     }
     return (allbocks);
 }
+/** free form survey responses */
+var surveyTextTrail = {
+    type: 'survey-text',
+    questions: [
+        { name: "side_strategy", prompt: "What stategy or strategies did you use to remember the correct way to open boxes?" },
+        { name: "pair_strategy", prompt: "How did you remember the inside-outside fruit pairs of each box?" },
+        { name: "effort", prompt: "Were you able to concentrate while playing the game? Did you have to take any breaks?" },
+        { name: "misc", prompt: "Do you have any other comments on the game?" },
+    ]
+};
+/** create stim response or outcome response survey
+    simliiar to mkBoxTrial or mkODTrial. but data out columns prefixed with "survey_"
+  * @param frt a fruit
+  * @return left/right html response trial
+*/
+function mkFrtSurvey(frt) {
+    return ({
+        type: 'html-keyboard-response',
+        prompt: "<p>left or right</p>",
+        choices: accept_keys,
+        stimulus: function (trial) {
+            return ("<img src='" + frt.img + "'/><br>");
+        },
+        on_finish: function (data) {
+            data.survey_type = frt.SO == SO.Stim ? "SR" : "OR";
+            data.survey_prompt = frt.name;
+            data.survey_chose = key_to_side(data.key_press);
+            data.correct = frt.score(data.key_press, 0, -1) > 0;
+        }
+    });
+}
+/**
+*/
+function simkey(key) {
+    // for charcode see e.g. "a".charCodeAt(0) 
+    // from jsPsych/tests/testing-utils.js:
+    var dispel = document.querySelector('.jspsych-display-element');
+    dispel.dispatchEvent(new KeyboardEvent('keydown', { keyCode: key }));
+    dispel.dispatchEvent(new KeyboardEvent('keyup', { keyCode: key }));
+    // record that it was simulated push instead of key 
+    jsPsych.data.get().addToLast({ touched: true });
+    if (DEBUG)
+        console.log('sent', key, 'updated', jsPsych.data.get().last().values());
+}
+function numberFrts(Frts) {
+    return (Frts.map(function (f, i) {
+        return "<div style='height:180px; width: 180px; background:url('" + f.img + "' no-repeat); dispaly: inline-block;' onclick='simkey(" + i + ")'>" + (i + 1) + "</div>";
+    }).
+        join("\n"));
+}
+function mkPairSurvey(frt, OutcomeFruits) {
+    return ({
+        type: 'html-keyboard-response',
+        choices: NUMKEYS,
+        //prompt: "<p>Which fruit is this fruits pair</p>",
+        stimulus: function (trial) {
+            return ("This fruit <img src='" + frt.img + "'/> is paired with:<br>" + numberFrts(OutcomeFruits));
+        },
+        on_finish: function (data) {
+            var chosefrt = OutcomeFruits[NUMKEYS.indexOf(data.key_press)];
+            data.survey_type = "SO";
+            data.survey_prompt = frt.name;
+            data.survey_chose = chosefrt.name;
+            data.correct = frt.pair.name == chosefrt.name;
+            if (DEBUG)
+                console.log(data.survey_prompt + " has pair " + frt.pair.name + ". chose " + data.suvery_chose + ". correct? " + data.correct);
+        }
+    });
+}
 /** make confidence slider trial
    prev trials should have data with
     - conf_prompt
@@ -478,18 +548,19 @@ function mkSOAblocks(frts, boxes, so, nblocks, nreps) {
     - survey_type
    @return trial
 */
-function mkSurvey(frt) {
-    return ({ type: '' });
-}
 function mkConfSlider() {
     return ({
         type: 'html-slider-response',
         stimulus: function (trial) {
             var prev = jsPsych.data.get().last().values()[0];
-            return (prev.conf_prompt + prev.conf_show);
+            var resp = "<br>opens from the " + prev.survey_chose;
+            if (prev.survey_type == 'SO') {
+                resp = " is paired with <img src='static/images/" + prev.survey_chose + ".png' />";
+            }
+            return ("How confident are you that <br><br>" + prev.stimulus + resp + "<br><br>");
         },
         labels: ['Not at all', 'Extremely'],
-        prompt: "<p>How confident are you about your answer</p>",
+        //prompt: "<p>How confident are you about your answer</p>",
         on_finish: function (data) {
             var prev = jsPsych.data.get().last().values()[0];
             // recapitulate previous here for easy data parsing (just need this row)

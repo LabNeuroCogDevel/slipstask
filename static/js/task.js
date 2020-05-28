@@ -12,6 +12,9 @@ var FRTS = fruits(); // boxes side effects will change values inside here
 const soa_boxes = soa_assign(9, 6, 3, 2);
 const boxes = allBoxes(FRTS, soa_boxes);
 
+const FrtsStim = boxes.map(x=>x.S);
+const FrtsOutcome = boxes.map(x=>x.O);
+
 /* 1. Instructed Discrimination. (6 boxes * 2 reps)*8 blocks */
 const allID = mkIDblocks(boxes);
 
@@ -21,9 +24,9 @@ const allOD = mkODblock(FRTS, 4); // 4 repeats of 3Lx3R = 36 trials
 /* 3. SOA - slips of action
       9 blocks w/ 12 trials each (2 outcomes per bloc), 108 trials total. (N.B. `6C2 == 15`)
 */
-const allSOA = mkSOAblocks(FRTS, boxes, SO.Outcome,  9, 2);
+var allSOA = mkSOAblocks(FRTS, boxes, SO.Outcome,  9, 2);
 /* 4. DD - devalued discrimination */
-const allDD  = mkSOAblocks(FRTS, boxes, SO.Stim,     9, 2);
+var allDD  = mkSOAblocks(FRTS, boxes, SO.Stim,     9, 2);
 
 /* Instructions */
 // 20200525 - defined in instructions.js
@@ -39,17 +42,22 @@ var instructions = [mkInstruction(INSTRUCTIONS_DATA["DD_wf"])];
 */
 
 
-var get_info = {
-  type: 'survey-text',
-  questions: [
-    {prompt: "Your Name?", name: "name"}, 
-    {prompt: "Your Age?",  name:"age"}
-  ],
-  on_finish: function(data){
-      // add task version
-     data.responses= add_version(data.responses)
+/*
+  we will do SOA and DD in random order
+*/
+const SOADDinst = {
+  SOA: mkInstruction(INSTRUCTIONS_DATA["SOA_wf"]),
+  DD: mkInstruction(INSTRUCTIONS_DATA["DD_wf"]) }
+var SOADDtl = {SOA: allSOA, DD:  allDD}
+const blockorder = jsPsych.randomization.shuffle(['SOA','DD'])
+// update block name
+for(let i=0; i<blockorder.length; i++) {
+  let bname = blockorder[i];
+  for(let j=0; j< SOADDtl[bname].length; j++) {
+    if(SOADDtl[bname][j].block) SOADDtl[bname][j].block= i+3 + "." + SOADDtl[bname][j].block;
   }
-};
+}
+
 
 var debrief_trial={
     type: 'html-keyboard-response',
@@ -62,3 +70,33 @@ var debrief_trial={
 
     }
 }
+
+
+var TIMELINE = [
+  // 1. ID
+  mkInstruction(INSTRUCTIONS_DATA["ID_wf"]),
+  allID,
+  // 2. OD
+  mkInstruction(INSTRUCTIONS_DATA["OD_wf"]),
+  allOD,
+  // 3. SOA or DD
+  SOADDinst[blockorder[0]],
+  SOADDtl[blockorder[0]],
+  // 4. DD or SOA
+  SOADDinst[blockorder[1]],
+  SOADDtl[blockorder[1]],
+  // 5. survey
+  debrief_trial].flat()
+
+
+var get_info = {
+  type: 'survey-text',
+  questions: [
+    {prompt: "Your Name?", name: "name"}, 
+    {prompt: "Your Age?",  name:"age"}
+  ],
+  on_finish: function(data){
+      // add task version
+     data.responses= add_version(data.responses)
+  }
+};

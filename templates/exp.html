@@ -50,24 +50,12 @@
 			var mode = "{{ mode }}";
 
 
-        // combine all for full timeline
-        timeline = [
-            mkInstruction(INSTRUCTIONS_DATA["ID_wf"]),
-            allID,
-            mkInstruction(INSTRUCTIONS_DATA["OD_wf"]),
-            allOD,
-            mkInstruction(INSTRUCTIONS_DATA["SOA_wf"]),
-            allSOA,
-            mkInstruction(INSTRUCTIONS_DATA["DD_wf"]),
-            allDD,
-            debrief_trial].flat()
-
          /* load psiturk */
          var psiturk = new PsiTurk(uniqueId, adServerLoc, mode);
 
          /* start the experiment */
          jsPsych.init({      
-            timeline: timeline,
+            timeline: TIMELINE,
             preload_images: ['static/images/box_closed.png',
                'static/images/box_open.png',
                'static/images/devalue.png',
