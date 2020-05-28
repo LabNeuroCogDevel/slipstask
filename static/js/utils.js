@@ -5,7 +5,7 @@ var SETTINGS = {
     'ITI_SOA': 1000,
     'dur_ID_fbk': 1000,
     'dur_SOAcue': 5000,
-    'dur_SOA': 1000,
+    'dur_SOA': 2000,
     'dur_score': 1500,
     // Instructed discrimination
     //  8 blocks of 12 trials (96 total). each of the 6 fruit boxes seen 16 times.

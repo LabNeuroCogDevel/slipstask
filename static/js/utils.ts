@@ -12,7 +12,7 @@ const SETTINGS = {
     'ITI_SOA': 1000, // SOA and DD
     'dur_ID_fbk': 1000,
     'dur_SOAcue': 5000, // how long to see the cue sheet
-    'dur_SOA': 1000, // how long to respond
+    'dur_SOA': 2000, // how long to respond
     'dur_score': 1500, //how long to show score
     // Instructed discrimination
     //  8 blocks of 12 trials (96 total). each of the 6 fruit boxes seen 16 times.

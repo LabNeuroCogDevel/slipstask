@@ -1,6 +1,9 @@
 var inst_o = new Fruit('olive');
 var inst_b = new Fruit('blueberry');
 var inst_box = mkBox(inst_o, inst_b, Dir.Left, [2]);
+const chartsec = SETTINGS['dur_SOAcue']/1000
+const respsec = SETTINGS['dur_SOA']/1000
+
 
 function IDexample(leftin, rightin){
     const empty="<font size=30>?</font>"
@@ -62,14 +65,14 @@ const INSTRUCTIONS_DATA = {
       "But <b>do not even try to open a box with a spoiled fruit</b>.<br>"+
       "If you correctly open a box with spoiled fruit inside, you'll lose points!",
 
-   "You'll have 5 seconds to memorize the good/bad chart for each shipment.<br>"+
-      "Then, you will only have a second to open or pass each box in the shipment.<br>",
+   "You'll have " + chartsec + " seconds to memorize the good/bad chart for each shipment.<br>"+
+      "Then, you will only have " + respsec + " second to open or pass each box in the shipment.<br>",
       "You'll see how well you did at the end of each shipment,<br>"+
       "but you wont know if you're right or wrong until then.",
 
     "Remember:<ul style='text-align:left'>" +
-      "<li>5 seconds to memorize the chart for this shipment</li>" + 
-      "<li>1 second to pick or pass</li>" + 
+      "<li>" + chartsec + " seconds to memorize the chart for this shipment</li>" + 
+      "<li>" + respsec +"second to pick or pass</li>" + 
       "<li>Don't open boxes with <font color=red><b>X</b></font>'ed fruits inside</li>" + 
       "</ul>When you're ready, click next.",
     //"Just like before, the faster you get unspoiled inside fruits, the more points you get"
@@ -83,8 +86,8 @@ const INSTRUCTIONS_DATA = {
     "You'll see how well you did at the end of each shipment,<br>" +
       "but you wont know if you're right or wrong until then.",
     "Remember:<ul style='text-align:left'>" +
-      "<li>5 seconds to memorize the chart</li>" + 
-      "<li>1 second to pick or pass</li>" + 
+      "<li> "+ chartsec +"  seconds to memorize the chart</li>" + 
+      "<li>" + respsec + " second to pick or pass</li>" + 
       "<li>Don't open boxes where the outside label is <font color=red><b>X</b></font>'ed out</li>" + 
       "</ul>When you're ready, click next.",
     //"Just like before, the faster you correctly open undamaged boxes, the more points you get"
