@@ -240,7 +240,7 @@ function mkBoxTrial(b, soa_block, block) {
         choices: accept_keys,
         post_trial_gap: ITI,
         trial_duration: dur,
-        block: block,
+        data: { block: block },
         prompt: "<p>left or right</p>",
         on_finish: function (data) {
             data.stim = b.S.name;

@@ -29,25 +29,12 @@ see https://labneurocogdevel.github.io/slipstask
     <script type="text/javascript">
 DEBUG=true;
 
-// combine all for full timeline
-fullTL = [
-    mkInstruction(INSTRUCTIONS_DATA["ID_wf"]),
-    allID,
-    mkInstruction(INSTRUCTIONS_DATA["OD_wf"]),
-    allOD,
-    mkInstruction(INSTRUCTIONS_DATA["SOA_wf"]),
-    allSOA,
-    mkInstruction(INSTRUCTIONS_DATA["DD_wf"]),
-    allDD].flat()
-
-//var timeline = [get_info, fullTL].flat()
-
 /* small versions for exploring */
 const scoretl = mkScoreFbk(); // tl = timeline
-IDTL   = [allID].flat();
-ODTL   = [allOD].flat();
-SOATL  = [allSOA].flat();
-DDTL  =  [allDD].flat();
+IDTL   = allID;
+ODTL   = allOD;
+SOATL  = SOADDtl['SOA'];
+DDTL  =  SOADDtl['DD'];
 
 function trials(timeline){
   jsPsych.init({timeline: timeline,
@@ -98,7 +85,7 @@ function init(){
       <a href="https://ff-lncd.herokuapp.com/">heroku</a>
     </div>
     <div> trials:
-      <a href="#" onclick="trials(fullTL)"> fulltask </a> |
+      <a href="#" onclick="trials(TIMELINE)"> fulltask </a> |
       <a href="#" onclick="trials(IDTL)"> ID</a> |
       <a href="#" onclick="trials(ODTL)"> OD</a> |
       <a href="#" onclick="trials(SOATL)"> SOA</a> |

@@ -67,7 +67,7 @@ const INSTRUCTIONS_DATA = {
 
    "You'll have " + chartsec + " seconds to memorize the good/bad chart for each shipment.<br>"+
       "Then, you will only have " + respsec + " second to open or pass each box in the shipment.<br>",
-      "You'll see how well you did at the end of each shipment,<br>"+
+   "You'll see how well you did at the end of each shipment,<br>"+
       "but you wont know if you're right or wrong until then.",
 
     "Remember:<ul style='text-align:left'>" +
@@ -81,9 +81,11 @@ const INSTRUCTIONS_DATA = {
     "Someone tried to intercept our shipments of tricky boxes and damanged some of them!<br>" +
       "For each shipment, we have a chart of what boxes were damaged.", 
     "You will still get points for opening boxes with good fruits inside<br>"+
-      "Like before, <b>don't even try to open a damaged box</b>.<br>" +
+      "But, <b>don't even try to open a damaged box</b>.<br>" +
       "If you open a damanged box correctly, you'll lose points!",
-    "You'll see how well you did at the end of each shipment,<br>" +
+   "You'll have " + chartsec + " seconds to memorize the good/bad chart for each shipment.<br>"+
+      "Then, you will only have " + respsec + " second to open or pass each box in the shipment.<br>",
+   "You'll see how well you did at the end of each shipment,<br>" +
       "but you wont know if you're right or wrong until then.",
     "Remember:<ul style='text-align:left'>" +
       "<li> "+ chartsec +"  seconds to memorize the chart</li>" + 

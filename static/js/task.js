@@ -54,7 +54,9 @@ const blockorder = jsPsych.randomization.shuffle(['SOA','DD'])
 for(let i=0; i<blockorder.length; i++) {
   let bname = blockorder[i];
   for(let j=0; j< SOADDtl[bname].length; j++) {
-    if(SOADDtl[bname][j].block) SOADDtl[bname][j].block= i+3 + "." + SOADDtl[bname][j].block;
+    if(SOADDtl[bname][j].data === undefined) continue
+    if(SOADDtl[bname][j].data.block === null) continue
+    SOADDtl[bname][j].data.block= i+3 + "." + SOADDtl[bname][j].data.block;
   }
 }
 

@@ -98,7 +98,7 @@ interface PsychEvent {
     stimulus?; trial_duration?; on_finish?;
     choices?; prompt?; post_trial_gap?;
     pages?; show_clickable_nav?;
-    labels?; block?;
+    labels?; data?;
 }
 
 const NUMKEYS : number[] = [49, 50, 51 ,52, 53, 54]; // keycodes for 1-6
@@ -262,7 +262,7 @@ function mkBoxTrial(b: Box, soa_block: number, block: string): PsychEvent {
         choices: accept_keys,
         post_trial_gap: ITI, // 20200526 - ITI helpful for knowning when fruit changed
         trial_duration: dur,
-        block: block,
+        data: {block: block},
         prompt: "<p>left or right</p>",
         on_finish: function(data) {
             data.stim = b.S.name;
