@@ -50,3 +50,15 @@ var get_info = {
      data.responses= add_version(data.responses)
   }
 };
+
+var debrief_trial={
+    type: 'html-keyboard-response',
+    stimulus: function(trial){
+      // setup win vs nowin feedback color and message
+      return(
+          "<h2>Thanks for playing!</h2>" +
+          "You accumulated " + sum_points() + " points!<br>" +
+        "<b><font size='larger'>Push any key to finish!</font></b></p>")
+
+    }
+}

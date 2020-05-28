@@ -31,23 +31,23 @@ DEBUG=true;
 
 // combine all for full timeline
 fullTL = [
-    //mkInstruction(INSTRUCTIONS_DATA["ID_wf"]),
+    mkInstruction(INSTRUCTIONS_DATA["ID_wf"]),
     allID,
-    //mkInstruction(INSTRUCTIONS_DATA["OD_wf"]),
+    mkInstruction(INSTRUCTIONS_DATA["OD_wf"]),
     allOD,
-    //mkInstruction(INSTRUCTIONS_DATA["SOA_wf"]),
+    mkInstruction(INSTRUCTIONS_DATA["SOA_wf"]),
     allSOA,
-   // mkInstruction(INSTRUCTIONS_DATA["DD_wf"]),
+    mkInstruction(INSTRUCTIONS_DATA["DD_wf"]),
     allDD].flat()
 
 //var timeline = [get_info, fullTL].flat()
 
 /* small versions for exploring */
 const scoretl = mkScoreFbk(); // tl = timeline
-IDTL   = [allID.slice(0,4), scoretl].flat();
-ODTL   = [allOD.slice(0,2), scoretl].flat();
-SOATL  = [allSOA.slice(0,3), scoretl].flat();
-DDTL  =  [allDD.slice(0,3), scoretl].flat();
+IDTL   = [allID.slice(0,8), scoretl].flat();
+ODTL   = [allOD.slice(0,4), scoretl].flat();
+SOATL  = [allSOA.slice(0,12), scoretl].flat();
+DDTL  =  [allDD.slice(0,12), scoretl].flat();
 
 function trials(timeline){
   jsPsych.init({timeline: timeline,
@@ -103,6 +103,7 @@ function init(){
       <a href="#" onclick="trials(ODTL)"> OD</a> |
       <a href="#" onclick="trials(SOATL)"> SOA</a> |
       <a href="#" onclick="trials(DDTL)"> DD</a> |
+      <a href="#" onclick="trials([debrief_trial])"> done</a> 
     </div>
     <div>ID feedback:
       <a href="#" onclick="fdbktl(0)">0</a> |

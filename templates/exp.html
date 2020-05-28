@@ -59,7 +59,8 @@
             mkInstruction(INSTRUCTIONS_DATA["SOA_wf"]),
             allSOA,
             mkInstruction(INSTRUCTIONS_DATA["DD_wf"]),
-            allDD].flat()
+            allDD,
+            debrief_trial].flat()
 
          /* load psiturk */
          var psiturk = new PsiTurk(uniqueId, adServerLoc, mode);
