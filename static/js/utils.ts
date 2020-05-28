@@ -13,7 +13,7 @@ const SETTINGS = {
     'dur_ID_fbk': 1000,
     'dur_SOAcue': 5000, // how long to see the cue sheet
     'dur_SOA': 2000, // how long to respond
-    'dur_score': 1500, //how long to show score
+    'dur_score': 2000, //how long to show score
     // Instructed discrimination
     //  8 blocks of 12 trials (96 total). each of the 6 fruit boxes seen 16 times.
     'ID_reps': 2,
@@ -72,12 +72,17 @@ function mkIDblocks(boxes: Box[]) : PsychEvent[] {
     const fbk = mkIDFbk();
     const IDidx : number[] = random_IDidx(boxes.length);
     const IDblocknum : number = -1; // -1 b/c this is not soa/dd
-    // add feedback
-    const allID : PsychEvent[] = [].concat(
+    const blksz = 12;
+    // add feedback and score slide every blksz
+    // NB. if every scoring with RT bonus, will need to change max given mkScoreFbk
+    var allID : PsychEvent[] = [].concat(
            IDidx.map( (i, ii) => [
                 mkBoxTrial(boxes[i], IDblocknum,
-			   '1.ID_' + Math.floor(ii/12) ),
-                fbk])).flat()
+			   '1.ID_' + Math.floor(ii/blksz) ),
+                fbk,
+               (ii>0 && ii % 12 ==0)?mkScoreFbk(blksz):null
+	   ])).flat().filter(x=>x!==null)
+    allID.push(mkScoreFbk(blksz))
     return(allID)
 }
 
@@ -299,21 +304,48 @@ function sum_points(): number {
     return (jsPsych.data.get().select('score').sum());
 }
 
+/** get points since last score 
+    score blocks have a 'lastscore' element
+    use that if it exists
+    otherwise use total points so far
+*/
+function points_since_last_shown(total: number) : number {
+    const lastscore = jsPsych.data.get().filterCustom(x=>x.lastscore!==null).select('lastscore').values;
+    const thisscore=(lastscore.length === 0)?total:total-lastscore[lastscore.length-1];
+    return(thisscore)
+}
+
 /** mkScoreFbk 
   * @return jspsych timeline obj to dispaly total score */
-function mkScoreFbk(): PsychEvent {
+function mkScoreFbk(blkmax : number | null): PsychEvent {
     return ({
         type: 'html-keyboard-response',
         //choices: ['z','m'],
         //post_trial_gap: SETTINGS['ITI'],
         // only show for fixed duration
         trial_duration: SETTINGS['dur_score'],
+        choices: jsPsych.NO_KEYS,
         stimulus: function(trial) {
-            const score = sum_points();
-            return (`<h2>Score: ${score}</h2>`)
+            const totalscore = sum_points();
+	    const thisscore = points_since_last_shown(totalscore);
+
+	    if(blkmax === null) {
+		var sum_prevmaxs = jsPsych.data.get().select('lasttotal').sum();
+		sum_prevmaxs = sum_prevmaxs.length==0?0:sum_prevmaxs[0];
+		// N.B -- assume no RT bonus. assume max one point
+		var nscored = jsPsych.data.get().filterCustom(x=>x.score!==null).count();
+		blkmax = nscored - sum_prevmaxs;
+
+		if(DEBUG) console.log(`scoreFbk: not given block max. think it is ${nscored} - ${sum_prevmaxs} = ${blkmax}`)
+	    }
+
+            return (`<h3>You scored ${thisscore} of ${blkmax} possible points this round.</h3> Your total score is ${totalscore}`)
         },
         on_finish: function(data) {
+
             data.block = 'score';
+	    data.lasttotal = blkmax;
+            data.lastscore = sum_points();
         }
     })
 }
@@ -370,7 +402,7 @@ function mkODblock(frts: Fruit[], nreps: number): PsychEvent[] {
         const top = sides[0]; const bot = sides[1];
         allOD.push(mkODTrial(fruits_by_side[top], fruits_by_side[bot]));
     }
-    allOD.push(mkScoreFbk());
+    allOD.push(mkScoreFbk(allOD.length));
     console.log(OD_left,OD_right,OD_fac, OD_order, allOD)
     return (allOD)
 }
@@ -450,8 +482,8 @@ function soa_assign(nblocks: number, nbox: number, reps: number, choose: number)
 function mkSOAblocks(frts: Fruit[], boxes: Box[], so: SO, nblocks: number, nreps: number): PsychEvent[] {
     var allbocks = [];
     // for psiturk, record what type of event this was
-    const desc = so == SO.Outcome ? "3.SOA" : "4.DD";
-    const score = mkScoreFbk();
+    const desc = so == SO.Outcome ? "SOA" : "DD";
+    const score = mkScoreFbk(boxes.length*nreps);
     for (let bn = 0; bn < nblocks; bn++) {
         allbocks.push(mkSOAgrid(Object.values(frts), bn, so));
         // each box seen twice. consider adding shuffleNoRepeats

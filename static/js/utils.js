@@ -6,7 +6,7 @@ var SETTINGS = {
     'dur_ID_fbk': 1000,
     'dur_SOAcue': 5000,
     'dur_SOA': 2000,
-    'dur_score': 1500,
+    'dur_score': 2000,
     // Instructed discrimination
     //  8 blocks of 12 trials (96 total). each of the 6 fruit boxes seen 16 times.
     'ID_reps': 2,
@@ -62,11 +62,15 @@ function mkIDblocks(boxes) {
     var fbk = mkIDFbk();
     var IDidx = random_IDidx(boxes.length);
     var IDblocknum = -1; // -1 b/c this is not soa/dd
-    // add feedback
+    var blksz = 12;
+    // add feedback and score slide every blksz
+    // NB. if every scoring with RT bonus, will need to change max given mkScoreFbk
     var allID = [].concat(IDidx.map(function (i, ii) { return [
-        mkBoxTrial(boxes[i], IDblocknum, '1.ID_' + Math.floor(ii / 12)),
-        fbk
-    ]; })).flat();
+        mkBoxTrial(boxes[i], IDblocknum, '1.ID_' + Math.floor(ii / blksz)),
+        fbk,
+        (ii > 0 && ii % 12 == 0) ? mkScoreFbk(blksz) : null
+    ]; })).flat().filter(function (x) { return x !== null; });
+    allID.push(mkScoreFbk(blksz));
     return (allID);
 }
 /** Stimulus (outside box) or Outcome (inside box) */
@@ -279,21 +283,44 @@ function mkIDFbk() {
 function sum_points() {
     return (jsPsych.data.get().select('score').sum());
 }
+/** get points since last score
+    score blocks have a 'lastscore' element
+    use that if it exists
+    otherwise use total points so far
+*/
+function points_since_last_shown(total) {
+    var lastscore = jsPsych.data.get().filterCustom(function (x) { return x.lastscore !== null; }).select('lastscore').values;
+    var thisscore = (lastscore.length === 0) ? total : total - lastscore[lastscore.length - 1];
+    return (thisscore);
+}
 /** mkScoreFbk
   * @return jspsych timeline obj to dispaly total score */
-function mkScoreFbk() {
+function mkScoreFbk(blkmax) {
     return ({
         type: 'html-keyboard-response',
         //choices: ['z','m'],
         //post_trial_gap: SETTINGS['ITI'],
         // only show for fixed duration
         trial_duration: SETTINGS['dur_score'],
+        choices: jsPsych.NO_KEYS,
         stimulus: function (trial) {
-            var score = sum_points();
-            return ("<h2>Score: " + score + "</h2>");
+            var totalscore = sum_points();
+            var thisscore = points_since_last_shown(totalscore);
+            if (blkmax === null) {
+                var sum_prevmaxs = jsPsych.data.get().select('lasttotal').sum();
+                sum_prevmaxs = sum_prevmaxs.length == 0 ? 0 : sum_prevmaxs[0];
+                // N.B -- assume no RT bonus. assume max one point
+                var nscored = jsPsych.data.get().filterCustom(function (x) { return x.score !== null; }).count();
+                blkmax = nscored - sum_prevmaxs;
+                if (DEBUG)
+                    console.log("scoreFbk: not given block max. think it is " + nscored + " - " + sum_prevmaxs + " = " + blkmax);
+            }
+            return ("<h3>You scored " + thisscore + " of " + blkmax + " possible points this round.</h3> Your total score is " + totalscore);
         },
         on_finish: function (data) {
             data.block = 'score';
+            data.lasttotal = blkmax;
+            data.lastscore = sum_points();
         }
     });
 }
@@ -349,7 +376,7 @@ function mkODblock(frts, nreps) {
         var bot = sides[1];
         allOD.push(mkODTrial(fruits_by_side[top_1], fruits_by_side[bot]));
     }
-    allOD.push(mkScoreFbk());
+    allOD.push(mkScoreFbk(allOD.length));
     console.log(OD_left, OD_right, OD_fac, OD_order, allOD);
     return (allOD);
 }
@@ -429,8 +456,8 @@ function soa_assign(nblocks, nbox, reps, choose) {
 function mkSOAblocks(frts, boxes, so, nblocks, nreps) {
     var allbocks = [];
     // for psiturk, record what type of event this was
-    var desc = so == SO.Outcome ? "3.SOA" : "4.DD";
-    var score = mkScoreFbk();
+    var desc = so == SO.Outcome ? "SOA" : "DD";
+    var score = mkScoreFbk(boxes.length * nreps);
     for (var bn = 0; bn < nblocks; bn++) {
         allbocks.push(mkSOAgrid(Object.values(frts), bn, so));
         // each box seen twice. consider adding shuffleNoRepeats

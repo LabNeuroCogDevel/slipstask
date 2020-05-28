@@ -44,10 +44,10 @@ fullTL = [
 
 /* small versions for exploring */
 const scoretl = mkScoreFbk(); // tl = timeline
-IDTL   = [allID.slice(0,8), scoretl].flat();
-ODTL   = [allOD.slice(0,4), scoretl].flat();
-SOATL  = [allSOA.slice(0,12), scoretl].flat();
-DDTL  =  [allDD.slice(0,12), scoretl].flat();
+IDTL   = [allID].flat();
+ODTL   = [allOD].flat();
+SOATL  = [allSOA].flat();
+DDTL  =  [allDD].flat();
 
 function trials(timeline){
   jsPsych.init({timeline: timeline,
