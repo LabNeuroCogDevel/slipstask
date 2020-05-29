@@ -99,11 +99,11 @@ const INSTRUCTIONS_DATA = {
       "We just have a few questions we want to ask you about the game.<br>"+
       "We want to know how well you feel like you learned about the tricky boxes.",
     "In this section, we'll ask you about <ol style='text-align:left'>"+
-      "<li>the way to open the box labeled with or containing each fruit</li>"+
-      "<li>what outside fruit label pair with which inside fruit</li>"+
-      "<li>and how confident you are about each answer</li></ol>",
+      "<li>the way to open the box labeled with or containing each fruit.</li>"+
+      "<li>what outside fruit label pair with which inside fruit.</li>"+
+      "<li>and how confident you are about each answer.</li></ol>",
     "When answering, <ol style='text-align:left'>"+
-      "<li>to pick left or right, push the keyboard arrow keys or click the arrow </li>" +
+      "<li>to pick left or right, push the keyboard arrow keys or click the arrow. </li>" +
       "<li>to pick a fruit's pair, push the number label on the keyboard or using the mouse. </li>"+
       "<li>to rank your confidence, move the slider and click continue.</li><br>"+
       "When you're ready to start, press next.",
