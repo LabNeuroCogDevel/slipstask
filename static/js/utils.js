@@ -458,6 +458,7 @@ function mkSOAblocks(frts, boxes, so, nblocks, nreps) {
     var allbocks = [];
     // for psiturk, record what type of event this was
     var desc = so == SO.Outcome ? "SOA" : "DD";
+    // TODO: 2 shouldn't be hardcoded. but number of devalued is unlikely to change
     var score = mkScoreFbk((boxes.length - 2) * nreps);
     for (var bn = 0; bn < nblocks; bn++) {
         allbocks.push(mkSOAgrid(Object.values(frts), bn, so));

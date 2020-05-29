@@ -485,6 +485,7 @@ function mkSOAblocks(frts: Fruit[], boxes: Box[], so: SO, nblocks: number, nreps
     var allbocks = [];
     // for psiturk, record what type of event this was
     const desc = so == SO.Outcome ? "SOA" : "DD";
+    // TODO: 2 shouldn't be hardcoded. but number of devalued is unlikely to change
     const score = mkScoreFbk((boxes.length-2)*nreps);
     for (let bn = 0; bn < nblocks; bn++) {
         allbocks.push(mkSOAgrid(Object.values(frts), bn, so));

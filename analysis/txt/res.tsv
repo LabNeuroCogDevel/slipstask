@@ -2425,6 +2425,354 @@ Jen20200526a	.9-weak_instructions	4.DD_8	399	1103532	html-keyboard-response	0.0-
 Jen20200526a	.9-weak_instructions	4.DD_8	400	1104963	html-keyboard-response	0.0-400.0	bananas	37	425.760000012815	melon					Left	1
 Jen20200526a	.9-weak_instructions	4.DD_8	401	1106453	html-keyboard-response	0.0-401.0	coconut	37	484.2850000131875	pear					Left	1
 Jen20200526a	.9-weak_instructions	4.DD_8	402	1108459	html-keyboard-response	0.0-402.0	kiwi			strawberry					None	0
+will20200529a	.97-20200529-survey	1.ID_0	1	24675	html-keyboard-response	0.0-1.0	lemon	37	3613	melon			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_0	3	27587	html-keyboard-response	0.0-3.0	apple	39	908	pineapple			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_0	5	30515	html-keyboard-response	0.0-5.0	coconut	37	924	bananas			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_0	7	33314	html-keyboard-response	0.0-7.0	strawberry	39	794	kiwi			Left	false	Right	0
+will20200529a	.97-20200529-survey	1.ID_0	9	36050	html-keyboard-response	0.0-9.0	cherries	39	733	pear			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_0	11	39329	html-keyboard-response	0.0-11.0	strawberry	37	1274	kiwi			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_0	13	42546	html-keyboard-response	0.0-13.0	apple	39	1213	pineapple			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_0	15	45441	html-keyboard-response	0.0-15.0	coconut	37	891	bananas			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_0	17	48498	html-keyboard-response	0.0-17.0	cherries	39	1052	pear			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_0	19	51249	html-keyboard-response	0.0-19.0	lemon	37	748	melon			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_0	21	54451	html-keyboard-response	0.0-21.0	grape	39	1199	orange			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_0	23	57106	html-keyboard-response	0.0-23.0	grape	39	652	orange			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_1	25	59602	html-keyboard-response	0.0-25.0	lemon	37	492	melon			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_1	28	64465	html-keyboard-response	0.0-28.0	coconut	39	860	bananas			Left	false	Right	0
+will20200529a	.97-20200529-survey	1.ID_1	30	66930	html-keyboard-response	0.0-30.0	grape	37	460	orange			Right	false	Left	0
+will20200529a	.97-20200529-survey	1.ID_1	32	69442	html-keyboard-response	0.0-32.0	strawberry	39	509	kiwi			Left	false	Right	0
+will20200529a	.97-20200529-survey	1.ID_1	34	73748	html-keyboard-response	0.0-34.0	grape	39	2302	orange			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_1	36	76067	html-keyboard-response	0.0-36.0	coconut	37	314	bananas			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_1	38	78451	html-keyboard-response	0.0-38.0	apple	39	380	pineapple			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_1	40	80835	html-keyboard-response	0.0-40.0	cherries	37	379	pear			Right	false	Left	0
+will20200529a	.97-20200529-survey	1.ID_1	42	83571	html-keyboard-response	0.0-42.0	cherries	39	732	pear			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_1	44	86020	html-keyboard-response	0.0-44.0	lemon	39	446	melon			Left	false	Right	0
+will20200529a	.97-20200529-survey	1.ID_1	46	88435	html-keyboard-response	0.0-46.0	apple	37	412	pineapple			Right	false	Left	0
+will20200529a	.97-20200529-survey	1.ID_1	48	90775	html-keyboard-response	0.0-48.0	strawberry	39	336	kiwi			Left	false	Right	0
+will20200529a	.97-20200529-survey	1.ID_2	50	93130	html-keyboard-response	0.0-50.0	grape	37	348	orange			Right	false	Left	0
+will20200529a	.97-20200529-survey	1.ID_2	53	97757	html-keyboard-response	0.0-53.0	strawberry	39	620	kiwi			Left	false	Right	0
+will20200529a	.97-20200529-survey	1.ID_2	55	100246	html-keyboard-response	0.0-55.0	cherries	37	484	pear			Right	false	Left	0
+will20200529a	.97-20200529-survey	1.ID_2	57	102980	html-keyboard-response	0.0-57.0	lemon	37	730	melon			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_2	59	106387	html-keyboard-response	0.0-59.0	coconut	39	1402	bananas			Left	false	Right	0
+will20200529a	.97-20200529-survey	1.ID_2	61	108741	html-keyboard-response	0.0-61.0	strawberry	37	350	kiwi			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_2	63	111140	html-keyboard-response	0.0-63.0	apple	37	395	pineapple			Right	false	Left	0
+will20200529a	.97-20200529-survey	1.ID_2	65	113539	html-keyboard-response	0.0-65.0	grape	39	396	orange			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_2	67	115875	html-keyboard-response	0.0-67.0	coconut	37	331	bananas			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_2	69	118388	html-keyboard-response	0.0-69.0	apple	39	508	pineapple			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_2	71	120819	html-keyboard-response	0.0-71.0	cherries	37	426	pear			Right	false	Left	0
+will20200529a	.97-20200529-survey	1.ID_2	73	123795	html-keyboard-response	0.0-73.0	lemon	37	966	melon			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_3	75	126436	html-keyboard-response	0.0-75.0	cherries	39	636	pear			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_3	78	131317	html-keyboard-response	0.0-78.0	grape	39	876	orange			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_3	80	134147	html-keyboard-response	0.0-80.0	coconut	37	826	bananas			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_3	82	137476	html-keyboard-response	0.0-82.0	strawberry	39	1325	kiwi			Left	false	Right	0
+will20200529a	.97-20200529-survey	1.ID_3	84	140310	html-keyboard-response	0.0-84.0	lemon	39	830	melon			Left	false	Right	0
+will20200529a	.97-20200529-survey	1.ID_3	86	143139	html-keyboard-response	0.0-86.0	apple	37	825	pineapple			Right	false	Left	0
+will20200529a	.97-20200529-survey	1.ID_3	88	145556	html-keyboard-response	0.0-88.0	cherries	39	412	pear			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_3	90	148485	html-keyboard-response	0.0-90.0	lemon	37	926	melon			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_3	92	151366	html-keyboard-response	0.0-92.0	apple	37	877	pineapple			Right	false	Left	0
+will20200529a	.97-20200529-survey	1.ID_3	94	168002	html-keyboard-response	0.0-94.0	coconut	37	14631	bananas			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_3	96	170809	html-keyboard-response	0.0-96.0	grape	39	803	orange			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_3	98	174311	html-keyboard-response	0.0-98.0	strawberry	37	1496	kiwi			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_4	100	177030	html-keyboard-response	0.0-100.0	coconut	39	715	bananas			Left	false	Right	0
+will20200529a	.97-20200529-survey	1.ID_4	103	182100	html-keyboard-response	0.0-103.0	apple	39	1064	pineapple			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_4	105	184996	html-keyboard-response	0.0-105.0	grape	39	892	orange			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_4	107	188164	html-keyboard-response	0.0-107.0	strawberry	39	1165	kiwi			Left	false	Right	0
+will20200529a	.97-20200529-survey	1.ID_4	109	190708	html-keyboard-response	0.0-109.0	cherries	37	540	pear			Right	false	Left	0
+will20200529a	.97-20200529-survey	1.ID_4	111	193444	html-keyboard-response	0.0-111.0	cherries	39	732	pear			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_4	113	196277	html-keyboard-response	0.0-113.0	apple	37	829	pineapple			Right	false	Left	0
+will20200529a	.97-20200529-survey	1.ID_4	115	198661	html-keyboard-response	0.0-115.0	lemon	39	379	melon			Left	false	Right	0
+will20200529a	.97-20200529-survey	1.ID_4	117	201171	html-keyboard-response	0.0-117.0	coconut	37	505	bananas			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_4	119	204068	html-keyboard-response	0.0-119.0	lemon	37	893	melon			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_4	121	206899	html-keyboard-response	0.0-121.0	grape	39	827	orange			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_4	123	210198	html-keyboard-response	0.0-123.0	strawberry	37	1295	kiwi			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_5	125	212947	html-keyboard-response	0.0-125.0	grape	39	744	orange			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_5	128	217976	html-keyboard-response	0.0-128.0	apple	39	1023	pineapple			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_5	130	221011	html-keyboard-response	0.0-130.0	apple	39	1030	pineapple			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_5	132	224291	html-keyboard-response	0.0-132.0	strawberry	37	1276	kiwi			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_5	134	228516	html-keyboard-response	0.0-134.0	lemon	37	2220	melon			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_5	136	233156	html-keyboard-response	0.0-136.0	cherries	39	2635	pear			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_5	138	238276	html-keyboard-response	0.0-138.0	strawberry	37	3116	kiwi			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_5	140	242166	html-keyboard-response	0.0-140.0	coconut	37	1887	bananas			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_5	142	246740	html-keyboard-response	0.0-142.0	lemon	37	2569	melon			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_5	144	249764	html-keyboard-response	0.0-144.0	grape	39	1022	orange			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_5	146	254743	html-keyboard-response	0.0-146.0	cherries	39	2975	pear			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_5	148	258749	html-keyboard-response	0.0-148.0	coconut	37	1997	bananas			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_6	150	263512	html-keyboard-response	0.0-150.0	strawberry	37	2758	kiwi			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_6	153	270970	html-keyboard-response	0.0-153.0	strawberry	37	3451	kiwi			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_6	155	275685	html-keyboard-response	0.0-155.0	cherries	39	2710	pear			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_6	157	279492	html-keyboard-response	0.0-157.0	coconut	37	1802	bananas			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_6	159	282292	html-keyboard-response	0.0-159.0	cherries	39	794	pear			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_6	161	285029	html-keyboard-response	0.0-161.0	lemon	37	733	melon			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_6	163	288020	html-keyboard-response	0.0-163.0	coconut	39	987	bananas			Left	false	Right	0
+will20200529a	.97-20200529-survey	1.ID_6	165	290964	html-keyboard-response	0.0-165.0	apple	39	940	pineapple			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_6	167	293720	html-keyboard-response	0.0-167.0	grape	39	752	orange			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_6	169	296649	html-keyboard-response	0.0-169.0	apple	39	924	pineapple			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_6	171	299431	html-keyboard-response	0.0-171.0	grape	39	776	orange			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_6	173	302757	html-keyboard-response	0.0-173.0	lemon	37	1323	melon			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_7	175	305348	html-keyboard-response	0.0-175.0	lemon	37	586	melon			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_7	178	315669	html-keyboard-response	0.0-178.0	strawberry	37	6315	kiwi			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_7	180	323096	html-keyboard-response	0.0-180.0	apple	39	5423	pineapple			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_7	182	326579	html-keyboard-response	0.0-182.0	apple	39	1478	pineapple			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_7	184	329559	html-keyboard-response	0.0-184.0	cherries	39	976	pear			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_7	186	332724	html-keyboard-response	0.0-186.0	coconut	39	1161	bananas			Left	false	Right	0
+will20200529a	.97-20200529-survey	1.ID_7	188	335335	html-keyboard-response	0.0-188.0	grape	39	606	orange			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_7	190	338516	html-keyboard-response	0.0-190.0	strawberry	37	1176	kiwi			Left	false	Left	1
+will20200529a	.97-20200529-survey	1.ID_7	192	341235	html-keyboard-response	0.0-192.0	grape	39	714	orange			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_7	194	344710	html-keyboard-response	0.0-194.0	coconut	39	1469	bananas			Left	false	Right	0
+will20200529a	.97-20200529-survey	1.ID_7	196	347508	html-keyboard-response	0.0-196.0	cherries	39	795	pear			Right	false	Right	1
+will20200529a	.97-20200529-survey	1.ID_7	198	351879	html-keyboard-response	0.0-198.0	lemon	37	2366	melon			Left	false	Left	1
+will20200529a	.97-20200529-survey	2.OD	202	365575	html-keyboard-response	0.0-202.0		39	4647		pineapple	kiwi			Right	1
+will20200529a	.97-20200529-survey	2.OD	203	367293	html-keyboard-response	0.0-203.0		39	714		pineapple	bananas			Right	1
+will20200529a	.97-20200529-survey	2.OD	204	372184	html-keyboard-response	0.0-204.0		37	3890		kiwi	pear			Left	1
+will20200529a	.97-20200529-survey	2.OD	205	375272	html-keyboard-response	0.0-205.0		37	2085		orange	bananas			Left	0
+will20200529a	.97-20200529-survey	2.OD	206	377958	html-keyboard-response	0.0-206.0		37	1684		orange	kiwi			Left	0
+will20200529a	.97-20200529-survey	2.OD	207	381621	html-keyboard-response	0.0-207.0		39	2661		pear	bananas			Right	1
+will20200529a	.97-20200529-survey	2.OD	208	387589	html-keyboard-response	0.0-208.0		37	4966		kiwi	pineapple			Left	1
+will20200529a	.97-20200529-survey	2.OD	209	391605	html-keyboard-response	0.0-209.0		37	3015		bananas	orange			Left	1
+will20200529a	.97-20200529-survey	2.OD	210	395240	html-keyboard-response	0.0-210.0		39	2633		pear	melon			Right	1
+will20200529a	.97-20200529-survey	2.OD	211	396965	html-keyboard-response	0.0-211.0		39	723		pear	bananas			Right	1
+will20200529a	.97-20200529-survey	2.OD	212	399126	html-keyboard-response	0.0-212.0		39	1159		pear	bananas			Right	1
+will20200529a	.97-20200529-survey	2.OD	213	402356	html-keyboard-response	0.0-213.0		37	2230		melon	pineapple			Left	1
+will20200529a	.97-20200529-survey	2.OD	214	407492	html-keyboard-response	0.0-214.0		39	4135		orange	melon			Right	1
+will20200529a	.97-20200529-survey	2.OD	215	413685	html-keyboard-response	0.0-215.0		37	5192		kiwi	pear			Left	1
+will20200529a	.97-20200529-survey	2.OD	216	418085	html-keyboard-response	0.0-216.0		39	3398		orange	melon			Right	1
+will20200529a	.97-20200529-survey	2.OD	217	423797	html-keyboard-response	0.0-217.0		39	4710		pineapple	kiwi			Right	1
+will20200529a	.97-20200529-survey	2.OD	218	426470	html-keyboard-response	0.0-218.0		39	1672		orange	bananas			Right	1
+will20200529a	.97-20200529-survey	2.OD	219	429335	html-keyboard-response	0.0-219.0		37	1864		kiwi	orange			Left	1
+will20200529a	.97-20200529-survey	2.OD	220	430979	html-keyboard-response	0.0-220.0		37	646		kiwi	pineapple			Left	1
+will20200529a	.97-20200529-survey	2.OD	221	434775	html-keyboard-response	0.0-221.0		39	2794		pineapple	melon			Right	1
+will20200529a	.97-20200529-survey	2.OD	222	438868	html-keyboard-response	0.0-222.0		39	3092		orange	kiwi			Right	1
+will20200529a	.97-20200529-survey	2.OD	223	443303	html-keyboard-response	0.0-223.0		37	3434		melon	pineapple			Left	1
+will20200529a	.97-20200529-survey	2.OD	224	445940	html-keyboard-response	0.0-224.0		37	1635		kiwi	pear			Left	1
+will20200529a	.97-20200529-survey	2.OD	225	449541	html-keyboard-response	0.0-225.0		39	2598		bananas	pineapple			Right	0
+will20200529a	.97-20200529-survey	2.OD	226	452870	html-keyboard-response	0.0-226.0		39	2327		orange	melon			Right	1
+will20200529a	.97-20200529-survey	2.OD	227	458214	html-keyboard-response	0.0-227.0		37	4342		bananas	orange			Left	1
+will20200529a	.97-20200529-survey	2.OD	228	462484	html-keyboard-response	0.0-228.0		39	3270		pear	kiwi			Right	1
+will20200529a	.97-20200529-survey	2.OD	229	464230	html-keyboard-response	0.0-229.0		39	744		pear	melon			Right	1
+will20200529a	.97-20200529-survey	2.OD	230	472725	html-keyboard-response	0.0-230.0		37	7494		melon	orange			Left	1
+will20200529a	.97-20200529-survey	2.OD	231	478773	html-keyboard-response	0.0-231.0		37	5048		bananas	pear			Left	1
+will20200529a	.97-20200529-survey	2.OD	232	482564	html-keyboard-response	0.0-232.0		39	2790		pineapple	melon			Right	1
+will20200529a	.97-20200529-survey	2.OD	233	485445	html-keyboard-response	0.0-233.0		37	1879		melon	pear			Left	1
+will20200529a	.97-20200529-survey	2.OD	234	488885	html-keyboard-response	0.0-234.0		37	2438		bananas	pineapple			Left	1
+will20200529a	.97-20200529-survey	2.OD	235	490582	html-keyboard-response	0.0-235.0		37	694		bananas	pineapple			Left	1
+will20200529a	.97-20200529-survey	2.OD	236	493956	html-keyboard-response	0.0-236.0		39	2374		orange	kiwi			Right	1
+will20200529a	.97-20200529-survey	2.OD	237	497271	html-keyboard-response	0.0-237.0		37	2313		melon	pear			Left	1
+will20200529a	.97-20200529-survey	3.DD_0	241	511892	html-keyboard-response	0.0-241.0	coconut	39	1156	bananas			Left	false	Right	0
+will20200529a	.97-20200529-survey	3.DD_0	242	513719	html-keyboard-response	0.0-242.0	coconut	39	821	bananas			Left	false	Right	0
+will20200529a	.97-20200529-survey	3.DD_0	243	515496	html-keyboard-response	0.0-243.0	cherries	39	774	pear			Right	false	Right	1
+will20200529a	.97-20200529-survey	3.DD_0	244	518501	html-keyboard-response	0.0-244.0	lemon			melon			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_0	245	520373	html-keyboard-response	0.0-245.0	cherries	39	868	pear			Right	false	Right	1
+will20200529a	.97-20200529-survey	3.DD_0	246	522437	html-keyboard-response	0.0-246.0	strawberry	39	1058	kiwi			None	true	Right	0
+will20200529a	.97-20200529-survey	3.DD_0	247	524324	html-keyboard-response	0.0-247.0	apple	39	883	pineapple			Right	false	Right	1
+will20200529a	.97-20200529-survey	3.DD_0	248	527328	html-keyboard-response	0.0-248.0	strawberry			kiwi			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_0	249	529272	html-keyboard-response	0.0-249.0	grape	39	939	orange			Right	false	Right	1
+will20200529a	.97-20200529-survey	3.DD_0	250	531652	html-keyboard-response	0.0-250.0	apple	39	1377	pineapple			Right	false	Right	1
+will20200529a	.97-20200529-survey	3.DD_0	251	533653	html-keyboard-response	0.0-251.0	grape	39	997	orange			Right	false	Right	1
+will20200529a	.97-20200529-survey	3.DD_0	252	536657	html-keyboard-response	0.0-252.0	lemon			melon			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_1	255	546666	html-keyboard-response	0.0-255.0	strawberry			kiwi			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_1	256	549670	html-keyboard-response	0.0-256.0	cherries			pear			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_1	257	552673	html-keyboard-response	0.0-257.0	cherries			pear			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_1	258	555678	html-keyboard-response	0.0-258.0	apple			pineapple			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_1	259	558683	html-keyboard-response	0.0-259.0	lemon			melon			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_1	260	560278	html-keyboard-response	0.0-260.0	grape	39	591	orange			None	true	Right	-1
+will20200529a	.97-20200529-survey	3.DD_1	261	561956	html-keyboard-response	0.0-261.0	coconut	37	674	bananas			Left	false	Left	1
+will20200529a	.97-20200529-survey	3.DD_1	262	563285	html-keyboard-response	0.0-262.0	apple	39	326	pineapple			None	true	Right	-1
+will20200529a	.97-20200529-survey	3.DD_1	263	564724	html-keyboard-response	0.0-263.0	coconut	37	434	bananas			Left	false	Left	1
+will20200529a	.97-20200529-survey	3.DD_1	264	567012	html-keyboard-response	0.0-264.0	lemon	39	1285	melon			Left	false	Right	0
+will20200529a	.97-20200529-survey	3.DD_1	265	569076	html-keyboard-response	0.0-265.0	grape	37	1060	orange			None	true	Left	0
+will20200529a	.97-20200529-survey	3.DD_1	266	570400	html-keyboard-response	0.0-266.0	strawberry	39	320	kiwi			Left	false	Right	0
+will20200529a	.97-20200529-survey	3.DD_2	269	580411	html-keyboard-response	0.0-269.0	apple			pineapple			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_2	270	583418	html-keyboard-response	0.0-270.0	strawberry			kiwi			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_2	271	586424	html-keyboard-response	0.0-271.0	strawberry			kiwi			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_2	272	589431	html-keyboard-response	0.0-272.0	coconut			bananas			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_2	273	592439	html-keyboard-response	0.0-273.0	cherries			pear			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_2	274	595445	html-keyboard-response	0.0-274.0	grape			orange			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_2	275	598452	html-keyboard-response	0.0-275.0	cherries			pear			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_2	276	601458	html-keyboard-response	0.0-276.0	lemon			melon			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_2	277	604463	html-keyboard-response	0.0-277.0	coconut			bananas			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_2	278	607469	html-keyboard-response	0.0-278.0	lemon			melon			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_2	279	610474	html-keyboard-response	0.0-279.0	grape			orange			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_2	280	613479	html-keyboard-response	0.0-280.0	apple			pineapple			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_3	283	623488	html-keyboard-response	0.0-283.0	cherries			pear			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_3	284	626493	html-keyboard-response	0.0-284.0	cherries			pear			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_3	285	629497	html-keyboard-response	0.0-285.0	strawberry			kiwi			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_3	286	632503	html-keyboard-response	0.0-286.0	coconut			bananas			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_3	287	633865	html-keyboard-response	0.0-287.0	grape	37	358	orange			Right	false	Left	0
+will20200529a	.97-20200529-survey	3.DD_3	288	636871	html-keyboard-response	0.0-288.0	strawberry			kiwi			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_3	289	638684	html-keyboard-response	0.0-289.0	apple	39	809	pineapple			Right	false	Right	1
+will20200529a	.97-20200529-survey	3.DD_3	290	641069	html-keyboard-response	0.0-290.0	lemon	39	1382	melon			None	true	Right	0
+will20200529a	.97-20200529-survey	3.DD_3	291	642873	html-keyboard-response	0.0-291.0	coconut	37	799	bananas			Left	false	Left	1
+will20200529a	.97-20200529-survey	3.DD_3	292	644519	html-keyboard-response	0.0-292.0	lemon	37	643	melon			None	true	Left	-1
+will20200529a	.97-20200529-survey	3.DD_3	293	647460	html-keyboard-response	0.0-293.0	apple	39	1937	pineapple			Right	false	Right	1
+will20200529a	.97-20200529-survey	3.DD_3	294	649094	html-keyboard-response	0.0-294.0	grape	39	630	orange			Right	false	Right	1
+will20200529a	.97-20200529-survey	3.DD_4	297	659101	html-keyboard-response	0.0-297.0	strawberry			kiwi			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_4	298	662106	html-keyboard-response	0.0-298.0	cherries			pear			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_4	299	665109	html-keyboard-response	0.0-299.0	grape			orange			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_4	300	668114	html-keyboard-response	0.0-300.0	cherries			pear			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_4	301	671118	html-keyboard-response	0.0-301.0	lemon			melon			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_4	302	674122	html-keyboard-response	0.0-302.0	grape			orange			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_4	303	677128	html-keyboard-response	0.0-303.0	strawberry			kiwi			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_4	304	680131	html-keyboard-response	0.0-304.0	lemon			melon			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_4	305	683137	html-keyboard-response	0.0-305.0	coconut			bananas			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_4	306	686141	html-keyboard-response	0.0-306.0	apple			pineapple			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_4	307	689144	html-keyboard-response	0.0-307.0	apple			pineapple			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_4	308	692149	html-keyboard-response	0.0-308.0	coconut			bananas			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_5	311	702156	html-keyboard-response	0.0-311.0	apple			pineapple			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_5	312	705160	html-keyboard-response	0.0-312.0	strawberry			kiwi			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_5	313	708166	html-keyboard-response	0.0-313.0	apple			pineapple			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_5	314	711171	html-keyboard-response	0.0-314.0	lemon			melon			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_5	315	714176	html-keyboard-response	0.0-315.0	coconut			bananas			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_5	316	717180	html-keyboard-response	0.0-316.0	grape			orange			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_5	317	720184	html-keyboard-response	0.0-317.0	coconut			bananas			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_5	318	723189	html-keyboard-response	0.0-318.0	strawberry			kiwi			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_5	319	726193	html-keyboard-response	0.0-319.0	grape			orange			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_5	320	729197	html-keyboard-response	0.0-320.0	lemon			melon			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_5	321	732201	html-keyboard-response	0.0-321.0	cherries			pear			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_5	322	735208	html-keyboard-response	0.0-322.0	cherries			pear			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_6	325	744311	html-keyboard-response	0.0-325.0	coconut	37	1095	bananas			Left	false	Left	1
+will20200529a	.97-20200529-survey	3.DD_6	326	746022	html-keyboard-response	0.0-326.0	lemon	37	706	melon			Left	false	Left	1
+will20200529a	.97-20200529-survey	3.DD_6	327	747781	html-keyboard-response	0.0-327.0	strawberry	37	754	kiwi			Left	false	Left	1
+will20200529a	.97-20200529-survey	3.DD_6	328	749383	html-keyboard-response	0.0-328.0	grape	39	598	orange			None	true	Right	-1
+will20200529a	.97-20200529-survey	3.DD_6	329	752388	html-keyboard-response	0.0-329.0	cherries			pear			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_6	330	754182	html-keyboard-response	0.0-330.0	apple	39	790	pineapple			Right	false	Right	1
+will20200529a	.97-20200529-survey	3.DD_6	331	756327	html-keyboard-response	0.0-331.0	apple	39	1141	pineapple			Right	false	Right	1
+will20200529a	.97-20200529-survey	3.DD_6	332	758791	html-keyboard-response	0.0-332.0	lemon	37	1459	melon			Left	false	Left	1
+will20200529a	.97-20200529-survey	3.DD_6	333	760741	html-keyboard-response	0.0-333.0	coconut	37	946	bananas			Left	false	Left	1
+will20200529a	.97-20200529-survey	3.DD_6	334	763078	html-keyboard-response	0.0-334.0	strawberry	39	1332	kiwi			Left	false	Right	0
+will20200529a	.97-20200529-survey	3.DD_6	335	765258	html-keyboard-response	0.0-335.0	grape	39	1174	orange			None	true	Right	-1
+will20200529a	.97-20200529-survey	3.DD_6	336	768262	html-keyboard-response	0.0-336.0	cherries			pear			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_7	339	778269	html-keyboard-response	0.0-339.0	strawberry			kiwi			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_7	340	781274	html-keyboard-response	0.0-340.0	cherries			pear			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_7	341	784280	html-keyboard-response	0.0-341.0	lemon			melon			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_7	342	787284	html-keyboard-response	0.0-342.0	cherries			pear			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_7	343	790289	html-keyboard-response	0.0-343.0	apple			pineapple			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_7	344	793293	html-keyboard-response	0.0-344.0	coconut			bananas			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_7	345	796298	html-keyboard-response	0.0-345.0	grape			orange			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_7	346	799303	html-keyboard-response	0.0-346.0	grape			orange			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_7	347	802307	html-keyboard-response	0.0-347.0	strawberry			kiwi			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_7	348	805311	html-keyboard-response	0.0-348.0	coconut			bananas			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_7	349	808316	html-keyboard-response	0.0-349.0	apple			pineapple			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_7	350	811320	html-keyboard-response	0.0-350.0	lemon			melon			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_8	353	821329	html-keyboard-response	0.0-353.0	grape			orange			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_8	354	824333	html-keyboard-response	0.0-354.0	apple			pineapple			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_8	355	827338	html-keyboard-response	0.0-355.0	lemon			melon			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_8	356	830342	html-keyboard-response	0.0-356.0	grape			orange			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_8	357	833347	html-keyboard-response	0.0-357.0	cherries			pear			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_8	358	836351	html-keyboard-response	0.0-358.0	strawberry			kiwi			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_8	359	839357	html-keyboard-response	0.0-359.0	strawberry			kiwi			Left	false	None	0
+will20200529a	.97-20200529-survey	3.DD_8	360	842362	html-keyboard-response	0.0-360.0	coconut			bananas			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_8	361	845366	html-keyboard-response	0.0-361.0	coconut			bananas			None	true	None	0
+will20200529a	.97-20200529-survey	3.DD_8	362	848371	html-keyboard-response	0.0-362.0	cherries			pear			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_8	363	851376	html-keyboard-response	0.0-363.0	apple			pineapple			Right	false	None	0
+will20200529a	.97-20200529-survey	3.DD_8	364	854381	html-keyboard-response	0.0-364.0	lemon			melon			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_0	368	1014199	html-keyboard-response	0.0-368.0	strawberry	39	625	kiwi			None	true	Right	0
+will20200529a	.97-20200529-survey	4.SOA_0	369	1015671	html-keyboard-response	0.0-369.0	grape	37	468	orange			Right	false	Left	0
+will20200529a	.97-20200529-survey	4.SOA_0	370	1017019	html-keyboard-response	0.0-370.0	coconut	39	343	bananas			Left	false	Right	0
+will20200529a	.97-20200529-survey	4.SOA_0	371	1018423	html-keyboard-response	0.0-371.0	apple	39	399	pineapple			Right	false	Right	1
+will20200529a	.97-20200529-survey	4.SOA_0	372	1019767	html-keyboard-response	0.0-372.0	strawberry	37	339	kiwi			None	true	Left	-1
+will20200529a	.97-20200529-survey	4.SOA_0	373	1021094	html-keyboard-response	0.0-373.0	lemon	39	323	melon			None	true	Right	0
+will20200529a	.97-20200529-survey	4.SOA_0	374	1022310	html-keyboard-response	0.0-374.0	coconut	39	212	bananas			Left	false	Right	0
+will20200529a	.97-20200529-survey	4.SOA_0	375	1023399	html-keyboard-response	0.0-375.0	lemon	37	83	melon			None	true	Left	-1
+will20200529a	.97-20200529-survey	4.SOA_0	376	1024502	html-keyboard-response	0.0-376.0	apple	39	99	pineapple			Right	false	Right	1
+will20200529a	.97-20200529-survey	4.SOA_0	377	1025898	html-keyboard-response	0.0-377.0	cherries	37	392	pear			Right	false	Left	0
+will20200529a	.97-20200529-survey	4.SOA_0	378	1028903	html-keyboard-response	0.0-378.0	grape			orange			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_0	379	1031907	html-keyboard-response	0.0-379.0	cherries			pear			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_1	382	1041915	html-keyboard-response	0.0-382.0	strawberry			kiwi			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_1	383	1044920	html-keyboard-response	0.0-383.0	grape			orange			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_1	384	1047925	html-keyboard-response	0.0-384.0	lemon			melon			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_1	385	1050929	html-keyboard-response	0.0-385.0	coconut			bananas			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_1	386	1053660	html-keyboard-response	0.0-386.0	strawberry	37	1725	kiwi			Left	false	Left	1
+will20200529a	.97-20200529-survey	4.SOA_1	387	1055366	html-keyboard-response	0.0-387.0	grape	37	702	orange			None	true	Left	0
+will20200529a	.97-20200529-survey	4.SOA_1	388	1056785	html-keyboard-response	0.0-388.0	apple	39	414	pineapple			None	true	Right	-1
+will20200529a	.97-20200529-survey	4.SOA_1	389	1058490	html-keyboard-response	0.0-389.0	lemon	37	700	melon			Left	false	Left	1
+will20200529a	.97-20200529-survey	4.SOA_1	390	1059829	html-keyboard-response	0.0-390.0	apple	39	334	pineapple			None	true	Right	-1
+will20200529a	.97-20200529-survey	4.SOA_1	391	1061225	html-keyboard-response	0.0-391.0	cherries	37	392	pear			Right	false	Left	0
+will20200529a	.97-20200529-survey	4.SOA_1	392	1062591	html-keyboard-response	0.0-392.0	coconut	39	360	bananas			Left	false	Right	0
+will20200529a	.97-20200529-survey	4.SOA_1	393	1063919	html-keyboard-response	0.0-393.0	cherries	37	324	pear			Right	false	Left	0
+will20200529a	.97-20200529-survey	4.SOA_2	396	1073926	html-keyboard-response	0.0-396.0	strawberry			kiwi			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_2	397	1076931	html-keyboard-response	0.0-397.0	coconut			bananas			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_2	398	1079936	html-keyboard-response	0.0-398.0	lemon			melon			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_2	399	1082941	html-keyboard-response	0.0-399.0	grape			orange			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_2	400	1085946	html-keyboard-response	0.0-400.0	strawberry			kiwi			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_2	401	1088951	html-keyboard-response	0.0-401.0	coconut			bananas			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_2	402	1091959	html-keyboard-response	0.0-402.0	cherries			pear			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_2	403	1094966	html-keyboard-response	0.0-403.0	apple			pineapple			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_2	404	1097972	html-keyboard-response	0.0-404.0	apple			pineapple			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_2	405	1100978	html-keyboard-response	0.0-405.0	grape			orange			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_2	406	1103984	html-keyboard-response	0.0-406.0	lemon			melon			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_2	407	1106989	html-keyboard-response	0.0-407.0	cherries			pear			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_3	410	1116347	html-keyboard-response	0.0-410.0	strawberry	37	1349	kiwi			None	true	Left	-1
+will20200529a	.97-20200529-survey	4.SOA_3	411	1119353	html-keyboard-response	0.0-411.0	cherries			pear			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_3	412	1122359	html-keyboard-response	0.0-412.0	cherries			pear			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_3	413	1125364	html-keyboard-response	0.0-413.0	lemon			melon			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_3	414	1128370	html-keyboard-response	0.0-414.0	coconut			bananas			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_3	415	1131376	html-keyboard-response	0.0-415.0	apple			pineapple			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_3	416	1134382	html-keyboard-response	0.0-416.0	lemon			melon			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_3	417	1137387	html-keyboard-response	0.0-417.0	apple			pineapple			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_3	418	1140392	html-keyboard-response	0.0-418.0	grape			orange			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_3	419	1143397	html-keyboard-response	0.0-419.0	coconut			bananas			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_3	420	1144987	html-keyboard-response	0.0-420.0	strawberry	37	585	kiwi			None	true	Left	-1
+will20200529a	.97-20200529-survey	4.SOA_3	421	1147991	html-keyboard-response	0.0-421.0	grape			orange			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_4	424	1157999	html-keyboard-response	0.0-424.0	apple			pineapple			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_4	425	1161004	html-keyboard-response	0.0-425.0	lemon			melon			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_4	426	1164010	html-keyboard-response	0.0-426.0	lemon			melon			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_4	427	1167015	html-keyboard-response	0.0-427.0	cherries			pear			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_4	428	1170020	html-keyboard-response	0.0-428.0	coconut			bananas			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_4	429	1173025	html-keyboard-response	0.0-429.0	grape			orange			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_4	430	1176031	html-keyboard-response	0.0-430.0	apple			pineapple			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_4	431	1179036	html-keyboard-response	0.0-431.0	grape			orange			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_4	432	1182041	html-keyboard-response	0.0-432.0	coconut			bananas			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_4	433	1185047	html-keyboard-response	0.0-433.0	cherries			pear			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_4	434	1188053	html-keyboard-response	0.0-434.0	strawberry			kiwi			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_4	435	1191058	html-keyboard-response	0.0-435.0	strawberry			kiwi			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_5	438	1201065	html-keyboard-response	0.0-438.0	grape			orange			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_5	439	1204070	html-keyboard-response	0.0-439.0	cherries			pear			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_5	440	1207075	html-keyboard-response	0.0-440.0	coconut			bananas			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_5	441	1210082	html-keyboard-response	0.0-441.0	cherries			pear			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_5	442	1213087	html-keyboard-response	0.0-442.0	strawberry			kiwi			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_5	443	1216092	html-keyboard-response	0.0-443.0	apple			pineapple			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_5	444	1219097	html-keyboard-response	0.0-444.0	apple			pineapple			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_5	445	1222102	html-keyboard-response	0.0-445.0	lemon			melon			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_5	446	1225108	html-keyboard-response	0.0-446.0	grape			orange			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_5	447	1228113	html-keyboard-response	0.0-447.0	strawberry			kiwi			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_5	448	1231118	html-keyboard-response	0.0-448.0	coconut			bananas			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_5	449	1234123	html-keyboard-response	0.0-449.0	lemon			melon			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_6	452	1244134	html-keyboard-response	0.0-452.0	lemon			melon			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_6	453	1247140	html-keyboard-response	0.0-453.0	grape			orange			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_6	454	1250146	html-keyboard-response	0.0-454.0	apple			pineapple			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_6	455	1253151	html-keyboard-response	0.0-455.0	cherries			pear			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_6	456	1256156	html-keyboard-response	0.0-456.0	lemon			melon			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_6	457	1259162	html-keyboard-response	0.0-457.0	coconut			bananas			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_6	458	1262166	html-keyboard-response	0.0-458.0	apple			pineapple			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_6	459	1265172	html-keyboard-response	0.0-459.0	strawberry			kiwi			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_6	460	1268177	html-keyboard-response	0.0-460.0	cherries			pear			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_6	461	1271183	html-keyboard-response	0.0-461.0	strawberry			kiwi			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_6	462	1274188	html-keyboard-response	0.0-462.0	grape			orange			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_6	463	1277193	html-keyboard-response	0.0-463.0	coconut			bananas			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_7	466	1287201	html-keyboard-response	0.0-466.0	lemon			melon			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_7	467	1290206	html-keyboard-response	0.0-467.0	grape			orange			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_7	468	1292329	html-keyboard-response	0.0-468.0	strawberry	37	1117	kiwi			Left	false	Left	1
+will20200529a	.97-20200529-survey	4.SOA_7	469	1294618	html-keyboard-response	0.0-469.0	cherries	39	1284	pear			None	true	Right	-1
+will20200529a	.97-20200529-survey	4.SOA_7	470	1296729	html-keyboard-response	0.0-470.0	coconut	37	1107	bananas			Left	false	Left	1
+will20200529a	.97-20200529-survey	4.SOA_7	471	1298623	html-keyboard-response	0.0-471.0	coconut	39	888	bananas			Left	false	Right	0
+will20200529a	.97-20200529-survey	4.SOA_7	472	1301628	html-keyboard-response	0.0-472.0	cherries			pear			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_7	473	1304633	html-keyboard-response	0.0-473.0	apple			pineapple			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_7	474	1307637	html-keyboard-response	0.0-474.0	strawberry			kiwi			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_7	475	1310643	html-keyboard-response	0.0-475.0	grape			orange			None	true	None	0
+will20200529a	.97-20200529-survey	4.SOA_7	476	1313651	html-keyboard-response	0.0-476.0	lemon			melon			Left	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_7	477	1316657	html-keyboard-response	0.0-477.0	apple			pineapple			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_8	480	1326666	html-keyboard-response	0.0-480.0	cherries			pear			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_8	481	1329672	html-keyboard-response	0.0-481.0	grape			orange			Right	false	None	0
+will20200529a	.97-20200529-survey	4.SOA_8	482	1331236	html-keyboard-response	0.0-482.0	grape	39	559	orange			Right	false	Right	1
+will20200529a	.97-20200529-survey	4.SOA_8	483	1332924	html-keyboard-response	0.0-483.0	coconut	37	684	bananas			None	true	Left	-1
+will20200529a	.97-20200529-survey	4.SOA_8	484	1334955	html-keyboard-response	0.0-484.0	strawberry	39	1026	kiwi			Left	false	Right	0
+will20200529a	.97-20200529-survey	4.SOA_8	485	1337035	html-keyboard-response	0.0-485.0	lemon	37	1072	melon			None	true	Left	-1
+will20200529a	.97-20200529-survey	4.SOA_8	486	1338824	html-keyboard-response	0.0-486.0	apple	39	783	pineapple			Right	false	Right	1
+will20200529a	.97-20200529-survey	4.SOA_8	487	1340584	html-keyboard-response	0.0-487.0	strawberry	37	753	kiwi			Left	false	Left	1
+will20200529a	.97-20200529-survey	4.SOA_8	488	1342219	html-keyboard-response	0.0-488.0	apple	39	628	pineapple			Right	false	Right	1
+will20200529a	.97-20200529-survey	4.SOA_8	489	1343864	html-keyboard-response	0.0-489.0	lemon	39	640	melon			None	true	Right	0
+will20200529a	.97-20200529-survey	4.SOA_8	490	1345337	html-keyboard-response	0.0-490.0	cherries	37	467	pear			Right	false	Left	0
+will20200529a	.97-20200529-survey	4.SOA_8	491	1346808	html-keyboard-response	0.0-491.0	coconut	39	467	bananas			None	true	Right	0
 Matt20200526a	.91-fix36OD	1.ID_0	1	181395	html-keyboard-response	0.0-1.0	apple	37	1416.6449999997858	lemon				false	Left	1
 Matt20200526a	.91-fix36OD	1.ID_0	3	185010	html-keyboard-response	0.0-3.0	kiwi	39	1606.0449999999837	strawberry				false	Right	0
 Matt20200526a	.91-fix36OD	1.ID_0	5	188972	html-keyboard-response	0.0-5.0	grape	39	1956.9249999999593	pineapple				false	Right	1
