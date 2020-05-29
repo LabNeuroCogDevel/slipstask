@@ -86,7 +86,7 @@ var Dir;
     Dir["Left"] = "Left";
     Dir["Right"] = "Right";
 })(Dir || (Dir = {}));
-var NUMKEYS = [49, 50, 51, 52, 53, 54]; // keycodes for 1-6
+var NUMKEYS = [49, 50, 51, 52, 53, 54]; // keycodes for 1-6 in order
 // Keys to direction
 var KEYS = {
     // https://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
@@ -480,7 +480,8 @@ var surveyTextTrail = {
         { name: "pair_strategy", prompt: "How did you remember the inside-outside fruit pairs of each box?" },
         { name: "effort", prompt: "Were you able to concentrate while playing the game? Did you have to take any breaks?" },
         { name: "misc", prompt: "Do you have any other comments on the game?" },
-    ]
+    ],
+    on_finish: function (data) { save_data(); }
 };
 /** create stim response or outcome response survey
     simliiar to mkBoxTrial or mkODTrial. but data out columns prefixed with "survey_"
@@ -493,7 +494,11 @@ function mkFrtSurvey(frt) {
         prompt: "<p>left or right</p>",
         choices: accept_keys,
         stimulus: function (trial) {
-            return ("<img src='" + frt.img + "'/><br>");
+            // TODO: hard coded left and right
+            // maybe: Object.values(KEYS).indexOf('Left')
+            return ("<div class='survey_arrow' onclick='simkey(37)'>←</div>" +
+                ("<img src='" + frt.img + "'/>") +
+                "<div class='survey_arrow' onclick='simkey(39)'>→</div><br>");
         },
         on_finish: function (data) {
             data.survey_type = frt.SO == SO.Stim ? "SR" : "OR";
@@ -503,7 +508,8 @@ function mkFrtSurvey(frt) {
         }
     });
 }
-/**
+/** send a keypress. useful for button push on keyboard trial
+  * @param keyCode of character to send. see e.g. "a".charCodeAt(0)
 */
 function simkey(key) {
     // for charcode see e.g. "a".charCodeAt(0) 
@@ -518,20 +524,20 @@ function simkey(key) {
 }
 function numberFrts(Frts) {
     return (Frts.map(function (f, i) {
-        return "<div style='height:180px; width: 180px; background:url('" + f.img + "' no-repeat); dispaly: inline-block;' onclick='simkey(" + i + ")'>" + (i + 1) + "</div>";
+        return "<div class=\"survey_outfrt\" style=\"background-image:url('" + f.img + "')\" onclick=\"simkey(NUMKEYS[" + i + "])\"><p>" + (i + 1) + "</p></div>" + (i == 2 ? "<br>" : "");
     }).
         join("\n"));
 }
-function mkPairSurvey(frt, OutcomeFruits) {
+function mkPairSurvey(frt, boxes) {
     return ({
         type: 'html-keyboard-response',
         choices: NUMKEYS,
         //prompt: "<p>Which fruit is this fruits pair</p>",
         stimulus: function (trial) {
-            return ("This fruit <img src='" + frt.img + "'/> is paired with:<br>" + numberFrts(OutcomeFruits));
+            return ("<img src='" + frt.img + "'/> is paired with:<br>" + numberFrts(boxes.map(function (x) { return x.O; })));
         },
         on_finish: function (data) {
-            var chosefrt = OutcomeFruits[NUMKEYS.indexOf(data.key_press)];
+            var chosefrt = boxes[NUMKEYS.indexOf(data.key_press)].O;
             data.survey_type = "SO";
             data.survey_prompt = frt.name;
             data.survey_chose = chosefrt.name;
@@ -553,22 +559,26 @@ function mkConfSlider() {
         type: 'html-slider-response',
         stimulus: function (trial) {
             var prev = jsPsych.data.get().last().values()[0];
+            var show = "<img src='static/images/" + prev.survey_prompt + ".png'/> ";
             var resp = "<br>opens from the " + prev.survey_chose;
             if (prev.survey_type == 'SO') {
                 resp = " is paired with <img src='static/images/" + prev.survey_chose + ".png' />";
             }
-            return ("How confident are you that <br><br>" + prev.stimulus + resp + "<br><br>");
+            return ("How confident are you that <br><br>" + show + resp + "<br><br>");
         },
         labels: ['Not at all', 'Extremely'],
         //prompt: "<p>How confident are you about your answer</p>",
         on_finish: function (data) {
-            var prev = jsPsych.data.get().last().values()[0];
+            var prev = jsPsych.data.get().last(2).values()[0];
             // recapitulate previous here for easy data parsing (just need this row)
+            data.survey_rt = prev.rt;
+            data.conf_rt = data.rt;
             data.survey_type = prev.survey_type;
             data.survey_prompt = prev.survey_prompt;
             data.survey_chose = prev.survey_chose;
             data.correct = prev.correct;
             // TODO: calculate summary stats
+            save_data();
         }
     });
 }
@@ -579,10 +589,32 @@ function mkConfSlider() {
 function showSRO(boxes) {
     return (boxes.map(function (x) { return [x.S.name, x.S.direction, x.O.name]; }));
 }
+/** all survey into one block
+ * @param boxes used for expreiment
+*/
+function mkSurveyBlock(boxes) {
+    var conf = mkConfSlider();
+    var S = jsPsych.randomization.shuffle(boxes.map(function (x) { return x.S; }));
+    var O = jsPsych.randomization.shuffle(boxes.map(function (x) { return x.O; }));
+    var P = jsPsych.randomization.shuffle(boxes.map(function (x) { return x.S; }));
+    var TL = [];
+    for (var _i = 0, _a = [S, O].flat(); _i < _a.length; _i++) {
+        var f = _a[_i];
+        TL.push(mkFrtSurvey(f));
+        TL.push(conf);
+    }
+    for (var _b = 0, P_1 = P; _b < P_1.length; _b++) {
+        var f = P_1[_b];
+        TL.push(mkPairSurvey(f, boxes));
+        TL.push(conf);
+    }
+    TL.push(surveyTextTrail);
+    return (TL);
+}
 // cheaters way of making the module
 if (typeof module !== "undefined") {
     module.exports = {
-        mkSOAblocks: mkSOAblocks, mkODblock: mkODblock, mkIDblocks: mkIDblocks,
+        mkIDblocks: mkIDblocks, mkODblock: mkODblock, mkSOAblocks: mkSOAblocks, mkSurveyBlock: mkSurveyBlock,
         mkBoxTrial: mkBoxTrial, mkIDFbk: mkIDFbk, mkBox: mkBox,
         fruits: fruits, soa_assign: soa_assign, allBoxes: allBoxes, showSRO: showSRO,
         Fruit: Fruit, Dir: Dir, SO: SO, KEYS: KEYS

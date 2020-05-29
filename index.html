@@ -38,12 +38,12 @@ DDTL  =  SOADDtl['DD'];
 
 function trials(timeline){
   jsPsych.init({timeline: timeline,
-		display_element: jsp,
+                display_element: jsp,
       preload_images: ['static/images/box_closed.png',
          'static/images/box_open_sm.gif',
          Object.values(FRTS).map(f=>f.img)].flat(),
-		on_finish: function() {
-		    trials(timeline)}});
+                on_finish: function() {
+                    trials(timeline)}});
 }
 
 function showInstructions(inst){
@@ -67,11 +67,17 @@ function fdbktl(score) {
   f.trial_duration = 99999;
   trials([p, f]);
 }
+const shortSurveyTL = [mkFrtSurvey(boxes[0].S),
+                       mkConfSlider(),
+                       mkPairSurvey(boxes[0].S, boxes),
+                       mkConfSlider(),
+                       debrief_trial];
 
 function init(){
    if(DEBUG) console.log(showSRO(boxes).map(x=>x[0]+":"+x[1]+"-"+x[2]).join("\n"))
+   trials(surveyTL);
    //fdbktl(1);
-   showInstructions('OD_wf');
+   //showInstructions('OD_wf');
    //trials(fullTL);
    
 }
@@ -90,7 +96,7 @@ function init(){
       <a href="#" onclick="trials(ODTL)"> OD</a> |
       <a href="#" onclick="trials(SOATL)"> SOA</a> |
       <a href="#" onclick="trials(DDTL)"> DD</a> |
-      <a href="#" onclick="trials([mkFrtSurvey(boxes[0].S),mkConfSlider()])"> survey</a> |
+      <a href="#" onclick="trials(surveyTL)"> survey</a> |
       <a href="#" onclick="trials([debrief_trial])"> done</a> 
     </div>
     <div>ID feedback:

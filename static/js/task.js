@@ -73,6 +73,7 @@ var debrief_trial={
     }
 }
 
+surveyTL = mkSurveyBlock(boxes);
 
 var TIMELINE = [
   // 1. ID
@@ -88,17 +89,7 @@ var TIMELINE = [
   SOADDinst[blockorder[1]],
   SOADDtl[blockorder[1]],
   // 5. survey
+  mkInstruction(INSTRUCTIONS_DATA["survey"]),
+  surveyTL,
+  // 6. All Done. also handed by psiturk
   debrief_trial].flat()
-
-
-var get_info = {
-  type: 'survey-text',
-  questions: [
-    {prompt: "Your Name?", name: "name"}, 
-    {prompt: "Your Age?",  name:"age"}
-  ],
-  on_finish: function(data){
-      // add task version
-     data.responses= add_version(data.responses)
-  }
-};
