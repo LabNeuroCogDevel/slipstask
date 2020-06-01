@@ -12,6 +12,26 @@ var SETTINGS = {
     'ID_reps': 2,
     'ID_blocks': 8
 };
+/** for practice, show grid of what we have
+*/
+function cheat_chart(bxs) {
+    var table = "<table>";
+    for (var _i = 0, bxs_1 = bxs; _i < bxs_1.length; _i++) {
+        var b = bxs_1[_i];
+        var left = b.O.feedback((b.O.direction == Dir.Left) ? 1 : 0);
+        var right = b.O.feedback((b.O.direction == Dir.Right) ? 1 : 0);
+        table +=
+            "<tr>" +
+                "<td>" + left + "</td>" +
+                "<td><font size=30>←</font></td>" +
+                "<td>" + b.S.render(false) + "</td>" +
+                "<td><font size=30>→</font></td>" +
+                "<td>" + right + "</td>" +
+                "</tr>";
+    }
+    table += "</table>";
+    return (table);
+}
 /** generate boxes
    * @param frts dictionary fruitname=>Fruit
    * @param soa_boxes output of soa_assign (block index on which to be devalued)
@@ -59,7 +79,7 @@ function random_IDidx(n) {
 */
 // TODO: merge random_IDidx so we can add score
 function mkIDblocks(boxes) {
-    var fbk = mkIDFbk();
+    var fbk = mkIDFbk(FRTS);
     var IDidx = random_IDidx(boxes.length);
     var IDblocknum = -1; // -1 b/c this is not soa/dd
     var blksz = 12;
@@ -213,14 +233,14 @@ function mkBox(s, o, d, devalued_blocks) {
     return (box);
 }
 /** Make dictionary of all fruits */
-function fruits() {
+function fruits(input_fruits) {
     // build dictionary of fruits
-    var fruits_string = ["apple", "bananas", "cherries", "coconut",
+    var fruits_strings = input_fruits ? input_fruits : ["apple", "bananas", "cherries", "coconut",
         "grape", "kiwi", "lemon", "melon",
         "orange", "pear", "pineapple", "strawberry"];
     var fruits = {};
-    for (var _i = 0, fruits_string_1 = fruits_string; _i < fruits_string_1.length; _i++) {
-        var f = fruits_string_1[_i];
+    for (var _i = 0, fruits_strings_1 = fruits_strings; _i < fruits_strings_1.length; _i++) {
+        var f = fruits_strings_1[_i];
         fruits[f] = new Fruit(f);
     }
     return (fruits);
@@ -258,7 +278,7 @@ function mkBoxTrial(b, soa_block, block) {
 }
 /** Feedback for Train Trials
 */
-function mkIDFbk() {
+function mkIDFbk(frts) {
     return ({
         type: 'html-keyboard-response',
         //choices: ['z','m'],
@@ -270,7 +290,7 @@ function mkIDFbk() {
         stimulus: function (trial) {
             // setup win vs nowin feedback color and message
             var prev = jsPsych.data.get().last().values()[0];
-            var frt = FRTS[prev.outcome];
+            var frt = frts[prev.outcome];
             return (frt.feedback(prev.score));
         },
         //update

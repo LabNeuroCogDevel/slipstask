@@ -18,6 +18,28 @@ const SETTINGS = {
     //  8 blocks of 12 trials (96 total). each of the 6 fruit boxes seen 16 times.
     'ID_reps': 2,
     'ID_blocks': 8,
+};
+
+/** for practice, show grid of what we have 
+*/
+
+function cheat_chart(bxs: Box[]) {
+
+   var table = "<table>";
+   for(let b of bxs) {
+    const left : string = b.O.feedback((b.O.direction == Dir.Left)?1:0);
+    const right: string = b.O.feedback((b.O.direction == Dir.Right)?1:0);
+    table += 
+      "<tr>"+
+      "<td>"+left+"</td>"+
+      "<td><font size=30>←</font></td>"+
+      "<td>"+b.S.render(false) + "</td>" +
+      "<td><font size=30>→</font></td>"+
+      "<td>"+right+"</td>" +
+      "</tr>";
+   }
+   table += "</table>";
+   return(table)
 }
 
 /** generate boxes
@@ -69,7 +91,7 @@ function random_IDidx(n: number): number[] {
 */
 // TODO: merge random_IDidx so we can add score
 function mkIDblocks(boxes: Box[]) : PsychEvent[] {
-    const fbk = mkIDFbk();
+    const fbk = mkIDFbk(FRTS);
     const IDidx : number[] = random_IDidx(boxes.length);
     const IDblocknum : number = -1; // -1 b/c this is not soa/dd
     const blksz = 12;
@@ -234,13 +256,14 @@ function mkBox(s: Fruit, o: Fruit, d: Dir, devalued_blocks: number[]): Box {
 }
 
 /** Make dictionary of all fruits */
-function fruits(): { [key: string]: Fruit; } {
+function fruits(input_fruits? : string[]): { [key: string]: Fruit; } {
     // build dictionary of fruits
-    const fruits_string = ["apple", "bananas", "cherries", "coconut",
+    const fruits_strings=input_fruits?input_fruits:["apple", "bananas", "cherries", "coconut",
         "grape", "kiwi", "lemon", "melon",
         "orange", "pear", "pineapple", "strawberry"];
+
     var fruits: { [key: string]: Fruit; } = {}
-    for (const f of fruits_string) {
+    for (const f of fruits_strings) {
         fruits[f] = new Fruit(f);
     }
     return (fruits)
@@ -280,7 +303,7 @@ function mkBoxTrial(b: Box, soa_block: number, block: string): PsychEvent {
 }
 /** Feedback for Train Trials
 */
-function mkIDFbk(): PsychEvent {
+function mkIDFbk(frts:{[key: string]: Fruit; }): PsychEvent {
     return ({
         type: 'html-keyboard-response',
         //choices: ['z','m'],
@@ -292,7 +315,7 @@ function mkIDFbk(): PsychEvent {
         stimulus: function(trial) {
             // setup win vs nowin feedback color and message
             let prev = jsPsych.data.get().last().values()[0];
-	    let frt : Fruit = FRTS[prev.outcome]
+	    let frt : Fruit = frts[prev.outcome]
             return (frt.feedback(prev.score))
         },
         //update

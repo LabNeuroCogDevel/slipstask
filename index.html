@@ -63,7 +63,7 @@ function fdbktl(score) {
          data.score=score;
          data.outcome='apple' },
    };
-  var f=mkIDFbk();
+  var f=mkIDFbk(FRTS);
   f.trial_duration = 99999;
   trials([p, f]);
 }
@@ -88,7 +88,8 @@ function init(){
   <body onload="init()">
     <div> links:
       <a href="https://github.com/LabNeuroCogDevel/slipstask"> repo</a> |
-      <a href="https://ff-lncd.herokuapp.com/">heroku</a>
+      <a href="https://ff-lncd.herokuapp.com/">heroku</a> |
+      <a href="practice.html">practice</a> |
     </div>
     <div> trials:
       <a href="#" onclick="trials(TIMELINE)"> fulltask </a> |

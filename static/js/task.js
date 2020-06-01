@@ -7,6 +7,7 @@
 // [{fruitname => Fruits(render(), side, soa devalue indexes)}, {...}, ...]
 var FRTS = fruits(); // boxes side effects will change values inside here
 
+
 // 9 blocks of 6 boxes each repeated 3 times. 2 devalued per block
 // devaule for on Slips Of Action and Discrimination Devaluation 
 const soa_boxes = soa_assign(9, 6, 3, 2);
