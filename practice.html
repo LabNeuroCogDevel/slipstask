@@ -29,28 +29,44 @@ see https://labneurocogdevel.github.io/slipstask
  #jsp { width: 49%;}
  #sidebar { transform: scale(.5); position: absolute; top:-100px;right:100px;width:40%; height:90%;}
  td {text-align:center;}
+ .taskconainer{ padding-top:40px; }
 </style>
 
     <script type="text/javascript">
 DEBUG=true;
 
 
-var p_imgs = fruits(["peanut","avocado","onion","potato","mushroom","leafygreen","hotpepper","eggplant","corn","cucumber","carrot","broccoli"]);
+const p_names = [
+  "peanut","avocado","onion","potato",
+  "mushroom","leafygreen","hotpepper", "eggplant",
+  "corn","cucumber","carrot","broccoli"]
+var p_imgs = fruits(p_names);
 // const practice_soa = soa_assign(1,6,1,1);
 // const p_boxes = allBoxes(p_imgs, practice_soa);
 /* hard code practice boxes */
 const p_boxes = [
     mkBox(p_imgs['peanut'],p_imgs['avocado'], 'Left', [0]),
-    mkBox(p_imgs['onion'],p_imgs['potato'], 'Left',[]),
+    mkBox(p_imgs['onion'],p_imgs['potato'], 'Left',[1]),
     mkBox(p_imgs['mushroom'],p_imgs['leafygreen'],'Left', []),
     mkBox(p_imgs['hotpepper'],p_imgs['eggplant'], 'Right',[]),
-    mkBox(p_imgs['corn'],p_imgs['cucumber'], 'Right',[]),
+    mkBox(p_imgs['corn'],p_imgs['cucumber'], 'Right',[1]),
     mkBox(p_imgs['carrot'],p_imgs['broccoli'],'Right', [0]),
 ];
 
+var soagrid = mkSOAgrid(Object.values(p_imgs), 0, SO.Outcome);
+soagrid['choices'] = jsPsych.ANY_KEYS;
+soagrid['trial_duration'] = null;
+soagrid['prompt'] = "push any key when ready <br>"+
+                   "<small>in the actual taks you will only have 5 seconds<br>"+
+                   "practice hint: no avacado means no peanut; no broccoli means no carrot</small>";
+var ddgrid = mkSOAgrid(Object.values(p_imgs), 1, SO.Stim);
+ddgrid['choices'] = jsPsych.ANY_KEYS;
+ddgrid['trial_duration'] = null;
+ddgrid['prompt'] = "push any key when ready <br>"+
+                   "<small>in the actual taks you will only have 5 seconds</small>";
 
 const prac = {
-    // 1. Instructed Discrimination. (6 boxes * 2 reps)*8 blocks 
+    // 1. Instructed Discrimination
    'ID' : [mkBoxTrial(p_boxes[0], -1,'IDprac1'),
            mkIDFbk(p_imgs),
            mkBoxTrial(p_boxes[5], -1,'IDprac2'),
@@ -59,31 +75,83 @@ const prac = {
            mkIDFbk(p_imgs),
            mkBoxTrial(p_boxes[4], -1,'IDprac4'),
            mkIDFbk(p_imgs),
+           mkScoreFbk(4)
    ],
    // 2. OD
-   'OD' : [mkODTrial(p_boxes[1].O, p_boxes[5].O), mkODTrial(p_boxes[4].O, p_boxes[1].O), mkScoreFbk(2)],
-   // 3. SOA - slips of action 9 blocks w/ 12 trials each (2 outcomes per bloc), 108 trials total. (N.B. `6C2 == 15`)
-   'SOA': mkSOAblocks(p_imgs, p_boxes, SO.Outcome,  1, 1),
+   'OD' : [
+       mkODTrial(p_boxes[1].O, p_boxes[5].O),
+       mkODTrial(p_boxes[4].O, p_boxes[1].O),
+       mkScoreFbk(2)
+   ],
+   // 3. SOA - slips of action 
+   'SOA': [
+     soagrid,
+     mkBoxTrial(p_boxes[0], 0, "SOAprac1_nopush"),
+     mkBoxTrial(p_boxes[1], 0, "SOAprac2_push"),
+     mkBoxTrial(p_boxes[5], 0, "SOAprac3_nopush"),
+     mkBoxTrial(p_boxes[4], 0, "SOAprac4_push"),
+     mkScoreFbk(2),
+   ],
    // 4. DD - devalued discrimination */
-   'DD' : mkSOAblocks(p_imgs, p_boxes, SO.Stim,    1, 1)
+   'DD' : [
+     ddgrid,
+     mkBoxTrial(p_boxes[4], 1, "SOAprac1_push"),
+     mkBoxTrial(p_boxes[1], 1, "SOAprac2_push"),
+     mkBoxTrial(p_boxes[0], 1, "SOAprac3_nopush"),
+     mkBoxTrial(p_boxes[5], 1, "SOAprac4_nopush"),
+     mkScoreFbk(2),
+  ],
 };
 
+const PHASES = ['ID','OD','SOA','DD'];
+const MINPNTS = {'ID':4, 'OD':2, 'SOA': 2, 'DD': 2};
 
-function trials(timeline){
+function mkKeyTrial(stim) {
+    return ({
+	    type: 'html-keyboard-response',
+	    stimulus: stim,
+	    prompt:"<small>push any key to continue</small>",
+            choices: jsPsych.ANY_KEYS,
+	})
+}
+
+var goodjob = mkKeyTrial('<h2>Good Job! That was perfect</h2>');
+      
+
+function gotoPhase(phase, again){
+   const instr = INSTRUCTIONS_DATA[phase+"_wf"];
+   const inst_str = instr.join("<hr>");
+   $('#instructions').html(inst_str);
+   const showinstr = $('#show_instructions').prop('checked');
+   // include instructions if checked. otherwise jump right to it
+   var tl = showinstr?[mkInstruction(instr), prac[phase]].flat():prac[phase];
+   // if we didn't do well, start with a do over screen
+   if(again) tl = [ mkKeyTrial("<h2>Let's try again</h2>"), tl].flat();
+   
+   // good job if we get min points for this phase
    jsPsych.init({
-     timeline: timeline,
+     timeline: [{timeline: tl},
+		{timeline: [goodjob],
+		 conditional_function:function(){return(sum_points() >= MINPNTS[phase])}}
+     ],
      display_element: jsp,
      preload_images: ['static/images/box_closed.png',
          'static/images/box_open_sm.gif',
          Object.values(p_imgs).map(f=>f.img)].flat(),
-     on_finish: function() {
-                    trials(timeline)}});
-}
-
-function gotoPhase(phase){
-   const inst_str = phase!==null?INSTRUCTIONS_DATA[phase+"_wf"].join("<hr>"):"";
-   $("#instructions").html(inst_str);
-   trials(prac[phase]);
+     on_finish: function(data) {
+        if(sum_points() < MINPNTS[phase]) {
+            console.log('contine?', sum_points(), MINPNTS[phase]);
+	    gotoPhase(phase, true)
+	} else {
+	    nextphase=PHASES[PHASES.indexOf(phase)+1];
+	    // will fail if out of range. thats okay
+	    if(nextphase) {
+             gotoPhase(nextphase, false);
+	    } else {
+              $('#jsp').html('<div style="text-align:center"><h2> Ready for the real thing? </h2></div>');
+	    }
+	}
+     }});
 }
 
 function togglesidebar(){
@@ -95,7 +163,7 @@ function togglesidebar(){
 function init(){
   $("#cheat_chart").html(cheat_chart(p_boxes));
   $("#instructions").hide();
-  gotoPhase('ID');
+  gotoPhase(PHASES[0], false);
 }
     </script>
 
@@ -103,20 +171,24 @@ function init(){
 
   <body onload="init()">
      <div id="sidebar">
-        <a href="#" onclick="togglesidebar()"> cheat table</a>  |
-        <a href="#" onclick="togglesidebar()"> instructions</a> 
+        <h2><a href="#" onclick="togglesidebar()"> cheat table/instructions</a> </h2>
         <br>
        <div id="cheat_chart"> </div>
        <div id="instructions"> </div>
      </div>
      <div id="toc">
-      1:       <a href="#" onclick="gotoPhase('ID')">ID</a>,
-      2:       <a href="#" onclick="gotoPhase('OD')"> OD</a>,
-      3&amp;4: <a href="#" onclick="gotoPhase('SOA')">SOA</a>
-            or <a href="#" onclick="gotoPhase('DD')"> DD</a>.
-      <a href="#" onclick="showInstructions()">clear</a>.
+      1:       <a href="#" onclick="gotoPhase('ID',false)">ID</a>,
+      2:       <a href="#" onclick="gotoPhase('OD',false)"> OD</a>,
+      3&amp;4: <a href="#" onclick="gotoPhase('SOA',false)">SOA</a>
+            or <a href="#" onclick="gotoPhase('DD',false)"> DD</a>.
+
+      show instructions?
+       <input type=checkbox name=show_instructions id="show_instructions" value=1 \>
+      cheat table? 
+       <input type=checkbox name=cheat onchange='$("#sidebar").fadeToggle(0);' value=1 \>
      </div>
-    <div>
+
+    <div class="taskconainer">
      <div id="jsp"> </div>
     </div>
   </body>
