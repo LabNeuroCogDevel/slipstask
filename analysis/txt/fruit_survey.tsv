@@ -1,4 +1,4 @@
-subjID	version	survey_type	survey_prompt	correct	response	survey_chose	survey_rt	conf_rt
+subjID	version	survey_type	survey_prompt	correct	confidence	survey_chose	survey_rt	conf_rt
 dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SR	melon	true	100	Right	1690.0000000002328	5451
 dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SR	cherries	true	100	Left	2121.000000000233	2691.000000000233
 dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SR	bananas	true	100	Left	1258	3292.000000000233

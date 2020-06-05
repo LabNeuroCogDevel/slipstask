@@ -34,7 +34,7 @@ jq -r '
 
 # memory survey about fruit side and assocation
 columns="survey_type survey_prompt correct response survey_chose survey_rt conf_rt"
-astsv $columns > $outdir/fruit_survey.tsv
+astsv $columns|sed s/response/confidence/ > $outdir/fruit_survey.tsv
 jq -r '
   .[0] as $v | .[1] as $r | .[1].data[] | .trialdata |
   select(.conf_rt != null) |
