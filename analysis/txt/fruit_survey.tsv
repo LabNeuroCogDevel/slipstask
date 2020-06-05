@@ -1,37 +1,37 @@
-subjID	version	survey_type	survey_prompt	correct	conf	survey_choose	survey_rt
-dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SR	melon	true			1690.0000000002328
-dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SR	cherries	true			2121.000000000233
-dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SR	bananas	true			1258
-dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SR	pear	true			1039
-dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SR	lemon	true			1074
-dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SR	apple	true			1064.0000000002328
-dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	OR	pineapple	true			3977
-dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	OR	strawberry	true			3235
-dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	OR	grape	true			2392
-dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	OR	coconut	true			1231
-dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	OR	orange	false			5981
-dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	OR	kiwi	true			1196
-dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SO	cherries	true			8273.000000000233
-dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SO	pear	true			3795
-dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SO	apple	true			1283
-dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SO	melon	true			1458
-dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SO	lemon	true			2218.999999999767
-dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SO	bananas	true			1734
-will20200529a	.97-20200529-survey	SR	coconut	true			2654
-will20200529a	.97-20200529-survey	SR	lemon	false			29064
-will20200529a	.97-20200529-survey	SR	strawberry	true			1372
-will20200529a	.97-20200529-survey	SR	apple	true			1165
-will20200529a	.97-20200529-survey	SR	grape	false			1332
-will20200529a	.97-20200529-survey	SR	cherries	true			1901
-will20200529a	.97-20200529-survey	OR	pear	true			7354
-will20200529a	.97-20200529-survey	OR	melon	false			9347
-will20200529a	.97-20200529-survey	OR	kiwi	true			1078
-will20200529a	.97-20200529-survey	OR	pineapple	true			19317
-will20200529a	.97-20200529-survey	OR	orange	false			1067
-will20200529a	.97-20200529-survey	OR	bananas	true			995
-will20200529a	.97-20200529-survey	SO	coconut	false			2940
-will20200529a	.97-20200529-survey	SO	cherries	false			924
-will20200529a	.97-20200529-survey	SO	grape	false			588
-will20200529a	.97-20200529-survey	SO	strawberry	true			13344
-will20200529a	.97-20200529-survey	SO	apple	true			2901
-will20200529a	.97-20200529-survey	SO	lemon	true			5173
+subjID	version	survey_type	survey_prompt	correct	response	survey_chose	survey_rt	conf_rt
+dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SR	melon	true	100	Right	1690.0000000002328	5451
+dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SR	cherries	true	100	Left	2121.000000000233	2691.000000000233
+dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SR	bananas	true	100	Left	1258	3292.000000000233
+dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SR	pear	true	100	Left	1039	2825
+dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SR	lemon	true	100	Right	1074	3063
+dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SR	apple	true	100	Right	1064.0000000002328	2690.000000000233
+dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	OR	pineapple	true	100	Right	3977	3974
+dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	OR	strawberry	true	100	Left	3235	3170
+dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	OR	grape	true	100	Left	2392	2872
+dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	OR	coconut	true	100	Right	1231	2591
+dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	OR	orange	false	66	Right	5981	3183
+dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	OR	kiwi	true	100	Right	1196	2466
+dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SO	cherries	true	65	orange	8273.000000000233	3197
+dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SO	pear	true	88	grape	3795	2588
+dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SO	apple	true	100	coconut	1283	2153
+dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SO	melon	true	100	pineapple	1458	2574
+dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SO	lemon	true	85	kiwi	2218.999999999767	2950.999999999767
+dbbf8220893d497d403bb9cdf49db7a4	.98-20200529-survey_fixmax	SO	bananas	true	100	strawberry	1734	2515
+will20200529a	.97-20200529-survey	SR	coconut	true	100	Left	2654	4704
+will20200529a	.97-20200529-survey	SR	lemon	false	100	Right	29064	2154
+will20200529a	.97-20200529-survey	SR	strawberry	true	0	Left	1372	3395
+will20200529a	.97-20200529-survey	SR	apple	true	50	Right	1165	791
+will20200529a	.97-20200529-survey	SR	grape	false	0	Left	1332	2562
+will20200529a	.97-20200529-survey	SR	cherries	true	77	Right	1901	3747
+will20200529a	.97-20200529-survey	OR	pear	true	100	Right	7354	3261
+will20200529a	.97-20200529-survey	OR	melon	false	100	Right	9347	2413
+will20200529a	.97-20200529-survey	OR	kiwi	true	13	Left	1078	3407
+will20200529a	.97-20200529-survey	OR	pineapple	true	65	Right	19317	1857
+will20200529a	.97-20200529-survey	OR	orange	false	69	Left	1067	22253
+will20200529a	.97-20200529-survey	OR	bananas	true	27	Left	995	1378
+will20200529a	.97-20200529-survey	SO	coconut	false	76	pear	2940	1514
+will20200529a	.97-20200529-survey	SO	cherries	false	39	pineapple	924	1441
+will20200529a	.97-20200529-survey	SO	grape	false	16	bananas	588	2014
+will20200529a	.97-20200529-survey	SO	strawberry	true	100	kiwi	13344	2693
+will20200529a	.97-20200529-survey	SO	apple	true	100	pineapple	2901	2729
+will20200529a	.97-20200529-survey	SO	lemon	true	100	melon	5173	2207

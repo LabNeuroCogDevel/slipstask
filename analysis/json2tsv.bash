@@ -33,11 +33,11 @@ jq -r '
   @tsv' < "$1" >> "$outdir/task.tsv"
 
 # memory survey about fruit side and assocation
-columns="survey_type survey_prompt correct conf survey_choose survey_rt"
+columns="survey_type survey_prompt correct response survey_chose survey_rt conf_rt"
 astsv $columns > $outdir/fruit_survey.tsv
 jq -r '
   .[0] as $v | .[1] as $r | .[1].data[] | .trialdata |
-  select(.survey_rt != null) |
+  select(.conf_rt != null) |
   [$r.workerId, $v, '"$(asjq_objs $columns)"'] |
   @tsv' < "$1" >> $outdir/fruit_survey.tsv
 
