@@ -10,6 +10,7 @@ analysis/txt/res.json: always
 
 analysis/txt/task.tsv: analysis/txt/res.json
 	analysis/json2tsv.bash $<
+	git diff|sed -n s/^\+[^+]//p|cut -f1,3|sort |uniq -c|sort -k2,1|cut -f1|uniq -c|sort -k2n|egrep '\w{31}$$'
 
 test: tests/.res.tap
 tests/.res.tap: $(wildcard tests/*js)
