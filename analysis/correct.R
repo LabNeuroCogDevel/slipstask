@@ -10,6 +10,7 @@ theme_set(theme_cowplot())
 
 surv <- read.table('txt/fruit_survey.tsv',header=T)
 age  <- read.csv('txt/ages.csv')
+# TODO: missing ages for some
 setdiff(surv$subjID, age$subjID)
 
 d <-
