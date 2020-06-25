@@ -8,9 +8,12 @@ theme_set(theme_cowplot())
 #   read in fruit and side pairs
 
 
+surv <- read.table('txt/fruit_survey.tsv',header=T)
+age  <- read.csv('txt/ages.csv')
+setdiff(surv$subjID, age$subjID)
+
 d <-
-   read.csv('txt/ages.csv') %>%
-   merge(read.table('txt/fruit_survey.tsv',header=T)) %>%
+   merge(age,surv) %>%
    mutate(correct=correct=='true') %>%
    group_by(subjID, age, survey_type) %>%
    summarise(cor=sum(correct)/n(), conf=mean(confidence))
