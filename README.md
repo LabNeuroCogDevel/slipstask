@@ -14,6 +14,7 @@ Port of *Simplified Fabulous Fruit Game*, Sanne de Wit, 2019. Developed for remo
 ### Javscript
 https://labneurocogdevel.github.io/slipstask/
 
+[<img src="./outline.svg?raw=True" height=400>](./outline.svg)
 
 ### 2018 ENEURO
 
