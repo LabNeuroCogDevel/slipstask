@@ -1,0 +1,12 @@
+avocado
+broccoli
+carrot
+corn
+cucumber
+eggplant
+hotpepper
+leafygreen
+mushroom
+onion
+peanut
+potato
