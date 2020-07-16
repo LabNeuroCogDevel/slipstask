@@ -37,7 +37,7 @@ class Fruit:
 
     def __repr__(self) -> str:
         return f"{self.name}: {self.SO} {self.box.Direction} " +\
-                ",".join(["%d"%x for x in self.box.devalued_blocks[BlockType.SOA]]) 
+                ",".join(["%d"%x for x in self.box.devalued_blocks[BlockType.SOA]])
 
 
 @autofields(check_types=True)
@@ -55,6 +55,38 @@ class Box:
         self.Outcome.SO = SO.Outcome
         self.Outcome.pair = self.Stim
         self.Stim.box = self.Outcome.box = self
+
+    def score(self, btype: BlockType, bnum: int, choice: Direction):
+        """get score for box
+        @param btype - blocktype
+        @param bnum - block number
+        @param choice - direction participant choose
+        @return score (-1,0,1)
+
+        >>> bx = Box(Fruit('s'),Fruit('o'), Direction.Left, {BlockType.SOA: [1]})
+        >>> bx.score(BlockType.ID, 1, Direction.Left)
+        1
+        >>> bx.score(BlockType.ID, 1, Direction.Right)
+        0
+        >>> bx.score(BlockType.SOA, 1, Direction.Right)
+        0
+        >>> bx.score(BlockType.SOA, 1, Direction.Left)
+        -1
+        >>> bx.score(BlockType.SOA, 3, Direction.Left)
+        1
+        """
+        if btype in [BlockType.DD, BlockType.SOA] and bnum in self.devalued_blocks[btype]:
+            if self.Direction == choice:
+                return -1
+            else:
+                return 0
+        else:
+            if self.Direction == choice:
+                return 1
+            else:
+                return 0
+
+
 
     def __repr__(self) -> str:
         return f"{self.Stim.name} -> {self.Outcome.name} ({self.Direction})"
@@ -187,10 +219,55 @@ class FabFruitTask:
         if devalue:
             self.X.draw()
 
+    def trial(self, btype: BlockType, block_num: int, show_boxes: List[int], onset: int = 0, deval_idx: int = 1):
+        """run a trial, flipping at onset
+        @param btype - block type: what to show, how to score
+        @param show_boxes - what box(es) to show
+        @param onset - what to show it. 0 is now
+        @param deval_idx - for DD 0 to deval top, 1 to devalue bottom (TODO check)
+        @param block_num - what block are we on
+        """
+
+        # check things make sense
+        if (btype == BlockType.OD and len(show_boxes) != 2) or \
+           (btype != BlockType.OD and len(show_boxes) != 1):
+            raise Exception('trail got wrong length (%d) of boxes for block (%s)' %
+                            (len(show_boxes), btype.name))
+
+        # what kind of box do we use?
+        # always closed
+        #box_is = "open" if btype in [BlockType.DD] else "closed"
+
+        # for most this is just drawing the box centered
+        # but if we have two boxes to draw, align vert. (block = OD)
+        for i, bn in enumerate(show_boxes):
+            pos = i - (2 if len(show_boxes) > 1 else 0)  # 0 or -2, -1
+            print(pos)
+            self.draw_box("closed", bn, pos, deval_idx == i)
+
+        # START
+        self.win.flip()
+
+        # TODO wait for response
+        # get response
+        resp = Direction.Left
+        bidx = 0
+
+        # if DD turn 1 into 0 or 0 into 1
+        if btype == BlockType.OD:
+            bidx = (deval_idx + 1) % 2
+
+        this_box = self.boxes[show_boxes[bidx]]
+        score = this_box.score(btype, block_num, resp)
+        print(score)
+
+
+
 
 if __name__ == "__main__":
     win = visual.Window([800, 600])
     task = FabFruitTask(win)
+
     task.draw_box('open', 1)
     task.win.flip()
     task.draw_box('closed', 2, -2, False)
@@ -205,3 +282,7 @@ if __name__ == "__main__":
     task.win.flip()
     task.draw_box('open', 1, 1, True)
     task.win.flip()
+    
+    task.trial(BlockType.ID, 1, [2])
+    task.trial(BlockType.DD, 1, [3])
+    task.trial(BlockType.OD, 1, [2, 3], deval_idx=0)
