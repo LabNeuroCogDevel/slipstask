@@ -7,15 +7,22 @@ import pandas as pd
 from autoclass import autoclass
 from pyfields import field, autofields
 from psychopy import visual, core
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, TypedDict
 from enum import Enum
 
 # Types
 Direction = Enum('Direction', 'Left Right None')
 SO = Enum('SO', 'Stim Outcome')
-BlockType = Enum('BlockType', 'ID OD SOA DD')
+PhaseType = Enum('PhaseType', 'ID OD SOA DD')
+TrialType = Enum('TrialType', 'GRID SHOW FBK ITI SCORE')
 Deval2DList = List[List[int]]
-DevalDict = Dict[BlockType, List[int]]
+DevalDict = Dict[PhaseType, List[int]]
+# quick def of e.g. {'blocks': 3, 'reps': 2}
+class PhaseSettings(TypedDict):
+    blocks: int; reps: int; dur: float
+    itis: List[float]
+    score: float; fbk: float; grid: float
+PhaseDict = Dict[PhaseType, PhaseSettings]
 # prototype for typing
 class Fruit: pass
 class Box: pass
@@ -37,7 +44,7 @@ class Fruit:
 
     def __repr__(self) -> str:
         return f"{self.name}: {self.SO} {self.box.Direction} " +\
-                ",".join(["%d"%x for x in self.box.devalued_blocks[BlockType.SOA]])
+                ",".join(["%d" % x for x in self.box.devalued_blocks[PhaseType.SOA]])
 
 
 @autofields(check_types=True)
@@ -56,26 +63,26 @@ class Box:
         self.Outcome.pair = self.Stim
         self.Stim.box = self.Outcome.box = self
 
-    def score(self, btype: BlockType, bnum: int, choice: Direction):
+    def score(self, btype: PhaseType, bnum: int, choice: Direction):
         """get score for box
         @param btype - blocktype
         @param bnum - block number
         @param choice - direction participant choose
         @return score (-1,0,1)
 
-        >>> bx = Box(Fruit('s'),Fruit('o'), Direction.Left, {BlockType.SOA: [1]})
-        >>> bx.score(BlockType.ID, 1, Direction.Left)
+        >>> bx = Box(Fruit('s'),Fruit('o'), Direction.Left, {PhaseType.SOA: [1]})
+        >>> bx.score(PhaseType.ID, 1, Direction.Left)
         1
-        >>> bx.score(BlockType.ID, 1, Direction.Right)
+        >>> bx.score(PhaseType.ID, 1, Direction.Right)
         0
-        >>> bx.score(BlockType.SOA, 1, Direction.Right)
+        >>> bx.score(PhaseType.SOA, 1, Direction.Right)
         0
-        >>> bx.score(BlockType.SOA, 1, Direction.Left)
+        >>> bx.score(PhaseType.SOA, 1, Direction.Left)
         -1
-        >>> bx.score(BlockType.SOA, 3, Direction.Left)
+        >>> bx.score(PhaseType.SOA, 3, Direction.Left)
         1
         """
-        if btype in [BlockType.DD, BlockType.SOA] and bnum in self.devalued_blocks[btype]:
+        if btype in [PhaseType.DD, PhaseType.SOA] and bnum in self.devalued_blocks[btype]:
             if self.Direction == choice:
                 return -1
             else:
@@ -92,14 +99,14 @@ class Box:
         return f"{self.Stim.name} -> {self.Outcome.name} ({self.Direction})"
 
 
-def devalued_blocks(nblocks: int = 9, nbox: int = 6, reps: int = 3, choose: int = 2) -> Deval2DList:
+def devalued_blocks(nblocks: int = 9, reps: int = 3, nbox: int = 6, choose: int = 2) -> Deval2DList:
     """
     generate assignments for SOA - slips of action
     9 blocks w/ 12 trials each (2 outcomes per bloc devalued), 108 trials total. (N.B. `6C2 == 15`)
     each outcome devalued 3 times (36 devalued, 72 valued)
     * @param nblocks - number of blocks where 2/6 are randomly devalued (9)
-    * @param nbox - number of boxes (6)
     * @param reps - number of repeats for each box (3)
+    * @param nbox - number of boxes (6)
     * @param choose - number of blocks per box (2)
     * @return per box devalued indexes e.g. [[0,5], [1,3], [0,1], ...] = first box devalued at block 0 and 5, 2nd @ 1&3, ...
     """
@@ -121,7 +128,7 @@ def devalued_blocks(nblocks: int = 9, nbox: int = 6, reps: int = 3, choose: int 
     # if we had a bad draw, we need to rerun
     # python wil stop from recursing forever
     if(need_redo):
-        bx_deval_on = devalued_blocks(nblocks, nbox, reps, choose)
+        bx_deval_on = devalued_blocks(nblocks, reps, nbox, choose)
     return bx_deval_on
 
 
@@ -146,7 +153,7 @@ def make_boxes(fruit_names: List[str], devalued_at: Deval2DList,
     'Outcome'
     >>> [len(bxs), len(frts)]
     [2, 4]
-    >>> bxs[0].devalued_blocks[BlockType.SOA]
+    >>> bxs[0].devalued_blocks[PhaseType.SOA]
     [1, 2]
     """
 
@@ -163,8 +170,8 @@ def make_boxes(fruit_names: List[str], devalued_at: Deval2DList,
         boxes.append(Box(Stim=fruits[i],
                          Outcome=fruits[i+nboxes],
                          Direction=sides[i],
-                         devalued_blocks={BlockType.SOA: devalued_at[i],
-                                          BlockType.DD: devalued_at[i]}))
+                         devalued_blocks={PhaseType.SOA: devalued_at[i],
+                                          PhaseType.DD: devalued_at[i]}))
         boxes[i].updateFruit()
 
     return (fruits, boxes)
@@ -219,7 +226,7 @@ class FabFruitTask:
         if devalue:
             self.X.draw()
 
-    def trial(self, btype: BlockType, block_num: int, show_boxes: List[int], onset: int = 0, deval_idx: int = 1):
+    def trial(self, btype: PhaseType, block_num: int, show_boxes: List[int], onset: int = 0, deval_idx: int = 1):
         """run a trial, flipping at onset
         @param btype - block type: what to show, how to score
         @param show_boxes - what box(es) to show
@@ -229,14 +236,10 @@ class FabFruitTask:
         """
 
         # check things make sense
-        if (btype == BlockType.OD and len(show_boxes) != 2) or \
-           (btype != BlockType.OD and len(show_boxes) != 1):
+        if (btype == PhaseType.OD and len(show_boxes) != 2) or \
+           (btype != PhaseType.OD and len(show_boxes) != 1):
             raise Exception('trail got wrong length (%d) of boxes for block (%s)' %
                             (len(show_boxes), btype.name))
-
-        # what kind of box do we use?
-        # always closed
-        #box_is = "open" if btype in [BlockType.DD] else "closed"
 
         # for most this is just drawing the box centered
         # but if we have two boxes to draw, align vert. (block = OD)
@@ -254,7 +257,7 @@ class FabFruitTask:
         bidx = 0
 
         # if DD turn 1 into 0 or 0 into 1
-        if btype == BlockType.OD:
+        if btype == PhaseType.OD:
             bidx = (deval_idx + 1) % 2
 
         this_box = self.boxes[show_boxes[bidx]]
@@ -262,6 +265,189 @@ class FabFruitTask:
         print(score)
 
 
+def trial_dict(phase: PhaseType, ttype: TrialType,
+               blocknum: int, trial: int,
+               LR1: str,
+               deval: bool = False, LR2: str = '',
+               onset: float = 0, dur: float = 1):
+    """provide defaults for write_timing"""
+    d = locals()
+    # remove Enum
+    d['phase'] = d['phase'].name
+    d['ttype'] = d['ttype'].name
+    # set end
+    d['end'] = d['onset'] + d['dur']
+    return(d)
+
+
+def OD_timing(settings: PhaseSettings, nbox: int = 6, seed=None):
+    """ timing for OD trials
+    deval column is bool. refers to top if OD
+
+    expect only 1 block with 36 trials.
+    3^2 * 2 (R on Top/L on Top) * 2 (top devaued, bottom devalued)
+    >>> d = pd.DataFrame(OD_timing({'itis': [1], 'dur': 1, 'score': 2}))
+
+    each side with top devalued(or not) is evenly distributed
+
+    >>> d[d.ttype == 'SHOW'].assign(LR=lambda x: [y[0] for y in x.LR1]).groupby(['LR','deval']).agg({'LR':len})
+              LR
+    LR deval    
+    L  False   9
+       True    9
+    R  False   9
+       True    9
+    """
+    if seed is None:
+        seed = np.random.default_rng()
+    # L0 to R2 (3 of each side)
+    # ## want equal parts T,F for R on top and L on top
+    sides = {s: [f'{s}{d}' for d in range(nbox//2)] for s in ['L', 'R']}
+    binfo = [[d, [R, L] if Lfirst else [L, R]]
+             for L in sides['L']
+             for R in sides['R']
+             for d in [True, False]
+             for Lfirst in [True, False]]
+    seed.shuffle(binfo)
+
+    trls = []
+    itis = settings['itis'] * (len(binfo)//len(settings['itis']))
+    onset = 0
+    for i in range(len(binfo)):  # 36 trls
+        LR = binfo[i][1]
+        deval_top = binfo[i][0]
+        # SHOW
+        trls.append(trial_dict(PhaseType.OD, TrialType.SHOW, 1,  i, LR1=LR[0],
+                               LR2=LR[1],
+                               deval=deval_top,
+                               onset=onset,
+                               dur=settings['dur']))
+        # ITI
+        trls.append(trial_dict(PhaseType.OD, TrialType.ITI, 1, i, LR[0],
+                               LR2=LR[1],
+                               onset=trls[-1]['end'],
+                               dur=itis[i]))
+        onset = trls[-1]['end']
+
+    # SCORE
+    trls.append(trial_dict(PhaseType.OD, TrialType.SCORE, 1, -1, '',
+                           onset=trls[-1]['end'],
+                           dur=settings['score']))
+
+    return trls
+
+
+def block_timing(ptype, settings, nbox: int = 6, seed=None):
+    """ generate timing for most blocks (not OD)
+    >>> settings = {'blocks': 9, 'reps': 3, 'dur': 1,\
+                    'itis': [1, 1, 1, 2, 2, 5], 'score': 1, 'grid': 5}
+    >>> d = pd.DataFrame(block_timing(PhaseType.SOA, settings))
+    """
+    if seed is None:
+        seed = np.random.default_rng()
+
+    devalued_at = [[]]*settings['blocks']
+    if ptype in [PhaseType.DD, PhaseType.SOA]:
+        devalued_at = devalued_blocks(settings['blocks'], settings['reps'], nbox)
+
+    # assume we have equal number of left and right opening boxes
+    # ## sizes
+    n_per_side = nbox//2
+    sides = [f'{s}{n}' for s in ['L', 'R'] for n in range(n_per_side)]
+    ntrl_in_block = settings['reps']*nbox
+
+    # ## initialize
+    # each box is shown once for each repetition
+    trls = []
+    # repeats of L1 L2 L3 R1 R2 R3
+    fruits = sides * settings['reps']
+    # maybe make these long enought to span blocks?
+    itis = settings['itis'] * (ntrl_in_block//len(settings['itis']))
+
+    # start at time zero
+    onset = 0
+    for bnum in range(settings['blocks']):
+
+        # mixup the order of things
+        seed.shuffle(itis)
+        seed.shuffle(fruits)
+        # TODO: if  SOA or DD
+        LR12 = [i for i, x in enumerate(devalued_at) if bnum in x]
+        if len(LR12) == 2:
+            trls.append(trial_dict(ptype, TrialType.GRID, bnum,  -1,
+                                   LR1=LR12[0],
+                                   LR2=LR12[1],
+                                   onset=0,
+                                   dur=settings['grid']))
+            onset += settings['grid']
+
+        # generic SHOW, ITI, end of block SCORE
+        for tnum in range(ntrl_in_block):
+            LR1 = fruits[tnum]
+            side_devalued = devalued_at[sides.index(LR1)]
+            # Show box(es)
+            trls.append(trial_dict(ptype, TrialType.SHOW, bnum,  tnum, fruits[tnum],
+                        deval=bnum in side_devalued,
+                        onset=onset,
+                        dur=settings['dur']))
+
+            onset = trls[-1]['end']
+
+            # FBK (only for ID)
+            if ptype == PhaseType.ID:
+                trls.append(trial_dict(ptype, TrialType.FBK, bnum, tnum, fruits[tnum],
+                            onset=onset,
+                            dur=settings['fbk']))
+                onset = trls[-1]['end']
+
+            # ITI
+            trls.append(trial_dict(ptype, TrialType.ITI, bnum, tnum, fruits[tnum],
+                        onset=onset,
+                        dur=itis[tnum]))
+            onset = trls[-1]['end']
+
+        # SCORE
+        # TODO: set duration
+        trls.append(trial_dict(ptype, TrialType.SCORE, bnum, -1, '',
+                    onset=onset, dur=settings['score']))
+    return trls
+
+
+def write_timings(phase: PhaseDict, fname: str = None, nbox: int = 6, seed=None):
+    """
+    >>> phases = {\
+         PhaseType.SOA:\
+          {'blocks': 9, 'reps': 3, 'dur': 1, 'itis': [1, 1, 1, 2, 2, 5], 'score': 1, 'grid': 5},\
+         PhaseType.OD:\
+          {'itis': [1], 'dur': 1, 'score': 2}\
+       }
+    >>> d = write_timings(phases)
+    >>> d[d.ttype == 'SHOW'].groupby('phase').agg({'phase':len})
+           phase
+    phase       
+    OD        36
+    SOA      162
+    """
+
+    all_trials = []
+    for ptype, settings in phase.items():
+        if(ptype == PhaseType.OD):
+            phase_trials = OD_timing(settings, nbox, seed)
+        else:
+            phase_trials = block_timing(ptype, settings, nbox, seed)
+        all_trials.extend(phase_trials)
+    d = pd.DataFrame(all_trials)
+
+    if fname:
+        d.to_csv(fname)
+
+    return d
+
+
+def read_timing(fname: str):
+    """ timing input
+    blocktype bnum trl LR1 direction isdeval LR2 onset"""
+    d = pd.read_csv(fname)
 
 
 if __name__ == "__main__":
@@ -282,7 +468,9 @@ if __name__ == "__main__":
     task.win.flip()
     task.draw_box('open', 1, 1, True)
     task.win.flip()
-    
-    task.trial(BlockType.ID, 1, [2])
-    task.trial(BlockType.DD, 1, [3])
-    task.trial(BlockType.OD, 1, [2, 3], deval_idx=0)
+
+    task.trial(TrialType.ID, 1, [2])
+    task.trial(TrialType.DD, 1, [3])
+    task.trial(TrialType.SOA, 1, [3])
+    task.trial(TrialType.OD, 1, [2, 3], deval_idx=0)  # top deval
+    task.trial(TrialType.OD, 1, [2, 3], deval_idx=1)  # bottom deval
