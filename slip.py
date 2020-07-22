@@ -4,32 +4,38 @@
 
 import numpy as np
 import pandas as pd
-from autoclass import autoclass
 from pyfields import field, autofields
-from psychopy import visual, core
-from typing import List, Dict, Tuple, TypedDict, Union
+from psychopy import visual, core, event
+from psychopy.data import TrialHandler
+from typing import List, Dict, Tuple, TypedDict, Optional
 from enum import Enum
+import lncdtasks
 
 # Types
 Direction = Enum('Direction', 'Left Right None')
 SO = Enum('SO', 'Stim Outcome')
 PhaseType = Enum('PhaseType', 'ID OD SOA DD')
 TrialType = Enum('TrialType', 'GRID SHOW FBK ITI SCORE')
+TaskTime = float
+TaskDur = float
 Deval2DList = List[List[int]]
 DevalDict = Dict[PhaseType, List[int]]
 TrialDict = TypedDict("TrialDict", {
                       'phase': PhaseType, 'ttype': TrialType,
                       'blocknum': int, 'trial': int, 'LR1': str, 'deval': bool,
-                      'LR2': str, 'onset': float, 'dur': float, 'end': int})
+                      'LR2': str, 'onset': TaskTime, 'dur': TaskDur, 'end': int})
 # quick def of e.g. {'blocks': 3, 'reps': 2}
 PhaseSettings = TypedDict("PhaseSettings", {
-                          'blocks': int, 'reps': int, 'dur': float,
-                          'itis': List[float],
-                          'score': float, 'fbk': float, 'grid': float,
+                          'blocks': int, 'reps': int, 'dur': TaskDur,
+                          'itis': List[TaskDur],
+                          'score': float, 'fbk': TaskDur, 'grid': TaskDur,
                           'ndevalblocks': int})
 PhaseDict = Dict[PhaseType, PhaseSettings]
+Keypress = str
+KeypressDict = Dict[Keypress, Direction]
 class Fruit: pass
 class Box: pass
+
 
 # ## default task settings for each phase
 DEFAULT_PHASES: PhaseDict = {
@@ -43,7 +49,10 @@ DEFAULT_PHASES: PhaseDict = {
                      'itis': [1, 1, 1, 2, 2, 5], 'score': 1, 'grid': 5,
                      'ndevalblocks': 3}}
 
-
+KEYS: KeypressDict = {'left': Direction.Left,
+                      'right': Direction.Right,
+                      '1': Direction.Left,
+                      '2': Direction.Right}
 class FabFruitInfo:
     """store timing, boxes, and fruits for Task
     generate or read timing
@@ -331,7 +340,7 @@ class FabFruitInfo:
 
         # ## add top and bottom column names
 
-        idx = np.where(self.timing.ttype == TrialType.SHOW)[0]
+        idx = np.where([x in [TrialType.FBK, TrialType.SHOW, TrialType.GRID] for x in self.timing.ttype])[0]
         for i in range(len(idx)):
             ii = idx[i]
             box_idxs = [box_dict[self.timing.LR1[ii]][0]]
@@ -342,7 +351,8 @@ class FabFruitInfo:
 
         # set stim to "top" for SOA, ID, OD for all the SHOW trialtypes
         idx = (self.timing.LR1 != '') & (self.timing.phase != PhaseType.DD)
-        self.timing.loc[idx, 'top'] = [box_dict[bn][1].Stim.name for bn in self.timing.LR1[idx]]
+        self.timing.loc[idx, 'top'] = [box_dict[bn][1].Stim.name
+                                       for bn in self.timing.LR1[idx]]
 
         # DD is outcome instead of stim
         idx = (self.timing.LR1 != '') & (self.timing.phase == PhaseType.DD)
@@ -390,11 +400,11 @@ class Box:
         self.Outcome.pair = self.Stim
         self.Stim.box = self.Outcome.box = self
 
-    def score(self, btype: PhaseType, bnum: int, choice: Direction):
+    def score(self, btype: PhaseType, bnum: int, choice: Optional[Direction]):
         """get score for box
         @param btype - blocktype
         @param bnum - block number
-        @param choice - direction participant choose
+        @param choice - direction participant choose. can be None
         @return score (-1,0,1)
 
         >>> bx = Box(Fruit('s'),Fruit('o'), Direction.Left, {PhaseType.SOA: [1]}, 'TestBox')
@@ -408,7 +418,11 @@ class Box:
         -1
         >>> bx.score(PhaseType.SOA, 3, Direction.Left)
         1
+        >>> bx.score(PhaseType.SOA, 3, None)
+        0
         """
+        if not choice:
+            return 0
         if btype in [PhaseType.DD, PhaseType.SOA] and bnum in self.devalued_blocks[btype]:
             if self.Dir == choice:
                 return -1
@@ -529,20 +543,31 @@ def make_boxes(fruit_names: List[str],
 
 
 class FabFruitTask:
-    def __init__(self, win, info: FabFruitInfo):
+    def __init__(self, win, info: FabFruitInfo, keys: KeypressDict = KEYS):
         self.win = win
-        # TODO: use FabFruitInfo
-        # with open('static/images/%s.txt' % fruit_type) as f:
-        #     fruit_names = [x.strip() for x in f.readlines()]
-        # if timing_file is None:
-        #     devalued_at: Deval2DList = devalued_blocks()
-        #     # TODO: write_timing using settings
-        #(self.fruits, self.boxes) = make_boxes(fruit_names, devalued_at)
-        
+
+        # settings
+        self.info = info
+        self.fruits = info.fruits
+        self.boxes = info.boxes
+        self.keys = keys
+
+        # timing
+        self.events = TrialHandler(info.timing.to_dict('records'), 1,
+                                   method='sequential',
+                                   dataTypes=['cor', 'resp', 'rt', 'score', 'fliptime'])
+
         # display objects
         self.box = visual.ImageStim(self.win, './static/images/box_open.png')
         self.fruit = visual.ImageStim(self.win, 'static/images/apple.png')
         self.X = visual.ImageStim(self.win, './static/images/devalue.png')
+
+        # score box for ID feeback
+        (w, h) = self.box.size
+        self.scoreBox = visual.Rect(self.win, lineWidth=2,
+                                    fillColor='yellow', lineColor='black',
+                                    pos=(0, h/2), size=(w/2, h/5))
+        self.textBox = visual.TextStim(self.win)
 
     def draw_box(self, boxtype, box_number, offset=0, devalue=False):
         """draw a box and fruit
@@ -581,13 +606,50 @@ class FabFruitTask:
         if devalue:
             self.X.draw()
 
-    def trial(self, btype: PhaseType, block_num: int, show_boxes: List[int], onset: int = 0, deval_idx: int = 1):
+    def iti(self, onset: TaskTime = 0) -> TaskTime:
+        """ show iti screen.
+        @param onset - when to flip. default now (0)
+        @return fliptime - when screen was flipped
+        """
+        lncdtasks.wait_until(onset)
+        fliptime = self.win.flip()
+        return fliptime
+
+    def message(self, message: str, onset: TaskTime = 0) -> TaskTime:
+        """show a message centered on the screen
+        @param message
+        @return fliptime
+        """
+        self.textBox.text = message
+        self.textBox.pos = (0, 0)
+        self.textBox.color = 'white'
+        self.textBox.draw()
+        lncdtasks.wait_until(onset)
+        return self.win.flip()
+
+    def grid(self, phase: PhaseType, deval_idxs: List[int], onset: TaskTime = 0) -> TaskTime:
+        """ show grid of boxes (always same order)
+        @param ceval_idxs - which to cross out
+        @param onset - when to flip. default now (0)
+        @return fliptime - when screen was flipped
+        """
+        for bi in range(len(self.boxes)):
+            # offset by one for showing teh grid
+            boxis = 'open' if phase == PhaseType.SOA else 'closed'
+            task.draw_box(boxis, bi, bi+1, bi in deval_idxs)
+
+        lncdtasks.wait_until(onset, verbose=True)
+        fliptime = self.win.flip()
+        return fliptime
+
+    def trial(self, btype: PhaseType, block_num: int, show_boxes: List[int],
+              onset: TaskTime = 0, deval_idx: int = 1, dur: TaskDur = 1) -> Tuple[TaskTime, Optional[str], Optional[TaskDur]]:
         """run a trial, flipping at onset
         @param btype - block type: what to show, how to score
         @param show_boxes - what box(es) to show
-        @param onset - what to show it. 0 is now
         @param deval_idx - for DD 0 to deval top, 1 to devalue bottom
         @param block_num - what block are we on
+        @return (fliptime, resp, rt) - key of response, how long til push could both be None
         """
 
         # check things make sense
@@ -600,31 +662,54 @@ class FabFruitTask:
         # but if we have two boxes to draw, align vert. (block = OD)
         for i, bn in enumerate(show_boxes):
             pos = i - (2 if len(show_boxes) > 1 else 0)  # 0 or -2, -1
-            print(pos)
+            print(f"  pos {pos}")
             self.draw_box("closed", bn, pos, deval_idx == i)
 
         # START
-        self.win.flip()
+        # NB. neg wait time treated like no wait
+        lncdtasks.wait_until(onset, verbose=True)
+        fliptime = self.win.flip()
+        # wait for response
+        if dur > 0:
+            print('  waiting for response for %f' % dur)
+            # NB. if two keys are held down, will re port both!
+            # make this None
+            resp: Keypress = event.waitKeys(maxWait=dur - .01, keyList=self.keys.keys())
+            rt = onset - core.getTime()
+            # NB. not actuall ITI. maybe just blank screen?
+            #     or maybe gray out current view?
+            self.iti(0)
+        else:
+            resp = None
+            rt = None
+        return (fliptime, resp, rt)
 
-        # TODO wait for response
-        # get response
-        resp = Direction.Left
-        bidx = 0
+    def fbk(self, show_box: int, score: int, onset: TaskTime = 0) -> TaskTime:
+        """ give feedback - only for ID
+        @param show_boxes - which box idx to show
+        @param score - score to display (see Box.score())
+        @param onset - when to flip (default to now (0))
+        """
+        bn: Box = self.boxes[show_box]
 
-        # if DD turn 1 into 0 or 0 into 1
-        if btype == PhaseType.OD:
-            bidx = (deval_idx + 1) % 2
+        self.draw_box("open", show_box, 0)
 
-        this_box = self.boxes[show_boxes[bidx]]
-        score = this_box.score(btype, block_num, resp)
-        print(score)
+        self.textBox.pos = self.scoreBox.pos
+        self.textBox.text = "%d" % score
+        self.textBox.color = 'black'
+        self.scoreBox.draw()
+        self.textBox.draw()
+
+        lncdtasks.wait_until(onset)
+        return self.win.flip()
+
 
 
 def trial_dict(phase: PhaseType, ttype: TrialType,
                blocknum: int, trial: int,
                LR1: str,
                deval: bool = False, LR2: str = '',
-               onset: float = 0.0, dur: float = 1.0) -> TrialDict:
+               onset: TaskTime = 0.0, dur: TaskDur = 1.0) -> TrialDict:
     """provide defaults for write_timing"""
     d = locals()
 
@@ -660,16 +745,7 @@ def extract_devalued(d, phase: PhaseType) -> Deval2DList:
     return devalued_at
 
 
-if __name__ == "__main__":
-    win = visual.Window([800, 600])
-    ffi = FabFruitInfo()
-    fruit_type = 'fruits'
-    with open('static/images/%s.txt' % fruit_type) as f:
-        fruit_names = [x.strip() for x in f.readlines()]
-    ffi.set_names(fruit_names)
-
-    task = FabFruitTask(win, ffi)
-
+def example(task):
     task.draw_box('open', 1)
     task.win.flip()
     task.draw_box('closed', 2, -2, False)
@@ -690,3 +766,82 @@ if __name__ == "__main__":
     task.trial(PhaseType.SOA, 1, [3])
     task.trial(PhaseType.OD, 1, [2, 3], deval_idx=0)  # top deval
     task.trial(PhaseType.OD, 1, [2, 3], deval_idx=1)  # bottom deval
+
+
+if __name__ == "__main__":
+    win = visual.Window([800, 600])
+
+    ffi = FabFruitInfo()
+    fruit_type = 'fruits'
+    with open('static/images/%s.txt' % fruit_type) as f:
+        fruit_names = [x.strip() for x in f.readlines()]
+    ffi.set_names(fruit_names)
+
+    # if we are testing
+    # ffi.timing = ffi.timing.loc[0:10]
+
+    task = FabFruitTask(win, ffi)
+    for e in task.events:
+        # set clock if no prev trial, prev trial happens after next.
+        # or current trial starts at 0
+        prev = task.events.getEarlierTrial()
+        if prev is None or prev.onset > e.onset or e.onset == 0:
+            starttime = core.getTime()
+            print(f"* new starttime {starttime:.2f}")
+
+        fliptime = starttime + e.onset
+        print(f"@{core.getTime():.2f} ETA {fliptime:.2f} {e.blocknum} {e.trial} {e.phase} {e.ttype} {e.LR1} {e.top} {e.deval}")
+
+        # how should we handle this event (trialtype)
+        if e.ttype == TrialType.SHOW:
+            if e.deval & (e.phase == PhaseType.DD):
+                deval_idx = 0
+            else:
+                deval_idx = 1  # 1 means nothing for ID DD and SOA
+            (fliptime, resp, rt) = task.trial(e.phase, e.blocknum, e.bxidx[0], fliptime, deval_idx)
+            e.resp = resp
+            e.rt = rt
+            print(f"  resp: {e.resp}")
+            # e.g.
+            #  task.trial(PhaseType.SOA, 1, [3])
+            #  task.trial(PhaseType.OD, 1, [2, 3], deval_idx=0)  # top deval
+        elif e.ttype == TrialType.ITI:
+            fliptime = task.iti(e.onset+starttime)
+
+        elif e.ttype == TrialType.FBK:
+            bi = e.bxidx[0][0]
+            bn = task.boxes[bi]
+            resp: Keypress = task.events.getEarlierTrial().resp
+            if resp and len(resp) > 1:
+                print(f"WARNING: pushed more than one key({resp})! considering no push")
+                resp = None
+            # want first (and only hopefully) key that was pushed
+            if resp:
+                resp = resp[0]
+
+            side = task.keys.get(resp)
+            score = bn.score(PhaseType.ID, e.blocknum, side)
+            print(f"  #score {resp} is {side} = {score}")
+            fliptime = task.fbk(bi, score, e.onset+starttime)
+
+        elif e.ttype == TrialType.GRID:
+            fliptime = task.grid(e.phase, e.bxidx[0], e.onset)
+
+        elif e.ttype == TrialType.SCORE:
+            #task.events.data
+            #d = task.info.timing.loc[0:task.events.thisN]
+            #d[(d.blocknum == d.blocknum[-1]) & 
+            score = "unkown score"
+
+            # print("score: %d" % task.events.getEarlierTrial().score)
+            task.message(f'Total Score: {score}')
+
+            lncdtasks.wait_until(e.onset+starttime)
+            fliptime = win.flip()
+
+        else:
+            print(f"#  doing nothing with {e.ttype}")
+
+        task.events.addData('fliptime', fliptime)
+    print("done")
+    task.events.saveAsText("exampe_out.csv")
