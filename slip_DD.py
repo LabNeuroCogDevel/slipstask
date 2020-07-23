@@ -2,6 +2,7 @@
 from psychopy import visual
 import pandas as pd
 from slip import FabFruitInfo, FabFruitTask, PhaseType, TrialType
+win = visual.Window([800, 600])
 
 from psychopy.hardware.emulator import ResponseEmulator
 simulated_responses = [(1,   'left'),
@@ -25,9 +26,9 @@ info.timing = pd.DataFrame([
 with open('static/images/fruits.txt') as f:
     info.set_names([x.strip() for x in f.readlines()])
 
-win = visual.Window([800, 600])
 task = FabFruitTask(win, info)
 
 responder.start()
 task.run()
-print(task.events)
+
+assert task.events.data['score'].sum() == 2

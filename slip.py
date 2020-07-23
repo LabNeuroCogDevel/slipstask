@@ -568,7 +568,8 @@ class FabFruitTask:
         self.events = TrialHandler(info.timing.to_dict('records'), 1,
                                    method='sequential',
                                    dataTypes=['cor', 'resp', 'side',
-                                              'rt', 'score', 'fliptime'])
+                                              'rt', 'score', 'fliptime',
+                                              'block_score'])
 
         # display objects
         self.box = visual.ImageStim(self.win, './static/images/box_open.png')
@@ -767,6 +768,9 @@ class FabFruitTask:
                 block_score += this_score
                 e.score = this_score
                 print(f"  #resp {resp} is {e.side} =>  {this_score} pts; total: {block_score}")
+                self.events.addData('score', e.score)
+                self.events.addData('rt', e.rt)
+                self.events.addData('resp', ",".join(e.resp) if resp else None)
 
             elif e.ttype == TrialType.ITI:
                 fliptime = self.iti(e.onset+starttime)
@@ -787,6 +791,7 @@ class FabFruitTask:
 
                 # print("score: %d" % self.events.getEarlierTrial().score)
                 self.message(f'In this block you scored {block_score} pnts', e.onset+starttime)
+                self.events.addData('block_score',block_score)
 
                 # if score is the last in this block. wait for a key
                 nexttrial = self.events.getFutureTrial()
@@ -799,6 +804,7 @@ class FabFruitTask:
 
             # update fliptime
             e.fliptime = fliptime
+            self.events.addData('fliptime', e.fliptime)
 
         print("done")
 
