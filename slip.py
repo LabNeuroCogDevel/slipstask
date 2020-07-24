@@ -6,10 +6,15 @@ import numpy as np
 import pandas as pd
 from psychopy import visual, core, event
 from psychopy.data import TrialHandler
-from typing import List, Dict, Tuple, TypedDict, Optional
+from typing import List, Dict, Tuple, Optional
 from enum import Enum
 from lncdtasks import first_key, TaskTime, TaskDur, Keypress, Filepath
 import lncdtasks
+# older python has TypedDict hidden away
+try:
+    from typing import TypedDict
+except:
+    from typing_extensions import TypedDict
 
 # Types
 Direction = Enum('Direction', 'Left Right None')

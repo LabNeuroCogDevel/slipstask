@@ -1,13 +1,9 @@
-# LNCD jspsych port of Fabulous Fruits
+# Slips of Action/Fabulous Fruits @ LNCD: jspsych (javascript) & psychopy (python) ports
 
 Port of *Simplified Fabulous Fruit Game*, Sanne de Wit, 2019. Developed for remote administration. see [manual](./SimplifiedFFG_Manual_2019.txt).
 
-
-
 * 12 fruits: apple, bananas, cherries, coconut, grape, kiwi, lemon, melon, orange, pear, pineapple, strawberry
   * uniquely 6 outside paired with 6 inside
-* 12 permutations: 2 sets (A, B) over shuffle # 1 to 6
-  * see [`SROmap.csv`](./SROmap.csv)
 
 ## Example
 
@@ -115,9 +111,20 @@ Discrimination Devaluation (?): Devalue stimulus instead of outcome to test. oth
 
 ## Hacking
 
+The task exists in two implementations here: web based javascript, and MR ready python.
+
+### Javascript
+Using jspsych and psiturk libraries
+
 * `utils.ts` contains mkBox and Fruit class/prototype (typescript compiled to `utils.js`)
  - `Fruit` has properties and drawing/rendering functions
  - `mkBox` modifies 2 fruits to be pairs, sets correct response, and which SOA blocks are devalued for the fruit
 
- ### Heroku
+#### Heroku
  see `$HOME/.psiturkconfig` w/ `[AWS Access]` containing `aws_access_key_id` and `aws_secret_access_key`. also `psiturk-heroku-config`
+
+### Python
+The python task implementation came second. Warts from porting show. 
+min numpy version is 1.18 (need `numpy.random.default_rng`). 
+
+This version pays more attention to timing and psuedo-randomizes Left/Right choices.
