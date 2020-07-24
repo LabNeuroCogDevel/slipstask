@@ -196,6 +196,20 @@ class FabFruitInfo:
         6             4
         7             4
         8             4
+
+        and we should have a GRID for every new block
+        >>> d[(d.ttype == 'GRID')].groupby('blocknum').agg({'trial':len})
+                  trial
+        blocknum       
+        0             1
+        1             1
+        2             1
+        3             1
+        4             1
+        5             1
+        6             1
+        7             1
+        8             1
         """
 
         settings = self.phases[ptype]
