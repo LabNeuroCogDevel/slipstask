@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 import slip
 import numpy as np
+import os
 
-DD = {slip.PhaseType.DD: {'blocks': 9, 'reps': 2, 'dur': 1,
-                    'itis': [1, 1, 1, 2, 2, 5], 'score': 1, 'grid': 5.0,
-                    'ndevalblocks': 3}}
+DD = {slip.PhaseType.DD: {
+       'blocks': 9, 'reps': 2,
+       'itis': [1, 1, 1, 2, 2, 5],
+       'grid': 5.0, 'dur': 1.5, 'score': 2,
+       'ndevalblocks': 3}}
 
 def rep_cnts(x, rep_max=4, reset_every=12):
     """dumb quick way to count reps"""
@@ -62,6 +65,11 @@ for _ in range(100):
     info = slip.FabFruitInfo(phases=SOA,seed=seed)
     if not timing_okay(info.timing):
         continue
-    else:
-        print('okay')
+    print('okay')
+    os.mkdir(f'timing/{seed_int}')
+    info.timing.to_csv(f'timing/{seed_int}/DD.csv')
+    x='\n'.join(info.timing.groupby('blocknum').agg({'onset': lambda x: " ".join(['%.02f' % a for a in x.values])}).onset.values)
+    with open(f'timing/{seed_int}/trial.1D', 'w') as f:
+        f.write(x)
+    break
 
