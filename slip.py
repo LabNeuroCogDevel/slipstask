@@ -16,6 +16,10 @@ try:
 except:
     from typing_extensions import TypedDict
 
+# seconds into task of first onset.
+# expect fixation before this
+FIRST_ONSET:TaskTime = 3
+
 # Types
 Direction = Enum('Direction', 'Left Right None')
 SO = Enum('SO', 'Stim Outcome')
@@ -80,7 +84,7 @@ class FabFruitInfo:
         if seed is None:
             seed = np.random.default_rng()
         self.seed = seed
-        # overwriten by read_timing when timing files exist
+        # overwritten by read_timing when timing files exist
         self.timing = []
         self.nbox = nbox
 
@@ -242,18 +246,19 @@ class FabFruitInfo:
         # start at time zero
         onset: TaskTime = 0
         for bnum in range(settings['blocks']):
+            onset=FIRST_ONSET
 
             # mixup the order of things
             self.seed.shuffle(itis)
             self.seed.shuffle(boxnamedir)
-            # LR12 will have 2 if SOA or DD
+            # LR12 will have 2 if SOA or DD during grid (first event only)
             # TODO: maybe hardcode check ptype in SOA DD and len(LR12)==2
             LR12 = [i for i, x in enumerate(devalued_at) if bnum in x]
             if len(LR12) == 2:
                 trls.append(trial_dict(ptype, TrialType.GRID, bnum,  -1,
                                        LR1=sides[LR12[0]],
                                        LR2=sides[LR12[1]],
-                                       onset=0,
+                                       onset=onset,
                                        dur=settings['grid']))
                 onset += settings['grid']
 
@@ -287,7 +292,7 @@ class FabFruitInfo:
                                    onset=onset, dur=settings['score']))
         return trls
 
-    def to_df(self, fname: str = None):
+    def to_df(self):
         """
         >>> phases = {\
             PhaseType.SOA:\
@@ -305,7 +310,7 @@ class FabFruitInfo:
         """
 
         all_trials = []
-        for ptype, settings in self.phases.items():
+        for ptype in self.phases.keys():
             if(ptype == PhaseType.OD):
                 phase_trials = self.OD()
             else:
@@ -313,8 +318,9 @@ class FabFruitInfo:
             all_trials.extend(phase_trials)
         d = pd.DataFrame(all_trials)
 
-        if fname:
-            d.to_csv(fname)
+        ## add correct side
+        # cor side is probably the direction of the top
+        d = add_corside(d)
 
         return d
 
@@ -833,7 +839,7 @@ def trial_dict(phase: PhaseType, ttype: TrialType,
                LR1: str,
                deval: bool = False, LR2: str = '',
                onset: TaskTime = 0.0, dur: TaskDur = 1.0) -> TrialDict:
-    """provide defaults for write_timing"""
+    """provide defaults for block_timing() and OD()"""
     d = locals()
 
     # for mypy. match keys
@@ -867,6 +873,21 @@ def extract_devalued(d, phase: PhaseType) -> Deval2DList:
 
     return devalued_at
 
+def add_corside(d: pd.DataFrame):
+    """add correct side.
+    @param d - dataframe with LR1 (values like L0..R2), ttype, phase, and deval
+    @return d with corside column
+    pass by refrence, so no return value"""
+    d['cor_side'] = ""
+    show_idx = (d.ttype == TrialType.SHOW) | (d.ttype == "SHOW")
+    d.loc[show_idx,'cor_side'] =  [x[0] for x in d.LR1[show_idx]]
+    # flip L/R if OD and devauled
+    flip_i = d.deval & [x in [PhaseType.OD, "OD"] for x in d.phase]
+    d.loc[flip_i, 'cor_side'] = ['R' if s == 'L' else 'L' for s in d.LR1[flip_i]]
+    # no correct resp if SOA or DD
+    none_i = d.deval & [x in [PhaseType.DD, PhaseType.SOA, "SOA", "DD"] for x in d.phase]
+    d.loc[none_i, 'cor_side'] = ""
+    return d
 
 def example(task):
     task.draw_box('open', 1)
