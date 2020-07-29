@@ -36,7 +36,8 @@ PhaseSettings = TypedDict("PhaseSettings", {
                           'blocks': int, 'reps': int, 'dur': TaskDur,
                           'itis': List[TaskDur],
                           'score': float, 'fbk': TaskDur, 'grid': TaskDur,
-                          'ndevalblocks': int})
+                          'ndevalblocks': int,
+                          'combine': bool})
 PhaseDict = Dict[PhaseType, PhaseSettings]
 KeypressDict = Dict[Keypress, Direction]
 
@@ -169,7 +170,7 @@ class FabFruitInfo:
 
         return trls
 
-    def block_timing(self, ptype) -> List[TrialDict]:
+    def block_timing(self, ptype: PhaseType, onset: TaskTime = 0) -> List[TrialDict]:
         """ generate timing for most blocks (not OD). 
         creates events in trial (SHOW, ITI, sometimes SCORE and FBK)
 
@@ -244,9 +245,14 @@ class FabFruitInfo:
             itis = settings['itis'] * (ntrl_in_block//len(settings['itis']))
 
         # start at time zero
-        onset: TaskTime = 0
+
+        onset=FIRST_ONSET
         for bnum in range(settings['blocks']):
-            onset=FIRST_ONSET
+            # maybe we want all blocks in this phase to be together (MR block)
+            if bnum > 0 and settings.get('combine', False):
+                onset = trls[-1]['end']
+            else:
+                onset = FIRST_ONSET
 
             # mixup the order of things
             self.seed.shuffle(itis)
