@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-from slip import FabFruitTask, FabFruitInfo
 from psychopy import visual, core
+from soapy.task import FabFruitTask
+from soapy.info import FabFruitInfo
 win = visual.Window([800, 600])
 info = FabFruitInfo(timing_files=['timing/seeded/1_445/1350647090/DD.csv'])
 with open('static/images/fruits.txt') as f:

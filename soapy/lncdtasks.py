@@ -14,7 +14,7 @@ def first_key(resp: List[str]) -> Optional[str]:
     warn (print) if there is more than one element in list
     """
     if resp and len(resp) > 1:
-        print(f"WARNING: pushed more than one key({e.resp})! considering no push")
+        print(f"WARNING: pushed more than one key({resp})! considering no push")
         resp = None
     # want first (and only hopefully) key that was pushed
     if resp:

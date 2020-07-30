@@ -128,3 +128,12 @@ The python task implementation came second. Warts from porting show.
 min numpy version is 1.18 (need `numpy.random.default_rng`). 
 
 This version pays more attention to timing and psuedo-randomizes Left/Right choices.
+
+#### Usage
+```
+# install (once)
+pip install -e 'https://github.com/LabNeuroCogDevel/slipstask'
+
+# with e.g. ~/.local/bin in $PATH
+soa_DD.py
+```

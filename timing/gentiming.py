@@ -5,8 +5,8 @@ import math
 import numpy as np
 import pandas as pd
 sys.path.insert(1, os.path.realpath(os.path.pardir))
-import slip
-from slip import TrialType, PhaseType
+from soapy.task_types import TrialType, PhaseType
+from soapy.task import FabFruitInfo
 os.chdir(os.path.dirname(__file__))
 
 
@@ -91,7 +91,7 @@ for _ in range(100):
         continue
 
     seed = np.random.default_rng(seed_int)
-    info = slip.FabFruitInfo(phases=DD, seed=seed)
+    info = FabFruitInfo(phases=DD, seed=seed)
 
     # remove blocks so write_1d doesn't separate them
     # useful for 'combine': True -- when all(diff(onset)>0)

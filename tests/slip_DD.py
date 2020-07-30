@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 from psychopy import visual
 import pandas as pd
-from slip import FabFruitInfo, FabFruitTask, PhaseType, TrialType
+from soapy.info import FabFruitInfo
+from soapy.task import FabFruitTask
+from soapy.task_types import PhaseType, TrialType
+
+# run this now b/c it can take a few seconds
 win = visual.Window([800, 600])
 
 from psychopy.hardware.emulator import ResponseEmulator

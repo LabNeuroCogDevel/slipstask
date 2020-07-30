@@ -1,9 +1,13 @@
 .#*
 .psiturk_history
-__pycache__/
 participants.db
 server.log
+
 node_modules/
 tests/.res.tap
 *.d.ts
 package-lock.json
+
+__pycache__/
+*.egg-info/
+*.pyc
