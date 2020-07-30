@@ -347,13 +347,13 @@ class FabFruitInfo:
         if fnames is None and td is None:
             raise Exception("Must provide timing names or dictionary!")
         elif fnames:
-            d = pd.concat([pd.read_csv(f) for f in fnames], ignore_index=True)
+            d = pd.concat([pd.read_csv(f) for f in fnames], ignore_index=True).fillna('')
         else:
             d = pd.DataFrame(td)
 
-        # make typed again
-        d['phase'] = [PhaseType[x] for x in d['phase']]
-        d['ttype'] = [TrialType[x] for x in d['ttype']]
+        # make typed again - maybe need to remove PhaseType. and TrialType.
+        d['phase'] = [PhaseType[x.replace("PhaseType.","")] for x in d['phase']]
+        d['ttype'] = [TrialType[x.replace("TrialType.","")] for x in d['ttype']]
         self.timing = d
         self.nbox = d.LR1[d.ttype == TrialType.SHOW].unique().size
         allphases = d.phase.unique()
@@ -395,6 +395,7 @@ class FabFruitInfo:
                                        for bn in self.timing.LR1[idx]]
 
         # DD is outcome instead of stim
+        print(self.timing) # TODO: rmme
         idx = (self.timing.LR1 != '') & (self.timing.phase == PhaseType.DD)
         self.timing.loc[idx, 'top'] = [box_dict[bn][1].Outcome.name for bn in self.timing.LR1[idx]]
 
@@ -688,7 +689,7 @@ class FabFruitTask:
         for bi in range(len(self.boxes)):
             # offset by one for showing teh grid
             boxis = 'open' if phase == PhaseType.SOA else 'closed'
-            task.draw_box(boxis, bi, bi+1, bi in deval_idxs)
+            self.draw_box(boxis, bi, bi+1, bi in deval_idxs)
 
         lncdtasks.wait_until(onset, verbose=True)
         fliptime = self.win.flip()
