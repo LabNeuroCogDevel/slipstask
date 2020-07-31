@@ -135,5 +135,5 @@ This version pays more attention to timing and psuedo-randomizes Left/Right choi
 pip install -e 'https://github.com/LabNeuroCogDevel/slipstask'
 
 # with e.g. ~/.local/bin in $PATH
-soa_DD.py
+SOA
 ```

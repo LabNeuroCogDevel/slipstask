@@ -1,0 +1,93 @@
+#!/usr/bin/env python3
+import sys
+import os
+from datetime import datetime
+from psychopy.gui import Dlg, DlgFromDict
+from soapy.task_types import PhaseType
+from soapy.info import FabFruitInfo
+from soapy.task import FabFruitTask
+from soapy import DEFAULT_PHASES
+
+
+def show_error(msg):
+    """quick dialog popup to report issues"""
+    d = Dlg(title=msg)
+    d.addText(msg)
+    d.show()
+
+
+def validate():
+    """check inputs are sane
+    Dlg modifies global INFO dict"""
+    if not INFO['ID']:
+        show_error("no ID given")
+        return False
+    try:
+        INFO['obj_seed'] = int(INFO['obj_seed'])
+    except ValueError:
+        show_error("bad/no obj_seed: must be a whole number")
+        return False
+
+    if INFO['phase'] in ['instructions']:
+        show_error(f"{INFO['phase']} phase not implemented")
+        return False
+
+    if INFO['objs'] in ['animals']:
+        show_error(f"{INFO['objs']} has no images yet")
+        return False
+
+    try:
+        INFO['phase_type'] = PhaseType[INFO['phase']]
+    except KeyError:
+        show_error(f"error using {INFO['phase']}!")
+        return False
+
+    return True
+
+
+# prompt until we're good or we cancel
+novalidate = True
+while novalidate or not validate():
+    # task settings
+    INFO = {
+        'ID': '',
+        'obj_seed': 0,
+        'objs': ['fruits', 'animals', 'veggies'],
+        'phase': ['instructions', 'ID', 'OD', 'DD', 'SOA'],
+        'blocks': 3,
+        'fullscreen': False,
+    }
+    novalidate = False
+    dlg = DlgFromDict(INFO, title="Slips of Action/Fab Fruits")
+    if not dlg.OK:
+        sys.exit(1)
+
+print(INFO)
+vdate = datetime.strftime(datetime.now(), "%Y%m%d")
+outdir = f"task_data/{INFO['ID']}/{vdate}"
+if not os.path.exists(outdir):
+    os.makedirs(outdir)
+
+# ## TODO prompt if we already have this subject (resume seed from file)
+
+# N.B. this here becuase it take a bit to load. we want a speedier dialog window
+from psychopy.visual import Window
+
+res = [] if INFO['fullscreen'] else [800, 600]
+win = Window(res)
+
+# TODO set seed
+
+# TODO: use mainfest.in files
+p = INFO['phase_type']
+ffi = FabFruitInfo({p: DEFAULT_PHASES[p]})
+with open('static/images/%s.txt' % INFO['objs']) as f:
+    fruit_names = [x.strip() for x in f.readlines()]
+ffi.set_names(fruit_names)
+
+# if we are testing
+# ffi.timing = ffi.timing.loc[0:10]
+
+task = FabFruitTask(win, ffi)
+task.run()
+task.events.saveAsText(f"{outdir}/{INFO['phase']}.csv")
