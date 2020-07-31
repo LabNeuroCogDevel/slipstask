@@ -6,7 +6,8 @@ from psychopy.gui import Dlg, DlgFromDict
 from soapy.task_types import PhaseType
 from soapy.info import FabFruitInfo
 from soapy.task import FabFruitTask
-from soapy import DEFAULT_PHASES, image_path
+from soapy.lncdtasks import wait_for_scanner
+from soapy import DEFAULT_PHASES, image_path, read_img_list
 
 
 def show_error(msg):
@@ -40,11 +41,45 @@ def validate():
 
     return True
 
+def pick_seed(seed_file):
+    """ seed can be specified or read from file
+        but if both and they dont agree, panic
+    @param seed_file - file to read seed from
+    @param numpy.random.default_rng(seed)
+    """
+    from numpy import random
+    seed = 0
+    if os.path.isfile(seed_file):
+        with open(seed_file) as f:
+            seed = int(f.readline().replace("\n",""))
+
+
+    # use file if we have it
+    # unless expliclty set set seed from dialog
+    # then check against known seed
+    if not INFO['obj_seed'] and not seed:
+        seed = int(random.uniform(10**10))
+    elif not seed: 
+        seed = INFO['obj_seed']
+    elif not INFO['obj_seed']: 
+        pass  # didn't try to change the seed, left at 0 in dialog. use file
+    elif INFO['obj_seed'] != seed:
+        show_error(f"already have seed {seed} in {seed_file}.\n" +
+                   f"you provided {INFO['obj_seed']}\n" +
+                   f"Either set dialog value to {seed} or remove {seed_file}")
+        sys.exit(1)
+    
+    # write seed to file
+    if not os.path.isfile(seed_file):
+        with open(seed_file,"w") as f:
+            f.write(f"{seed}")
+
+    return random.default_rng(seed)
 
 # prompt until we're good or we cancel
 novalidate = True
 while novalidate or not validate():
-    # task settings
+    # task settings - inside loop or we'd loos list of options
     INFO = {
         'ID': '',
         'obj_seed': 0,
@@ -52,6 +87,8 @@ while novalidate or not validate():
         'phase': ['instructions', 'ID', 'OD', 'DD', 'SOA'],
         'blocks': 3,
         'fullscreen': False,
+        'MR': False,
+        'quick_test': True,
     }
     novalidate = False
     dlg = DlgFromDict(INFO, title="Slips of Action/Fab Fruits")
@@ -59,31 +96,51 @@ while novalidate or not validate():
         sys.exit(1)
 
 print(INFO)
-vdate = datetime.strftime(datetime.now(), "%Y%m%d")
-outdir = f"task_data/{INFO['ID']}/{vdate}"
+now = datetime.now()
+vdate = datetime.strftime(now, "%Y%m%d")
+vtime = datetime.strftime(now, "%H:%M.%S")
+outdir = os.path.join("task_data", INFO['ID'], vdate)
 if not os.path.exists(outdir):
     os.makedirs(outdir)
 
-# ## TODO prompt if we already have this subject (resume seed from file)
+# reuse or pick new seed
+seed_file = os.path.join(outdir,"seed.txt")
+seed = pick_seed(seed_file)
 
-# N.B. this here becuase it take a bit to load. we want a speedier dialog window
+
+# psychopy takes a bit to load. import here b/c we want a speedier dialog window
 from psychopy.visual import Window
 
 res = [] if INFO['fullscreen'] else [800, 600]
 win = Window(res)
 
-# TODO set seed
-
-# TODO: use mainfest.in files
+# build task
 p = INFO['phase_type']
-ffi = FabFruitInfo({p: DEFAULT_PHASES[p]})
-with open(image_path(f"{INFO['objs']}.txt")) as f:
-    fruit_names = [x.strip() for x in f.readlines()]
-ffi.set_names(fruit_names)
+ffi = FabFruitInfo({p: DEFAULT_PHASES[p]}, seed=seed)
+# set fruits/animals/veggies. will use ffi.seed for random assignment
+ffi.set_names(read_img_list(INFO['objs']))
 
 # if we are testing
-# ffi.timing = ffi.timing.loc[0:10]
+if INFO.get('quick_test'):
+    ffi.timing = ffi.timing.loc[0:15]
 
+# ## Build the task
 task = FabFruitTask(win, ffi)
-task.run()
-task.events.saveAsText(f"{outdir}/{INFO['phase']}.csv")
+task.save_path = os.path.join(outdir,f"{vtime}_{INFO['phase']}.csv")
+
+
+# when preset timing is not important, we can use
+# "duration" based timing instead of onset
+#
+# on MR, we also need to wait for the scanner trigger
+# to say we actually started
+if INFO.get('MR'):
+    starttime = wait_for_scanner(win)
+    # TODO: shuffle best timing list
+else:
+    task.timing_method = 'dur'
+    starttime = None
+
+# do it
+task.run(starttime)
+task.save_progress()

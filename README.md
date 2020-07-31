@@ -137,3 +137,11 @@ pip install -e 'git+https://github.com/LabNeuroCogDevel/slipstask'
 # with e.g. ~/.local/bin in $PATH
 SOA
 ```
+#### Timing
+see `timing/gentiming.py`
+
+#### Code
+
+* `soapy/__init__.py` - default task settings
+* `soapy/bin/SOA` - default launcher
+* `soapy/images` has links from `static/images`: pngs and obj lists (.txt)

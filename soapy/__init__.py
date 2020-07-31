@@ -1,5 +1,5 @@
 import os
-from typing import Optional
+from typing import Optional, List
 from soapy.task_types import \
     Direction, PhaseDict, KeypressDict,\
     PhaseType
@@ -41,6 +41,16 @@ def image_path(image: Optional[str] = None) -> Filepath:
     return ipath
 
 
+def read_img_list(objs_type: str) -> List[str]:
+    """read fruit/object names from txt file list in package data"""
+    filename = image_path(f'{objs_type}.txt')
+    if not os.path.isfile(filename):
+        raise Exception("Missing {objs_type} list file {filename}")
+    with open(filename) as f:
+        names = [x.strip() for x in f.readlines()]
+    return(names)
+
+
 def example(task):
     """example on how to use task drawing"""
     task.draw_box('open', 1)
@@ -66,21 +76,19 @@ def example(task):
 
 
 if __name__ == "__main__":
-    from task import FabFruitTask
-    from info import FabFruitInfo
     from psychopy import visual
+    import soapy.task
+    import soapy.info
 
     win = visual.Window([800, 600])
 
-    ffi = FabFruitInfo()
-    fruit_type = 'fruits'
-    with open('static/images/%s.txt' % fruit_type) as f:
-        fruit_names = [x.strip() for x in f.readlines()]
+    ffi = soapy.info.FabFruitInfo()
+    fruit_names = read_img_list('fruits')
     ffi.set_names(fruit_names)
 
     # if we are testing
     # ffi.timing = ffi.timing.loc[0:10]
 
-    task = FabFruitTask(win, ffi)
-    task.run()
-    task.events.saveAsText("exampe_out.csv")
+    slips = soapy.task.FabFruitTask(win, ffi, timing_method="dur")
+    slips.run()
+    slips.events.saveAsText("exampe_out.csv")

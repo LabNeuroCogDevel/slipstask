@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from psychopy import visual
 import pandas as pd
+from soapy import read_img_list
 from soapy.info import FabFruitInfo
 from soapy.task import FabFruitTask
 from soapy.task_types import PhaseType, TrialType
@@ -27,8 +28,7 @@ info.timing = pd.DataFrame([
     {'phase': PhaseType.OD, 'ttype': TrialType.SCORE, 'blocknum': 2, 'trial': 4, 'deval': False, 'onset':2, 'LR1': 'R0', 'LR2': 'L0'},
 ])
 
-with open('static/images/fruits.txt') as f:
-    info.set_names([x.strip() for x in f.readlines()])
+info.set_names(read_img_list('fruits'))
 
 task = FabFruitTask(win, info)
 

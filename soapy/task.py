@@ -7,11 +7,14 @@ from soapy import KEYS, image_path
 from soapy.lncdtasks import first_key, TaskTime, TaskDur, Keypress
 from soapy.task_types import KeypressDict, PhaseType, TrialType, SO
 from soapy.info import FabFruitInfo
-from soapy.lncdtasks import wait_until
+from soapy.lncdtasks import wait_until, Filepath
 
 
 class FabFruitTask:
-    def __init__(self, win, info: FabFruitInfo, keys: KeypressDict = KEYS):
+    save_path: Optional[Filepath]
+
+    def __init__(self, win, info: FabFruitInfo, keys: KeypressDict = KEYS,
+                 timing_method: str = "onset"):
         self.win = win
 
         # settings
@@ -19,8 +22,10 @@ class FabFruitTask:
         self.fruits = info.fruits
         self.boxes = info.boxes
         self.keys = keys
+        self.save_path = None
 
         # timing
+        self.timing_method = timing_method  # alternative "dur"
         self.events = TrialHandler(info.timing.to_dict('records'), 1,
                                    method='sequential',
                                    dataTypes=['cor', 'resp', 'side',
@@ -83,10 +88,12 @@ class FabFruitTask:
         @return fliptime - when screen was flipped
         """
         wait_until(onset)
-        self.textBox.pos = (0, 0)
         self.textBox.color = 'white'
         self.textBox.text = '+'
-        self.textBox.height = .5
+        # same hight as box that will replace it
+        # but text hieght is a little different. still not centered
+        self.textBox.height = self.box.size[1]
+        self.textBox.pos = (0, 1/16)  # try to offset cross
         self.textBox.draw()
         fliptime = self.win.flip()
         return fliptime
@@ -153,7 +160,7 @@ class FabFruitTask:
             # NB. if two keys are held down, will re port both!
             # make this None
             resp = event.waitKeys(maxWait=dur - .01, keyList=self.keys.keys())
-            rt = onset - core.getTime()
+            rt = core.getTime() - onset
         return (fliptime, resp, rt)
 
     def fbk(self, show_box: int, score: int, onset: TaskTime = 0) -> TaskTime:
@@ -175,8 +182,9 @@ class FabFruitTask:
         wait_until(onset)
         return self.win.flip()
 
-    def run(self):
+    def run(self, init_time: Optional[TaskTime] = None):
         """ run the task through all events """
+
         block_score: float = 0
         for e in self.events:
             # set clock if no prev trial, prev trial happens after next.
@@ -185,12 +193,36 @@ class FabFruitTask:
             if prev is None or prev.onset > e.onset or e.onset == 0:
                 starttime = core.getTime()
                 block_score = 0
+                prev_dur = 0
                 print(f"* new starttime {starttime:.2f} and score reset")
+                # if we don't start for a little bit of time, show fix cross
+                if e.onset > 0:
+                    self.iti()
+            else:
+                prev_dur = prev.dur
 
-            fliptime = starttime + e.onset
             now = core.getTime()
-            eta = now - fliptime
-            print(f"@{now:.2f} ({e.onset}) ETA {eta:.3f}s blk {e.blocknum} trl {e.trial}" +
+
+            # re-adjust starttime if this is frist pass and we have an actual time
+            # this will put us back on track if tehre is a little delay
+            # between scanner trigger and actual setup
+            if prev is None and init_time:
+                start_offset = init_time - starttime
+                print(f"# setting starttime to {init_time:.2f}, lost {start_offset:.2f}s")
+                starttime = init_time
+
+            # if we are using onset timing method, use preprogramed onsset times
+            # if duration, wait until the previous duration
+            #    -- duration will be changed when e.g. rt < max wait
+            if self.timing_method == "onset":
+                fliptime = starttime + e.onset
+            elif self.timing_method == "dur":
+                fliptime = now + prev_dur
+            else:
+                raise Exception(f"Unknown timing_method {self.timing_method}")
+
+            eta = fliptime - now
+            print(f"@{now:.2f} ({e.onset}|{prev_dur:.2f}) ETA {eta:.3f}s blk {e.blocknum} trl {e.trial}" +
                   f" {e.phase} {e.ttype} {e.LR1} {e.top} {e.deval}")
 
             # how should we handle this event (trialtype)
@@ -214,8 +246,12 @@ class FabFruitTask:
                 print(f"  resp: {e.resp}")
 
                 # indicate we pushed a button by changing the screen
-                if e.resp:
+                if e.resp and self.timing_method == "onset":
                     self.win.flip()
+                
+                # if we are running outside of scanner, don't wait for next
+                if self.timing_method == "dur":
+                    e.dur = 0
 
                 resp = first_key(e.resp)
                 e.side = self.keys.get(resp) if resp else None
@@ -229,16 +265,17 @@ class FabFruitTask:
                 self.events.addData('resp', ",".join(e.resp) if resp else None)
 
             elif e.ttype == TrialType.ITI:
-                fliptime = self.iti(e.onset+starttime)
+                self.save_progress()
+                fliptime = self.iti(fliptime)
 
             elif e.ttype == TrialType.FBK:
                 bi = e.bxidx[0][0]
                 # bx = self.boxes[bi]
                 this_score = self.events.getEarlierTrial().score
-                fliptime = self.fbk(bi, this_score, e.onset+starttime)
+                fliptime = self.fbk(bi, this_score, fliptime)
 
             elif e.ttype == TrialType.GRID:
-                fliptime = self.grid(e.phase, e.bxidx[0], e.onset)
+                fliptime = self.grid(e.phase, e.bxidx[0], fliptime)
 
             elif e.ttype == TrialType.SCORE:
                 #self.events.data
@@ -246,8 +283,8 @@ class FabFruitTask:
                 #d[(d.blocknum == d.blocknum[-1]) &
 
                 # print("score: %d" % self.events.getEarlierTrial().score)
-                self.message(f'In this block you scored {block_score} pnts', e.onset+starttime)
-                self.events.addData('block_score',block_score)
+                self.message(f'In this block you scored {block_score} pnts', fliptime)
+                self.events.addData('block_score', block_score)
 
                 # if score is the last in this block. wait for a key
                 nexttrial = self.events.getFutureTrial()
@@ -263,3 +300,11 @@ class FabFruitTask:
             self.events.addData('fliptime', e.fliptime)
 
         print("done")
+
+    def save_progress(self):
+        """save progress. probably at an iti or at end"""
+        if not self.save_path:
+            print(f"WARNING: trying to save buth no 'save_path' given")
+            return
+        self.events.saveAsText(self.save_path)
+
