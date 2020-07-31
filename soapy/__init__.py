@@ -1,14 +1,14 @@
-import numpy as np
-import pandas as pd
-from typing import List, Dict, Tuple
+import os
+from typing import Optional
 from soapy.task_types import \
-    Direction, PhaseDict, Deval2DList, KeypressDict,\
-    PhaseType, TrialType, TrialDict
-from soapy.lncdtasks import TaskTime, TaskDur
-from soapy.box import Box
-from soapy.fruit import Fruit
+    Direction, PhaseDict, KeypressDict,\
+    PhaseType
+from soapy.lncdtasks import TaskTime, Filepath
+import soapy
 
 # ## default task settings for each phase
+FIRST_ONSET: TaskTime = 3
+
 DEFAULT_PHASES: PhaseDict = {
      PhaseType.ID: {'itis': [.5], 'dur': 1, 'fbk': 1, 'score': 2,
                     'blocks': 6, 'reps': 2},
@@ -25,10 +25,24 @@ KEYS: KeypressDict = {'left': Direction.Left,
                       '1': Direction.Left,
                       '2': Direction.Right}
 
-FIRST_ONSET: TaskTime = 3
+
+def image_path(image: Optional[str] = None) -> Filepath:
+    """ path to image folder. contains list txt files and disp images"""
+    # NB. may need to rewrite to use pkgutil if using egg archive?
+    # data = pkgutil.get_data('soapy', 'images/X.png')
+    mpath = soapy.__loader__.path
+    root = os.path.dirname(mpath)
+    ipath = os.path.join(root, "images")
+    if image:
+        ipath = os.path.join(ipath, image)
+        # bad for testing
+        # if not os.path.isfile(ipath):
+        #     raise Exception(f"image {image} does not exist at '{ipath}'!")
+    return ipath
 
 
 def example(task):
+    """example on how to use task drawing"""
     task.draw_box('open', 1)
     task.win.flip()
     task.draw_box('closed', 2, -2, False)
@@ -54,7 +68,7 @@ def example(task):
 if __name__ == "__main__":
     from task import FabFruitTask
     from info import FabFruitInfo
-    from psycopy import visual
+    from psychopy import visual
 
     win = visual.Window([800, 600])
 

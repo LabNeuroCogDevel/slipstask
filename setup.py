@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="soapy",
-    version="0.0.1",
+    version="0.0.2",
     author="Will Foran",
     author_email="willforn+py@gmail.com",
     description="Slips of action/Fabulious Fruits task",
@@ -20,6 +20,5 @@ setuptools.setup(
     ],
     python_requires='>=3.8',
     include_package_data=True,
-    scripts=['soa_DD.py'],
-
+    scripts=['soapy/bin/SOA'],
 )

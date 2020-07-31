@@ -388,7 +388,7 @@ def make_boxes(fruit_names: List[str],
                nbox=None,
                seed=None) -> Tuple[List[Fruit], List[Box]]:
     """ make boxes for the task. consistant across all blocks
-    @param fruit_names - list of names. should have images in static/image/{name}.png
+    @param fruit_names - list of names. should have images in image/{name}.png
     @param deval_dict - what box name is devaled at each block for each phase.
                         boxnames are like L0..R2
     @param seed - optional random seed

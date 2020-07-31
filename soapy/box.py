@@ -16,7 +16,16 @@ class Box:
         # like L0 to R2
 
     def updateFruit(self):
-        "Fruits in this box should know about the box"
+        """Fruits in this box should know about the box
+        >>> bx = Box(Fruit('apple'),Fruit('kiwi'),Direction.Right,{},'R0')
+        >>> bx.updateFruit()
+        >>> bx.Stim.name
+        'apple'
+        >>> bx.Outcome.name
+        'kiwi'
+        >>> bx.Outcome.box.Stim.name
+        'apple'
+        """
         self.Stim.SO = SO.Stim
         self.Stim.pair = self.Outcome
         self.Outcome.SO = SO.Outcome
@@ -30,7 +39,7 @@ class Box:
         @param choice - direction participant choose. can be None
         @return score (-1,0,1)
 
-        >>> bx = Box(Fruit('s'),Fruit('o'), Direction.Left, {PhaseType.SOA: [1]}, 'TestBox')
+        >>> bx = Box(Fruit('apple'),Fruit('kiwi'), Direction.Left, {PhaseType.SOA: [1]}, 'TestBox')
         >>> bx.score(PhaseType.ID, 1, Direction.Left)
         1
         >>> bx.score(PhaseType.ID, 1, Direction.Right)

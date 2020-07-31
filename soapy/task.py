@@ -3,7 +3,7 @@ import pandas as pd
 from psychopy import visual, core, event
 from psychopy.data import TrialHandler
 from typing import List, Tuple, Optional
-from soapy import KEYS
+from soapy import KEYS, image_path
 from soapy.lncdtasks import first_key, TaskTime, TaskDur, Keypress
 from soapy.task_types import KeypressDict, PhaseType, TrialType, SO
 from soapy.info import FabFruitInfo
@@ -28,9 +28,9 @@ class FabFruitTask:
                                               'block_score'])
 
         # display objects
-        self.box = visual.ImageStim(self.win, './static/images/box_open.png')
-        self.fruit = visual.ImageStim(self.win, 'static/images/apple.png')
-        self.X = visual.ImageStim(self.win, './static/images/devalue.png')
+        self.box = visual.ImageStim(self.win, image_path('box_open.png'))
+        self.fruit = visual.ImageStim(self.win, image_path('apple.png'))
+        self.X = visual.ImageStim(self.win, image_path('devalue.png'))
 
         # score box for ID feeback
         (w, h) = self.box.size
@@ -48,7 +48,7 @@ class FabFruitTask:
                         1 to 6 is grid (1-3 top left to right, 4-6 bottom L->R)
         @param devalue - should we draw an X over it?
         """
-        self.box.setImage('static/images/box_%s.png' % boxtype)
+        self.box.setImage(image_path(f'box_{boxtype}.png'))
         # closed box see stim, open to see outcome
         sotype = SO.Stim if boxtype == "closed" else SO.Outcome
         fruit_img = self.boxes[box_number].__getattribute__(sotype.name).image
