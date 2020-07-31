@@ -32,10 +32,6 @@ def validate():
         show_error(f"{INFO['phase']} phase not implemented")
         return False
 
-    if INFO['objs'] in ['animals']:
-        show_error(f"{INFO['objs']} has no images yet")
-        return False
-
     try:
         INFO['phase_type'] = PhaseType[INFO['phase']]
     except KeyError:
