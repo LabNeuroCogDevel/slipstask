@@ -124,7 +124,7 @@ Using jspsych and psiturk libraries
  see `$HOME/.psiturkconfig` w/ `[AWS Access]` containing `aws_access_key_id` and `aws_secret_access_key`. also `psiturk-heroku-config`
 
 ### Python
-The python task implementation came second. Warts from porting show. 
+The python task implementation came second. Warts from porting show: see `info.devalued_blocks` <-> TrialHanlder Dataframe
 min numpy version is 1.18 (need `numpy.random.default_rng`). 
 
 This version pays more attention to timing and psuedo-randomizes Left/Right choices.

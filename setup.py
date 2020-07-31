@@ -19,6 +19,10 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.8',
+    install_requires=[
+        'psychopy',
+        'typing',
+    ],
     include_package_data=True,
     scripts=['soapy/bin/SOA'],
 )
