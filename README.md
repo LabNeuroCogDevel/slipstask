@@ -132,7 +132,7 @@ This version pays more attention to timing and psuedo-randomizes Left/Right choi
 #### Usage
 ```
 # install (once)
-pip install -e 'https://github.com/LabNeuroCogDevel/slipstask'
+pip install -e 'git+https://github.com/LabNeuroCogDevel/slipstask'
 
 # with e.g. ~/.local/bin in $PATH
 SOA
