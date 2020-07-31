@@ -1,0 +1,12 @@
+penguin
+snail
+butterfly
+dragon
+shark
+zebra
+wolf
+sloth
+skunk
+boar
+lion
+gorilla
