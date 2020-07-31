@@ -81,7 +81,7 @@ win = Window(res)
 # TODO: use mainfest.in files
 p = INFO['phase_type']
 ffi = FabFruitInfo({p: DEFAULT_PHASES[p]})
-with open('static/images/%s.txt' % INFO['objs']) as f:
+with open(image_path(f"{INFO['objs']}.txt")) as f:
     fruit_names = [x.strip() for x in f.readlines()]
 ffi.set_names(fruit_names)
 
