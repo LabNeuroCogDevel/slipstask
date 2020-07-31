@@ -6,7 +6,7 @@ from psychopy.gui import Dlg, DlgFromDict
 from soapy.task_types import PhaseType
 from soapy.info import FabFruitInfo
 from soapy.task import FabFruitTask
-from soapy import DEFAULT_PHASES
+from soapy import DEFAULT_PHASES, image_path
 
 
 def show_error(msg):
@@ -77,7 +77,7 @@ win = Window(res)
 # TODO: use mainfest.in files
 p = INFO['phase_type']
 ffi = FabFruitInfo({p: DEFAULT_PHASES[p]})
-with open('static/images/%s.txt' % INFO['objs']) as f:
+with open(image_path(f"{INFO['objs']}.txt")) as f:
     fruit_names = [x.strip() for x in f.readlines()]
 ffi.set_names(fruit_names)
 

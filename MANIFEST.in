@@ -1,2 +1,3 @@
-include soapy/static/images/*.png soapy/static/images/*.txt
+include soapy/images/*.png
+include soapy/images/*.txt
 include soapy/bin/*
