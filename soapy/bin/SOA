@@ -6,7 +6,7 @@ from psychopy.gui import Dlg, DlgFromDict
 from soapy.task_types import PhaseType
 from soapy.info import FabFruitInfo
 from soapy.task import FabFruitTask
-from soapy import DEFAULT_PHASES
+from soapy import DEFAULT_PHASES, image_path
 
 
 def show_error(msg):
