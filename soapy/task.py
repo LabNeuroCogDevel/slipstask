@@ -4,7 +4,8 @@ from psychopy import visual, core, event
 from psychopy.data import TrialHandler
 from typing import List, Tuple, Optional
 from soapy import KEYS, image_path
-from soapy.lncdtasks import first_key, TaskTime, TaskDur, Keypress
+from soapy.lncdtasks import first_key, TaskTime, TaskDur, Keypress,\
+                            dly_waitKeys
 from soapy.task_types import KeypressDict, PhaseType, TrialType, SO
 from soapy.info import FabFruitInfo
 from soapy.lncdtasks import wait_until, Filepath
@@ -44,7 +45,7 @@ class FabFruitTask:
                                     pos=(0, h/2), size=(w/2, h/5))
         self.textBox = visual.TextStim(self.win)
 
-    def draw_box(self, boxtype, box_number, offset=0, devalue=False):
+    def draw_box(self, boxtype, box_number, offset=0, devalue=False) -> Tuple[float, float]:
         """draw a box and fruit
         @param boxtype - open or closed
         @param box_number - which box to draw
@@ -52,12 +53,14 @@ class FabFruitTask:
                         -2 is above -1 is below
                         1 to 6 is grid (1-3 top left to right, 4-6 bottom L->R)
         @param devalue - should we draw an X over it?
+        @param position of drawn box
         """
         self.box.setImage(image_path(f'box_{boxtype}.png'))
         # closed box see stim, open to see outcome
         sotype = SO.Stim if boxtype == "closed" else SO.Outcome
-        fruit_img = self.boxes[box_number].__getattribute__(sotype.name).image
-        self.fruit.setImage(fruit_img)
+        if box_number is not None:
+            fruit_img = self.boxes[box_number].__getattribute__(sotype.name).image
+            self.fruit.setImage(fruit_img)
         # set postion of box
         (w, h) = self.box.size
         positions = [
@@ -78,9 +81,12 @@ class FabFruitTask:
         self.X.pos = positions[offset+2]
 
         self.box.draw()
-        self.fruit.draw()
+        if box_number is not None:
+            self.fruit.draw()
         if devalue:
             self.X.draw()
+        
+        return positions[offset+2]
 
     def iti(self, onset: TaskTime = 0) -> TaskTime:
         """ show iti screen.
@@ -307,4 +313,24 @@ class FabFruitTask:
             print(f"WARNING: trying to save buth no 'save_path' given")
             return
         self.events.saveAsText(self.save_path)
+    
+    def instruction(self, top: str, func, bottom="(push any key)", flip=True) -> Keypress:
+        """print some text and run an arbitraty function"""
+        # text settings
+        self.textBox.height = .08
+        self.textBox.color = 'white'
 
+        if top:
+            self.textBox.pos = (0, .8)
+            self.textBox.text = top
+            self.textBox.draw()
+        if bottom:
+            self.textBox.pos = (0, -.8)
+            self.textBox.text = bottom
+            self.textBox.draw()
+        if func:
+            func(self)
+        if flip:
+            self.win.flip()
+        key = dly_waitKeys(.5)
+        return key

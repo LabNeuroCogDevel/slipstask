@@ -10,7 +10,7 @@ except:
 # Types
 Direction = Enum('Direction', 'Left Right None')
 SO = Enum('SO', 'Stim Outcome')
-PhaseType = Enum('PhaseType', 'ID OD SOA DD')
+PhaseType = Enum('PhaseType', 'ID OD SOA DD SURVEY')
 TrialType = Enum('TrialType', 'GRID SHOW FBK ITI SCORE')
 Deval2DList = List[List[int]]
 DevalDict = Dict[PhaseType, List[int]]
