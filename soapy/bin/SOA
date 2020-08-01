@@ -77,8 +77,8 @@ def pick_seed(seed_file):
     return random.default_rng(seed)
 
 # prompt until we're good or we cancel
-novalidate = True
-while novalidate or not validate():
+isvalid = False
+while not isvalid:
     # task settings - inside loop or we'd loos list of options
     INFO = {
         'ID': '',
@@ -90,10 +90,10 @@ while novalidate or not validate():
         'MR': False,
         'quick_test': True,
     }
-    novalidate = False
     dlg = DlgFromDict(INFO, title="Slips of Action/Fab Fruits")
     if not dlg.OK:
         sys.exit(1)
+    isvalid = validate()
 
 print(INFO)
 now = datetime.now()
