@@ -37,6 +37,7 @@ class FabFruitTask:
         self.box = visual.ImageStim(self.win, image_path('box_open.png'))
         self.fruit = visual.ImageStim(self.win, image_path('apple.png'))
         self.X = visual.ImageStim(self.win, image_path('devalue.png'))
+        self.confident = visual.ImageStim(self.win, image_path("confidence.png"))
 
         # score box for ID feeback
         (w, h) = self.box.size
@@ -131,6 +132,35 @@ class FabFruitTask:
         wait_until(onset, verbose=True)
         fliptime = self.win.flip()
         return fliptime
+    
+    def fruit_only(self, fruit: Fruit) -> Tuple[str, TaskDur, bool]:
+        """ show only a fruit, and ask what side it opens from
+        @param fruit - fruit to question
+        @return (resp, rt, iscorrect)"""
+        self.fruit.pos = (0, 0)
+        self.fruit.setImage(fruit.image)
+        self.fruit.draw()
+        self.win.flip()
+        resp = event.waitKeys(keyList=self.keys.keys())
+        rt = core.getTime() - onset
+        correct = self.keys[resp] == fruit.Dir.name
+        return (resp, rt, correct)
+
+    def get_confidence(self, mesg:str = "How confident are you?") -> Tuple[int, TaskDur]:
+        self.textBox.text = mesg
+        self.textBox.pos = (0, .9)
+        self.textBox.draw()
+        self.confidence.draw()
+        #self.fruit.size = (1, 1)
+        self.fruit.draw()
+        onset = self.win.flip()
+        # TODO: show image of hand
+        resp = event.waitKeys(keyList=["1", "2", "4", "5"])
+        resp = first_key(resp)
+        rt = core.getTime() - onset
+        return (int(resp), rt)
+
+
 
     def trial(self, btype: PhaseType, block_num: int, show_boxes: List[int],
               onset: TaskTime = 0, deval_idx: int = 1, dur: TaskDur = 1) -> Tuple[TaskTime, Optional[str], Optional[TaskDur]]:
