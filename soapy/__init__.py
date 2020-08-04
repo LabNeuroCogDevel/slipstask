@@ -26,11 +26,34 @@ KEYS: KeypressDict = {'left': Direction.Left,
                       '2': Direction.Right}
 
 
+def module_path() -> Filepath:
+    """return path to files in module
+    @return Filepath to module
+
+    NB. may need to rewrite to use pkgutil if using egg archive?
+   """
+    return soapy.__loader__.path
+
+
+def timing_path(phase: PhaseType = PhaseType.DD) -> List[Filepath]:
+    """find timing files for a given phase
+    likely only to be for DD
+    @param phase - PhaseType to find timing files for
+    @return list of paths to timing files
+    """
+    from glob import glob
+    mpath = module_path()
+    root = os.path.dirname(mpath)
+    tpath = os.path.join(root, "timing", phase.name)
+    if not os.path.isdir(tpath):
+        raise Exception(f"no path to timing for phase {phase.name}: {tpath}")
+    return glob(os.path.join(tpath, "*.csv"))
+
+
 def image_path(image: Optional[str] = None) -> Filepath:
     """ path to image folder. contains list txt files and disp images"""
-    # NB. may need to rewrite to use pkgutil if using egg archive?
     # data = pkgutil.get_data('soapy', 'images/X.png')
-    mpath = soapy.__loader__.path
+    mpath = module_path()
     root = os.path.dirname(mpath)
     ipath = os.path.join(root, "images")
     if image:

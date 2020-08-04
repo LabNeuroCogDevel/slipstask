@@ -2,12 +2,15 @@
 import sys
 import os
 from datetime import datetime
+from numpy import random
 from psychopy.gui import Dlg, DlgFromDict
+from typing import Optional, List
 from soapy.task_types import PhaseType
 from soapy.info import FabFruitInfo
+from soapy.instruct import show_instruction
 from soapy.task import FabFruitTask
-from soapy.lncdtasks import wait_for_scanner
-from soapy import DEFAULT_PHASES, image_path, read_img_list
+from soapy.lncdtasks import wait_for_scanner, Filepath
+from soapy import DEFAULT_PHASES, image_path, read_img_list, timing_path
 
 
 def show_error(msg):
@@ -16,8 +19,8 @@ def show_error(msg):
     d.addText(msg)
     d.show()
 
-
 def validate():
+    global INFO
     """check inputs are sane
     Dlg modifies global INFO dict"""
     if not INFO['ID']:
@@ -29,25 +32,38 @@ def validate():
         show_error("bad/no obj_seed: must be a whole number")
         return False
 
-    if INFO['phase'] in ['instructions']:
-        show_error(f"{INFO['phase']} phase not implemented")
-        return False
-
     try:
         INFO['phase_type'] = PhaseType[INFO['phase']]
     except KeyError:
         show_error(f"error using {INFO['phase']}!")
         return False
 
+    now = datetime.now()
+    INFO['vdate'] = datetime.strftime(now, "%Y%m%d")
+    INFO['vtime'] = datetime.strftime(now, "%H:%M.%S")
+    outdir = os.path.join("task_data", INFO['ID'], INFO['vdate'])
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+
+    INFO['outdir'] = outdir
+    # reuse or pick new seed
+    seed_file = os.path.join(outdir,"seed.txt")
+    seed = pick_seed(seed_file)
+    if not seed:
+        return False
+
+    INFO['seed'] = seed
+
     return True
 
-def pick_seed(seed_file):
+def pick_seed(seed_file: Filepath) -> Optional[random._generator.Generator]:
     """ seed can be specified or read from file
         but if both and they dont agree, panic
     @param seed_file - file to read seed from
     @param numpy.random.default_rng(seed)
+    @return numpy random seed object
+    sideffect - update INFO['obj_seed']
     """
-    from numpy import random
     seed = 0
     if os.path.isfile(seed_file):
         with open(seed_file) as f:
@@ -67,45 +83,67 @@ def pick_seed(seed_file):
         show_error(f"already have seed {seed} in {seed_file}.\n" +
                    f"you provided {INFO['obj_seed']}\n" +
                    f"Either set dialog value to {seed} or remove {seed_file}")
-        sys.exit(1)
+        return None
     
     # write seed to file
     if not os.path.isfile(seed_file):
         with open(seed_file,"w") as f:
             f.write(f"{seed}")
 
+    INFO['obj_seed'] = seed
     return random.default_rng(seed)
 
-# prompt until we're good or we cancel
-isvalid = False
-while not isvalid:
-    # task settings - inside loop or we'd loos list of options
-    INFO = {
-        'ID': '',
-        'obj_seed': 0,
-        'objs': ['fruits', 'animals', 'veggies'],
-        'phase': ['instructions', 'ID', 'OD', 'DD', 'SOA'],
-        'blocks': 3,
-        'fullscreen': False,
-        'MR': False,
-        'quick_test': True,
-    }
-    dlg = DlgFromDict(INFO, title="Slips of Action/Fab Fruits")
-    if not dlg.OK:
+def main_info():
+    global INFO
+    # prompt until we're good or we cancel
+    isvalid = False
+    while not isvalid:
+        # task settings - inside loop or we'd loos list of options
+        INFO = {
+            'ID': '',
+            'obj_seed': 0,
+            'objs': ['fruits', 'animals', 'veggies'],
+            'phase': ['ID', 'OD', 'DD', 'SOA'],
+            'fullscreen': False,
+            'instruction': True,
+            'MR': False,
+            'quick_test': True,
+        }
+        dlg = DlgFromDict(INFO, title="Slips of Action/Fab Fruits")
+        if not dlg.OK:
+            sys.exit(1)
+        isvalid = validate()
+
+        print(f"task INFO: {INFO}")
+        
+# ## Start
+main_info()
+p = INFO['phase_type']
+
+# use psudeo-random times?
+if INFO['MR']:
+    timing = timing_path(p)
+    random.default_rng(INFO['obj_seed']).shuffle(timing)
+    # TODO: dialog to set number of blocks
+    blockinfo={'start':0, 'end':3}
+    pdlg = DlgFromDict(block_settings, title="Slips of Action/Fab Fruits: settings")
+    if not pdlg.OK:
         sys.exit(1)
-    isvalid = validate()
+    timing = timing[blockinfo['start']:blockinfo['end']]
+    print(f"MR: using timing files {timing} for {start} to {end}")
+    ffi = FabFruitInfo(timing_files=timing, seed=INFO['seed'])
+else:
+    phase_settings = DEFAULT_PHASES[p]
+    phase_settings['itis'] = ",".join([str(x) for x in phase_settings.get('itis',[])])
+    pdlg = DlgFromDict(phase_settings, title="Slips of Action/Fab Fruits: settings")
+    if not pdlg.OK:
+        sys.exit(1)
+    phase_settings['itis'] = [float(x) for x in phase_settings['itis'].split(",")]
+    # build task
+    ffi = FabFruitInfo({p: phase_settings}, seed=INFO['seed'])
 
-print(INFO)
-now = datetime.now()
-vdate = datetime.strftime(now, "%Y%m%d")
-vtime = datetime.strftime(now, "%H:%M.%S")
-outdir = os.path.join("task_data", INFO['ID'], vdate)
-if not os.path.exists(outdir):
-    os.makedirs(outdir)
-
-# reuse or pick new seed
-seed_file = os.path.join(outdir,"seed.txt")
-seed = pick_seed(seed_file)
+# set fruits/animals/veggies. will use ffi.seed for random assignment
+ffi.set_names(read_img_list(INFO['objs']))
 
 
 # psychopy takes a bit to load. import here b/c we want a speedier dialog window
@@ -114,19 +152,15 @@ from psychopy.visual import Window
 res = [] if INFO['fullscreen'] else [800, 600]
 win = Window(res)
 
-# build task
-p = INFO['phase_type']
-ffi = FabFruitInfo({p: DEFAULT_PHASES[p]}, seed=seed)
-# set fruits/animals/veggies. will use ffi.seed for random assignment
-ffi.set_names(read_img_list(INFO['objs']))
 
 # if we are testing
 if INFO.get('quick_test'):
     ffi.timing = ffi.timing.loc[0:15]
-
+if INFO.get('instruction'):
+    show_instruction(win, p)
 # ## Build the task
 task = FabFruitTask(win, ffi)
-task.save_path = os.path.join(outdir,f"{vtime}_{INFO['phase']}.csv")
+task.save_path = os.path.join(INFO['outdir'],f"{INFO['vtime']}_{INFO['phase']}.csv")
 
 
 # when preset timing is not important, we can use

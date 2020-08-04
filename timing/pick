@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd $(dirname $0)
+outd=../soapy/timing/DD
+test -d $outd || mkdir -p $_
+head -n 10 seeded/tr1_dur1.5_454total.txt|cut -f1 |sed 1d| while read seedf; do
+  cp $seedf/DD.csv $outd/$(basename $seedf).csv
+done

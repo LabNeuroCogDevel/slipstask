@@ -13,5 +13,5 @@ for d in seeded/*/; do
          %_h = %{$h{$f}};
          print join("\t",$f, @_h{@vals} )
        }
- }' > ${d%/}.txt
+ }'| sort -k6n |uniq > ${d%/}.txt
 done

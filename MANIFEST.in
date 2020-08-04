@@ -1,3 +1,4 @@
 include soapy/images/*.png
 include soapy/images/*.txt
+include soapy/timing/*/*csv
 include soapy/bin/*

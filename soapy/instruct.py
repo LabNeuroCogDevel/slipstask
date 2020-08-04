@@ -14,7 +14,8 @@ def ID_example(t, left, right):
 
 chartsec = "5"
 respsec = "2"
-obj_type = "animal"
+obj_type = "fruit"
+example_type = "veggies"
 INSTRUCTIONS = {
 PhaseType.ID: [
     ["In this game, you will open tricky "+obj_type+" boxes.\n" +
@@ -111,7 +112,7 @@ def show_instruction(win, phase: PhaseType):
     # doesn't actaully matter what phase for this part
     ffi = FabFruitInfo({phase: DEFAULT_PHASES[phase]})
     # set fruits/animals/veggies. will use ffi.seed for random assignment
-    ffi.set_names(read_img_list(obj_type+"s"))
+    ffi.set_names(read_img_list(example_type))
     t = FabFruitTask(win, ffi)
     j = 0
     while j < len(INSTRUCTIONS[phase]):
