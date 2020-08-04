@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+
+#
+# 20200803 - send lowest norm std dev files to soapy package
+# so they are avaible for picking pseudo random timings
+#
 set -euo pipefail
 cd $(dirname $0)
 outd=../soapy/timing/DD

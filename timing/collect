@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+# 20200803 - put all 3ddeconvolve nodata outputs (norm std dev)
+# into a datatable. each row is a seed. columns are norm std dev of X.mat and contrasts
 set -euo pipefail
 cd $(dirname $0)
 for d in seeded/*/; do
