@@ -137,6 +137,12 @@ pip install -e 'git+https://github.com/LabNeuroCogDevel/slipstask'
 # with e.g. ~/.local/bin in $PATH
 SOA
 ```
+
+Running `SOA` opens a dialog box.
+Currently (20200803), only phase "DD" supports checking "MR."
+If MR is checked, timing files will be loaded, and an additional prompt will ask for start and end block numbers.
+Otherwise, the additional prompt will confirm timing and repitition settings for the randomly generated trials.
+
 #### Timing
 see `timing/gentiming.py`
 
