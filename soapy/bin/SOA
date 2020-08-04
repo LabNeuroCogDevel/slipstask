@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+
+# q to quit at any time?
+from psychopy.preferences import prefs
+prefs.general['shutdownKey'] = 'q'
+
 import sys
 import os
 from datetime import datetime
@@ -12,6 +17,8 @@ from soapy.task import FabFruitTask
 from soapy.lncdtasks import wait_for_scanner, Filepath
 from soapy import DEFAULT_PHASES, image_path, read_img_list, timing_path
 
+INFO = {}  # defined in main_info
+
 
 def show_error(msg):
     """quick dialog popup to report issues"""
@@ -19,10 +26,14 @@ def show_error(msg):
     d.addText(msg)
     d.show()
 
-def validate():
-    global INFO
+
+def validate() -> bool:
     """check inputs are sane
-    Dlg modifies global INFO dict"""
+    Dlg modifies global INFO dict
+    @return True if all good
+    side-effects: modify INFO
+    """
+    global INFO
     if not INFO['ID']:
         show_error("no ID given")
         return False
@@ -47,7 +58,7 @@ def validate():
 
     INFO['outdir'] = outdir
     # reuse or pick new seed
-    seed_file = os.path.join(outdir,"seed.txt")
+    seed_file = os.path.join(outdir, "seed.txt")
     seed = pick_seed(seed_file)
     if not seed:
         return False
@@ -55,6 +66,7 @@ def validate():
     INFO['seed'] = seed
 
     return True
+
 
 def pick_seed(seed_file: Filepath) -> Optional[random._generator.Generator]:
     """ seed can be specified or read from file
@@ -64,34 +76,35 @@ def pick_seed(seed_file: Filepath) -> Optional[random._generator.Generator]:
     @return numpy random seed object
     sideffect - update INFO['obj_seed']
     """
+    global INFO
     seed = 0
     if os.path.isfile(seed_file):
         with open(seed_file) as f:
-            seed = int(f.readline().replace("\n",""))
-
+            seed = int(f.readline().replace("\n", ""))
 
     # use file if we have it
     # unless expliclty set set seed from dialog
     # then check against known seed
     if not INFO['obj_seed'] and not seed:
         seed = int(random.uniform(10**10))
-    elif not seed: 
+    elif not seed:
         seed = INFO['obj_seed']
-    elif not INFO['obj_seed']: 
+    elif not INFO['obj_seed']:
         pass  # didn't try to change the seed, left at 0 in dialog. use file
     elif INFO['obj_seed'] != seed:
         show_error(f"already have seed {seed} in {seed_file}.\n" +
                    f"you provided {INFO['obj_seed']}\n" +
                    f"Either set dialog value to {seed} or remove {seed_file}")
         return None
-    
+
     # write seed to file
     if not os.path.isfile(seed_file):
-        with open(seed_file,"w") as f:
+        with open(seed_file, "w") as f:
             f.write(f"{seed}")
 
     INFO['obj_seed'] = seed
     return random.default_rng(seed)
+
 
 def main_info():
     global INFO
@@ -115,7 +128,8 @@ def main_info():
         isvalid = validate()
 
         print(f"task INFO: {INFO}")
-        
+
+
 # ## Start
 main_info()
 p = INFO['phase_type']
@@ -125,16 +139,16 @@ if INFO['MR']:
     timing = timing_path(p)
     random.default_rng(INFO['obj_seed']).shuffle(timing)
     # TODO: dialog to set number of blocks
-    blockinfo={'start':0, 'end':3}
-    pdlg = DlgFromDict(block_settings, title="Slips of Action/Fab Fruits: settings")
+    blockinfo = {'start': 0, 'end': 3}
+    pdlg = DlgFromDict(blockinfo, title="Slips of Action/Fab Fruits: settings")
     if not pdlg.OK:
         sys.exit(1)
     timing = timing[blockinfo['start']:blockinfo['end']]
-    print(f"MR: using timing files {timing} for {start} to {end}")
+    print(f"MR: using timing files for {blockinfo['start']} to {blockinfo['end']}: {timing} ")
     ffi = FabFruitInfo(timing_files=timing, seed=INFO['seed'])
 else:
     phase_settings = DEFAULT_PHASES[p]
-    phase_settings['itis'] = ",".join([str(x) for x in phase_settings.get('itis',[])])
+    phase_settings['itis'] = ",".join([str(x) for x in phase_settings.get('itis', [])])
     pdlg = DlgFromDict(phase_settings, title="Slips of Action/Fab Fruits: settings")
     if not pdlg.OK:
         sys.exit(1)
@@ -144,7 +158,6 @@ else:
 
 # set fruits/animals/veggies. will use ffi.seed for random assignment
 ffi.set_names(read_img_list(INFO['objs']))
-
 
 # psychopy takes a bit to load. import here b/c we want a speedier dialog window
 from psychopy.visual import Window
@@ -160,7 +173,7 @@ if INFO.get('instruction'):
     show_instruction(win, p)
 # ## Build the task
 task = FabFruitTask(win, ffi)
-task.save_path = os.path.join(INFO['outdir'],f"{INFO['vtime']}_{INFO['phase']}.csv")
+task.save_path = os.path.join(INFO['outdir'], f"{INFO['vtime']}_{INFO['phase']}.csv")
 
 
 # when preset timing is not important, we can use

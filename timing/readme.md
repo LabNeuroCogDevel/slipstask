@@ -2,7 +2,7 @@
 
 ## Code
 - `gentiming.py` runs through random seeds to generate files, esp `seeded/tr${TR}_dur${DUR}_${TIME}total/$seed/convolve.txt`
-  * cf. embeded `3dDeconvolve` call
+  * q.v. embeded `3dDeconvolve` call
   * contrasts: Left - Right, and valued - devalued
 
 - `collect` makes `seeded/tr${TR}_dur${DUR}_${TIME}total.txt` on `_h` and `_LC` outputs

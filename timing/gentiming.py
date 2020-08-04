@@ -124,7 +124,7 @@ def timing_okay(d):
     if dv_rep > MAX_DEVAL_REP:
         print(f"devalued box repeated {dv_rep} > {MAX_DEVAL_REP} times")
         return False
-    
+
     # only grab SHOW. and only if not SOA or DD deval
     # don't count sequence:  R, devalued R (cor resp is no resp) as a repeat
     have_side = (d.ttype == TrialType.SHOW) &\
