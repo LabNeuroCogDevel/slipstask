@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import os.path
 from psychopy import visual, core, event
 from psychopy.data import TrialHandler
 from typing import List, Tuple, Optional
@@ -289,16 +290,21 @@ class FabFruitTask:
 
     def survey(self):
         """ run through fruit and box survey"""
+        outf = open(os.path.join(self.save_path, "survey.txt"), "w")
+        outf.write(f"type disp f_resp f_rt pick iscorrect c_resp c_rt\n")
         # TODO make random order
         for f in self.fruits:
             print(f"showing {f}")
             (f_resp, f_rt, f_correct) = self.fruit_only(f)
             (c_resp, c_rt) = self.get_confidence()
-            # TODO: score
+            outf.write(f"side {f.name} {f_resp} {f_rt} {self.keys[f_resp]} {f_correct} {c_resp} {c_rt}\n")
 
         for b in self.boxes:
             (f_resp, f_rt, f_pick, f_corr) = self.fruit_fingers(b.Stim)
             (c_resp, c_rt) = self.get_confidence()
+            outf.write(f"pair {b.Sitm.name} {f_resp} {f_rt} {f_pick} {f_correct} {c_resp} {c_rt}\n")
+
+        outf.close()
 
     def run(self, init_time: Optional[TaskTime] = None):
         """ run the task through all events """
