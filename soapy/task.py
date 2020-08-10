@@ -3,13 +3,24 @@ import pandas as pd
 from psychopy import visual, core, event
 from psychopy.data import TrialHandler
 from typing import List, Tuple, Optional
-from soapy import KEYS, image_path
+from soapy import KEYS, NUM_KEYS, image_path
 from soapy.fruit import Fruit
 from soapy.lncdtasks import first_key, TaskTime, TaskDur, Keypress,\
                             dly_waitKeys
 from soapy.task_types import KeypressDict, PhaseType, TrialType, SO
 from soapy.info import FabFruitInfo
 from soapy.lncdtasks import wait_until, Filepath
+
+
+def wait_numkey(onset: TaskTime) -> Tuple[int, TaskDur]:
+    """ wait for keypress in use NUM_KEY and get numeric value
+    @param onset time to make rt relative to last flip
+    @return (index of resp, RT)
+    """
+    resp = event.waitKeys(keyList=NUM_KEYS)
+    resp = first_key(resp)
+    rt = core.getTime() - onset
+    return (NUM_KEYS.index(resp), rt)
 
 
 class FabFruitTask:
@@ -39,6 +50,14 @@ class FabFruitTask:
         self.fruit = visual.ImageStim(self.win, image_path('apple.png'))
         self.X = visual.ImageStim(self.win, image_path('devalue.png'))
         self.confidence = visual.ImageStim(self.win, image_path("confidence.png"))
+        self.hand = visual.ImageStim(self.win, image_path("hand_only.png"))
+        # downsize hands
+        if(self.win.size[1] <= 600):
+            self.confidence.size *= .5
+            self.hand.size *= .5
+        # bottom align
+        self.confidence.pos[1] = -1 + self.confidence.size[1]/2
+        self.hand.pos[1] = -1 + self.hand.size[1]/2
 
         # score box for ID feeback
         (w, h) = self.box.size
@@ -87,7 +106,7 @@ class FabFruitTask:
             self.fruit.draw()
         if devalue:
             self.X.draw()
-        
+
         return positions[offset+2]
 
     def iti(self, onset: TaskTime = 0) -> TaskTime:
@@ -133,18 +152,23 @@ class FabFruitTask:
         wait_until(onset, verbose=True)
         fliptime = self.win.flip()
         return fliptime
-    
+
     def fruit_only(self, fruit: Fruit) -> Tuple[str, TaskDur, bool]:
         """ show only a fruit, and ask what side it opens from
         @param fruit - fruit to question
         @return (resp, rt, iscorrect)"""
+        self.textBox.text = "Push the left or right key for this fruit"
+        self.textBox.pos = (0, .8)
         self.fruit.pos = (0, 0)
         self.fruit.setImage(fruit.image)
+
+        self.textBox.draw()
         self.fruit.draw()
         onset = self.win.flip()
         resp = event.waitKeys(keyList=self.keys.keys())
-        rt = core.getTime() - onset
-        correct = self.keys[resp] == fruit.box.Dir.name
+        resp = first_key(resp)
+        rt: TaskDur = core.getTime() - onset
+        correct: bool = self.keys[resp] == fruit.box.Dir.name
         return (resp, rt, correct)
 
     def get_confidence(self, mesg: str = "How confident are you?") -> Tuple[int, TaskDur]:
@@ -156,17 +180,11 @@ class FabFruitTask:
         self.textBox.pos = (0, .9)
         self.textBox.draw()
         self.confidence.draw()
-        #self.fruit.size = (1, 1)
-        self.fruit.draw()
         onset = self.win.flip()
-        # TODO: show image of hand
-        resp = event.waitKeys(keyList=["1", "2", "4", "5"])
-        resp = first_key(resp)
-        rt = core.getTime() - onset
-        return (int(resp), rt)
+        return wait_numkey(onset)
 
     def trial(self, btype: PhaseType, block_num: int, show_boxes: List[int],
-              onset: TaskTime = 0, deval_idx: int = 1, dur: TaskDur = 1) -> Tuple[TaskTime, Optional[str], Optional[TaskDur]]:
+              onset: TaskTime = 0, deval_idx: int = 1, dur: TaskDur = 1) -> Tuple[TaskTime, List[Keypress], Optional[TaskDur]]:
         """run a trial, flipping at onset
         @param btype - block type: what to show, how to score
         @param show_boxes - what box(es) to show
@@ -192,7 +210,7 @@ class FabFruitTask:
         wait_until(onset, verbose=True)
         fliptime = self.win.flip()
         # wait for response
-        resp: Optional[Keypress] = None
+        resp: List[Keypress] = []
         rt: Optional[TaskDur] = None
         if dur > 0:
             print(f'  wait-for-response for {dur}sec')
@@ -220,6 +238,67 @@ class FabFruitTask:
 
         wait_until(onset)
         return self.win.flip()
+
+    def fruit_fingers(self, stim: Fruit) -> Tuple[int, TaskDur, str, bool]:
+        """ overlay outcome fruits ontop of hand image for a given stim
+        @param stim - stim fruit. outcome pair will be among shown
+        @return index of response (thumb to pinky), RT, picked, correct """
+        self.textBox.text = "What is this label's pair"
+        self.textBox.pos = (0, .8)
+        self.fruit.pos = (0, .7)
+        self.fruit.setImage(stim.image)
+        self.textBox.draw()
+        self.fruit.draw()
+        self.hand.draw()
+
+        print(f'testing {stim.box}')
+        # fruits to show
+        #  shuffle all outcomes but one we want to include
+        this_outcome = stim.box.Outcome
+        show_fruits = [f for f in self.fruits
+                       if f.name != this_outcome.name and f.SO == SO.Outcome]
+        self.info.seed.shuffle(show_fruits)
+        # take out one at random (only have 5 fingers)
+        show_fruits = show_fruits[0:(len(self.boxes)-1)]
+        # and put the correct answer in
+        show_fruits.append(this_outcome)
+        self.info.seed.shuffle(show_fruits)
+        print(f'showing {show_fruits}')
+
+        # put a fruit on each finger
+        fingure_ends = [
+            [0.60, 0.55],  # thumb
+            [0.25, 1.05],  # index
+            [-.10, 1.10],  # middle
+            [-.35, 1.03],  # ring
+            [-.60, 0.75],  # pinky
+        ]
+        for i, pos in enumerate(fingure_ends):
+            x = self.hand.pos[0] - (self.hand.size[0] * pos[0])
+            y = -1 + (self.hand.size[1]*pos[1])
+            self.fruit.setImage(show_fruits[i].image)
+            self.fruit.pos = [x, y]
+            self.fruit.draw()
+
+        onset = self.win.flip()
+        (resp, rt) = wait_numkey(onset)
+        picked = show_fruits[resp].name
+        corr = picked == this_outcome.name
+        print(f"picked {picked}, is cor? {corr}")
+        return (resp, rt, picked, corr)
+
+    def survey(self):
+        """ run through fruit and box survey"""
+        # TODO make random order
+        for f in self.fruits:
+            print(f"showing {f}")
+            (f_resp, f_rt, f_correct) = self.fruit_only(f)
+            (c_resp, c_rt) = self.get_confidence()
+            # TODO: score
+
+        for b in self.boxes:
+            (f_resp, f_rt, f_pick, f_corr) = self.fruit_fingers(b.Stim)
+            (c_resp, c_rt) = self.get_confidence()
 
     def run(self, init_time: Optional[TaskTime] = None):
         """ run the task through all events """
@@ -287,7 +366,7 @@ class FabFruitTask:
                 # indicate we pushed a button by changing the screen
                 if e.resp and self.timing_method == "onset":
                     self.win.flip()
-                
+
                 # if we are running outside of scanner, don't wait for next
                 if self.timing_method == "dur":
                     e.dur = 0
@@ -346,7 +425,7 @@ class FabFruitTask:
             print(f"WARNING: trying to save buth no 'save_path' given")
             return
         self.events.saveAsText(self.save_path)
-    
+
     def instruction(self, top: str, func, bottom="(push any key)", flip=True) -> Keypress:
         """print some text and run an arbitraty function"""
         # text settings

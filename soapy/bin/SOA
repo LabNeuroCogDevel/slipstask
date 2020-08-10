@@ -116,7 +116,7 @@ def main_info():
             'ID': '',
             'obj_seed': 0,
             'objs': ['fruits', 'animals', 'veggies'],
-            'phase': ['ID', 'OD', 'DD', 'SOA'],
+            'phase': ['ID', 'OD', 'DD', 'SOA', 'SURVEY'],
             'fullscreen': False,
             'instruction': True,
             'MR': False,
@@ -147,23 +147,26 @@ if INFO['MR']:
     print(f"MR: using timing files for {blockinfo['start']} to {blockinfo['end']}: {timing} ")
     ffi = FabFruitInfo(timing_files=timing, seed=INFO['seed'])
 else:
-    phase_settings = DEFAULT_PHASES[p]
-    phase_settings['itis'] = ",".join([str(x) for x in phase_settings.get('itis', [])])
-    pdlg = DlgFromDict(phase_settings, title="Slips of Action/Fab Fruits: settings")
-    if not pdlg.OK:
-        sys.exit(1)
-    phase_settings['itis'] = [float(x) for x in phase_settings['itis'].split(",")]
     # build task
-    ffi = FabFruitInfo({p: phase_settings}, seed=INFO['seed'])
+    if INFO.get('phase_type') == PhaseType.SURVEY:
+        ffi = FabFruitInfo(seed=INFO['seed'])
+    else:
+        phase_settings = DEFAULT_PHASES[p]
+        phase_settings['itis'] = ",".join([str(x) for x in phase_settings.get('itis', [])])
+        pdlg = DlgFromDict(phase_settings, title="Slips of Action/Fab Fruits: settings")
+        if not pdlg.OK:
+            sys.exit(1)
+        phase_settings['itis'] = [float(x) for x in phase_settings['itis'].split(",")]
+        ffi = FabFruitInfo({p: phase_settings}, seed=INFO['seed'])
 
 # set fruits/animals/veggies. will use ffi.seed for random assignment
 ffi.set_names(read_img_list(INFO['objs']))
-ffi.save_boxes(os.path.join(INFO['outdir'], 'boxes.txt')) # will error if boxes change order/name
+ffi.save_boxes(os.path.join(INFO['outdir'], 'boxes.txt'))  # will error if boxes change order/name
 
 # psychopy takes a bit to load. import here b/c we want a speedier dialog window
 from psychopy.visual import Window
 
-res = [] if INFO['fullscreen'] else [800, 600]
+res = None if INFO['fullscreen'] else [800, 600]
 win = Window(res)
 
 
@@ -190,5 +193,8 @@ else:
     starttime = None
 
 # do it
-task.run(starttime)
-task.save_progress()
+if INFO.get('phase_type') == PhaseType.SURVEY:
+    task.survey()
+else:
+    task.run(starttime)
+    task.save_progress()
