@@ -158,6 +158,7 @@ else:
 
 # set fruits/animals/veggies. will use ffi.seed for random assignment
 ffi.set_names(read_img_list(INFO['objs']))
+ffi.save_boxes(os.path.join(INFO['outdir'], 'boxes.txt')) # will error if boxes change order/name
 
 # psychopy takes a bit to load. import here b/c we want a speedier dialog window
 from psychopy.visual import Window

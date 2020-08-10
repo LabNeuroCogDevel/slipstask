@@ -1,8 +1,11 @@
 import pandas as pd
 import numpy as np
+import re
+import os.path
 from typing import List, Dict, Tuple, Optional
 from soapy import DEFAULT_PHASES, FIRST_ONSET
-from soapy.task_types import PhaseDict, PhaseType, Deval2DList, TrialType, TrialDict, Direction
+from soapy.task_types import PhaseDict, PhaseType, Deval2DList, TrialType,\
+                             TrialDict, Direction
 from soapy.lncdtasks import Filepath, TaskTime, TaskDur
 from soapy.box import Box
 from soapy.fruit import Fruit
@@ -348,6 +351,81 @@ class FabFruitInfo:
         self.timing.loc[idx, 'bottom'] = [box_dict[bn][1].Stim.name for bn in self.timing.LR2[idx]]
 
         return self.timing
+
+    def save_boxes(self, fname: Filepath, ftest: bool = True) -> bool:
+        """ save boxes to a file. one line for each box
+        each line like {name}: {Stim.name} -> {Outcome.name} ({Dir})
+        @param fname - file to save to
+        @param ftest - check on previous file
+        @return True if wrote to file, False if no need.
+        Excpetion if what we'd write is different than what we have
+
+        >>> ffi = FabFruitInfo(nbox=2)
+        >>> d = ffi.set_names(["s1","s2", "o1", "o2"])
+        >>> ffi.save_boxes('/tmp/bnames.txt', ftest=False)
+        True
+        >>> ffi.save_boxes('/tmp/bnames.txt')
+        False
+        """
+        boxes = ["%s" % b for b in self.boxes]
+        if ftest and os.path.isfile(fname):
+            with open(fname) as f:
+                res = f.readlines()
+            if(res == boxes):
+                raise Exception(f'already saved boxes and they do not match! {boxes} vs stored {res}')
+
+            # if boxes are already saved and match. we can continue
+            return False
+
+        with open(fname, 'w') as f:
+            f.write("\n".join(boxes))
+
+        return True
+
+    def read_box_file(self, fname):
+        """ use read_boxes to set class info
+        side-effect: update fruits and boxes"""
+        (self.fruits, self.boxes) = read_boxes(fname)
+
+
+def read_boxes(fname: Filepath) -> Tuple[List[Fruit], List[Box]]:
+    """
+    read boxes from a textfile and set task info to them
+    used to recover after save_boxes() for survey
+    @param fname
+    @return (fruits, boxes)
+    >>> ffi = FabFruitInfo(nbox=2, seed=np.random.default_rng(1))
+    >>> d = ffi.set_names(["s1","s2", "o1", "o2"])
+    >>> f = '/tmp/box_read_test.txt'
+    >>> ffi.save_boxes(f, False)
+    True
+    >>> (f,b) = read_boxes(f)
+    >>> b
+    [R0: o1 -> s2 (Direction.Right), L0: o2 -> s1 (Direction.Left)]
+    """
+    boxre = re.compile("^(?P<box>.*): (?P<stim>.*) -> (?P<outcome>.*) \((?P<dir>.*)\)$")
+    with open(fname) as f:
+        lines = f.readlines()
+    res = [boxre.search(x) for x in lines]
+    # check no None
+    for x, i in enumerate(res):
+        if x is None:
+            raise Exception(f'could not read box on line {i}: {lines[i]}')
+
+    fruits = {x.group(t): Fruit(x.group(t))
+              for t in ['stim', 'outcome']
+              for x in res}
+    for line in res:
+        boxes = [Box(fruits[x.group('stim')],
+                     fruits[x.group('outcome')],
+                     x.group('dir'),
+                     {},
+                     x.group('box'))
+                 for x in res]
+
+    return([f for f in fruits.values()], boxes)
+
+
 
 
 def devalued_blocks(nblocks: int = 9, reps: int = 3, nbox: int = 6, choose: int = 2) -> Deval2DList:

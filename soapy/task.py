@@ -4,6 +4,7 @@ from psychopy import visual, core, event
 from psychopy.data import TrialHandler
 from typing import List, Tuple, Optional
 from soapy import KEYS, image_path
+from soapy.fruit import Fruit
 from soapy.lncdtasks import first_key, TaskTime, TaskDur, Keypress,\
                             dly_waitKeys
 from soapy.task_types import KeypressDict, PhaseType, TrialType, SO
@@ -37,7 +38,7 @@ class FabFruitTask:
         self.box = visual.ImageStim(self.win, image_path('box_open.png'))
         self.fruit = visual.ImageStim(self.win, image_path('apple.png'))
         self.X = visual.ImageStim(self.win, image_path('devalue.png'))
-        self.confident = visual.ImageStim(self.win, image_path("confidence.png"))
+        self.confidence = visual.ImageStim(self.win, image_path("confidence.png"))
 
         # score box for ID feeback
         (w, h) = self.box.size
@@ -140,13 +141,17 @@ class FabFruitTask:
         self.fruit.pos = (0, 0)
         self.fruit.setImage(fruit.image)
         self.fruit.draw()
-        self.win.flip()
+        onset = self.win.flip()
         resp = event.waitKeys(keyList=self.keys.keys())
         rt = core.getTime() - onset
-        correct = self.keys[resp] == fruit.Dir.name
+        correct = self.keys[resp] == fruit.box.Dir.name
         return (resp, rt, correct)
 
-    def get_confidence(self, mesg:str = "How confident are you?") -> Tuple[int, TaskDur]:
+    def get_confidence(self, mesg: str = "How confident are you?") -> Tuple[int, TaskDur]:
+        """ put up confidence image and wait for 1-5 key push
+        @param msg text shown, default "how confident are you"
+        @return (resp, rt)
+        """
         self.textBox.text = mesg
         self.textBox.pos = (0, .9)
         self.textBox.draw()
@@ -159,8 +164,6 @@ class FabFruitTask:
         resp = first_key(resp)
         rt = core.getTime() - onset
         return (int(resp), rt)
-
-
 
     def trial(self, btype: PhaseType, block_num: int, show_boxes: List[int],
               onset: TaskTime = 0, deval_idx: int = 1, dur: TaskDur = 1) -> Tuple[TaskTime, Optional[str], Optional[TaskDur]]:
