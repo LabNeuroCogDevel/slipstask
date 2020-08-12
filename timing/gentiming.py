@@ -154,32 +154,45 @@ def write_1d(d: pd.DataFrame, bcol='blocknum', fname=None):
         f.write("\n".join(x))
 
 
-def gen_timing(_, seed_int=None):
+def gen_timing(_, phase_info=DD, seed_int=None):
     """make a random timing, check we don't repeat too much. run 3dDeconvolve
     """
     global TR, DUR, TOTAL_SECS
 
+    # what phase are we working on?
+    outname=[x.name for x in phase_info.keys()]
+    if len(outname!=0):
+        raise Exception(f"expect only 1 phase key in {phase_info}")
+    outname=outname[0]
+
+    # gen random seed
     if not seed_int:
         seed_int = int(np.random.uniform(10**10))
 
-    outdir = f'seeded/tr{TR}_dur{DUR}_{TOTAL_SECS}total/{seed_int}'
+    # setup path
+    outdir = f'seeded/tr{TR}_dur{DUR}_{TOTAL_SECS}total/{seed_int}/{outname}'
     if os.path.isdir(outdir):
         return True
-    if os.path.exists(f"{outdir}/timing_cor.txt"):
-        return True
 
+    # generate task
     seed = np.random.default_rng(seed_int)
-    info = FabFruitInfo(phases=DD, seed=seed)
+    info = FabFruitInfo(phases=phase_info, seed=seed)
+    
+    # check again again incase we had a race condition when parallizing
+    if os.path.isdir(outdir):
+        return True
 
     # remove blocks so write_1d doesn't separate them
     # useful for 'combine': True -- when all(diff(onset)>0)
     info.timing['blocknum'] = 1
 
+    # we dont want too many repeats of anything
     if not timing_okay(info.timing):
         return False
+
     print('okay')
     os.makedirs(outdir, exist_ok=True)
-    info.timing.to_csv(f'{outdir}/DD.csv')
+    info.timing.to_csv(f'{outdir}/{outname}.csv')
 
     # all onsets
     d = info.timing[info.timing.ttype == TrialType.SHOW]
@@ -190,7 +203,7 @@ def gen_timing(_, seed_int=None):
     for side in ['L', 'R']:
         # for DD and SOA, devalued has no correct side
         # whereas, for OD, devalued still has a left or right cor resp
-        if True:
+        if outname in ['SOA','DD']:
             is_side = [x[0] == side for x in d.LR1]
             side_d = d[is_side]
         else:
@@ -200,30 +213,56 @@ def gen_timing(_, seed_int=None):
         write_1d(side_d[side_d.deval], fname=f'{outdir}/{side}_deval.1D')
         write_1d(side_d[np.logical_not(side_d.deval)], fname=f'{outdir}/{side}_val.1D')
 
-    # run deconvolve -nodata to get timining correlations
-    # output to textfiles for later
-    os.system(f"""
-      cd {outdir};
-      3dDeconvolve -nodata {nTR} {TR} \
-         -polort 3 \
-         -num_stimts 3 \
-         -stim_times  1 L_val.1D    'BLOCK({DUR})' -stim_label  1 Lval \
-         -stim_times  2 R_val.1D    'BLOCK({DUR})' -stim_label  2 Rval \
-         -stim_times  3 trials_deval.1D  'BLOCK({DUR})' -stim_label  3 deval \
-         -num_glt 2\
-         -gltsym "SYM: +Lval -Rval" -glt_label 1 L-R \
-         -gltsym "SYM: +.5*Lval +.5*Rval -deval" -glt_label 2 val-deval \
-         -x1D X.xmat.1D | tee convolve.txt;
-      1d_tool.py -cormat_cutoff 0.1 -show_cormat_warnings -infile X.xmat.1D \
-        2>timing_cor.warn | tee timing_cor.txt
-      """)
-
+    run_decon(outdir, outname)
     return True
+
+
+def run_decon(outdir, outname):
+    """ run deconvolve -nodata to get timining correlations
+    output to textfiles for later
+    """
+    global nTR, TR, DUR
+
+    if outname in ['DD', 'SOA']:
+        os.system(f"""
+          cd {outdir};
+          3dDeconvolve -nodata {nTR} {TR} \
+             -polort 3 \
+             -num_stimts 3 \
+             -stim_times  1 L_val.1D    'BLOCK({DUR})' -stim_label  1 Lval \
+             -stim_times  2 R_val.1D    'BLOCK({DUR})' -stim_label  2 Rval \
+             -stim_times  3 trials_deval.1D  'BLOCK({DUR})' -stim_label  3 deval \
+             -num_glt 2\
+             -gltsym "SYM: +Lval -Rval" -glt_label 1 L-R \
+             -gltsym "SYM: +.5*Lval +.5*Rval -deval" -glt_label 2 val-deval \
+             -x1D X.xmat.1D | tee convolve.txt;
+          """)
+    elif outname in ['ID', 'OD']:
+        os.system(f"""
+          cd {outdir};
+          3dDeconvolve -nodata {nTR} {TR} \
+             -polort 3 \
+             -num_stimts 3 \
+             -stim_times  1 L_val.1D    'BLOCK({DUR})' -stim_label  1 Lval \
+             -stim_times  2 R_val.1D    'BLOCK({DUR})' -stim_label  2 Rval \
+             -num_glt 1\
+             -gltsym "SYM: +Lval -Rval" -glt_label 1 L-R \
+             -x1D X.xmat.1D | tee convolve.txt;
+          """)
+    else:
+        raise Exception(f'unknown type {outname}')
+
+    os.system("""
+    cd {outdir};
+    1d_tool.py -cormat_cutoff 0.1 -show_cormat_warnings -infile X.xmat.1D \
+            2>timing_cor.warn | tee timing_cor.txt
+            """)
 
 
 if __name__ == "__main__":
     for _ in range(10000):
-        gen_timing(_)
+        gen_timing(_, DD)
+        gen_timing(_, ID)
 
     # from multiprocessing import Pool
     # p = Pool(2)
