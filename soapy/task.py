@@ -67,7 +67,7 @@ class FabFruitTask:
                                     pos=(0, h/2), size=(w/2, h/5))
         self.textBox = visual.TextStim(self.win)
 
-    def draw_box(self, boxtype, box_number, offset=0, devalue=False) -> Tuple[float, float]:
+    def draw_box(self, boxtype, box_number:Optional[int], offset=0, devalue=False) -> Tuple[float, float]:
         """draw a box and fruit
         @param boxtype - open or closed
         @param box_number - which box to draw
@@ -221,13 +221,15 @@ class FabFruitTask:
             rt = core.getTime() - onset
         return (fliptime, resp, rt)
 
-    def fbk(self, show_box: int, score: int, onset: TaskTime = 0) -> TaskTime:
+    def fbk(self, show_box: Optional[int], score: int, onset: TaskTime = 0) -> TaskTime:
         """ give feedback - only for ID
         @param show_boxes - which box idx to show
         @param score - score to display (see Box.score())
         @param onset - when to flip (default to now (0))
         """
 
+        if score <= 0:
+            show_box = None
         self.draw_box("open", show_box, 0)
 
         self.textBox.pos = self.scoreBox.pos
@@ -383,7 +385,7 @@ class FabFruitTask:
                 this_score = bx.score(e.phase, e.blocknum, e.side)
                 block_score += this_score
                 e.score = this_score
-                print(f"  #resp {resp} is {e.side} =>  {this_score} pts; total: {block_score}")
+                print(f"  #resp {resp} @ {e.rt:.2f}s is {e.side} =>  {this_score} pts; total: {block_score}")
                 self.events.addData('score', e.score)
                 self.events.addData('rt', e.rt)
                 self.events.addData('resp', ",".join(e.resp) if resp else None)
