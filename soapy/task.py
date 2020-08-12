@@ -436,15 +436,20 @@ class FabFruitTask:
 
     def instruction(self, top: str, func, bottom="(push any key)", flip=True) -> Keypress:
         """print some text and run an arbitraty function"""
-        # text settings
-        self.textBox.height = .08
-        self.textBox.color = 'white'
 
+        # instructions are not timing sensitive.
+        # and we need enough character columns to show the instructions
         if top:
-            self.textBox.pos = (0, .8)
-            self.textBox.text = top
-            self.textBox.draw()
+            visual.TextStim(self.win,
+                            text=top,
+                            pos=(0, .7),
+                            color='white',
+                            wrapWidth=2).\
+               draw()
+
         if bottom:
+            self.textBox.height = .08
+            self.textBox.color = 'white'
             self.textBox.pos = (0, -.8)
             self.textBox.text = bottom
             self.textBox.draw()

@@ -5,11 +5,13 @@ from soapy.info import FabFruitInfo
 from soapy.lncdtasks import dly_waitKeys
 from typing import List
 
-def ID_example(t, left, right):
+def ID_example(t, left=False, right=False):
     """draw boxes by example"""
     t.draw_box("closed", 1, 5)
-    t.draw_box("open", left, 4)
-    t.draw_box("open", right, 6)
+    if left:
+        t.draw_box("open", 2, 4)
+    if right:
+        t.draw_box("open", None, 6)
 
 
 chartsec = "5"
@@ -20,27 +22,30 @@ INSTRUCTIONS = {
 PhaseType.ID: [
     ["In this game, you will open tricky "+obj_type+" boxes.\n" +
      "The boxes look like this: \n",
-     lambda t: t.draw_box("closed", 1, 5)],
+     lambda t: ID_example(t,left=False, right=False)],
     ["All boxes open from both the left and right.\n" +
-     "You can pick which way to open the box using the left or right keys.\n",
-     lambda t: ID_example(t, None, None)],
+     "You can pick which way to open the box using \n" +
+     "your index or middle finger\n",
+     lambda t: ID_example(t, False, False)],
+    ["This box opens from the Left",
+     lambda t: ID_example(t, True, False)],
 
-    ["But the boxes have a trick to hide what's inside. \n" +
+    ["The boxes have a trick to hide what's inside. \n" +
      "If you pick the wrong side, the inside will appear empty and have no points.\n",
-     lambda t: ID_example(t, 2, None)],
+     lambda t: ID_example(t, False, True)],
 
     ["You will get points for picking the correct side to open.\n"+
      "Boxes labeled with the same "+obj_type+" on the outside always open from the same side."],
 
-    ["The boxes have another trick.\n" +
-     "The "+obj_type+" on the inside is different from "+obj_type+" label on the outside.\n" +
-     "Pay attention to this! Later, you will get points for knowing what outside "+obj_type+" label gives you the inside fruit.",
-     lambda t: ID_example(t, 2, 3)],
+    ["The "+obj_type+" on the inside is different from "+obj_type+" label on the outside.\n" +
+     "Pay attention to this!\nLater, you will get points for knowing what outside "+obj_type+" label gives you the inside fruit.",
+     lambda t: ID_example(t, 2, None)],
 
-    ["Learn how to open all the boxes and get the most points!\n" +
+    ["You have to pick quickly.\n" +
+     f"You only have {DEFAULT_PHASES[PhaseType.ID]['dur']} seconds to choose!"],
+    ["\n\nLearn how to open all the boxes and get the most points!\n" +
      "Remember what "+obj_type+"s are inside the boxes too.\n" +
-     "Ready to play!?\n" +
-     "We'll start when you hit next."],
+     "\n\nReady to play!?\n"],
     ],
 PhaseType.OD: [
      ["You opened all the boxes we have! But we have too many of some of the inside "+obj_type+"s. \n" +
@@ -59,14 +64,14 @@ PhaseType.OD: [
       "If you correctly open a box with spoiled "+obj_type+" inside, you'll lose points!"],
 
      ["You'll have 5 seconds to memorize the good/bad chart for each shipment.\n"+
-      "Then, you will only have 2 second to open or pass each box in the shipment.\n"],
+      "Then, you will only have 1.5 seconds to open or pass each box in the shipment.\n"],
 
      ["You'll see how well you did at the end of each shipment,\n" +
       "but you wont know if you're right or wrong until then."],
 
      ["Remember:\n" +
       " 5 seconds to memorize the chart for this shipment\n" +
-      " 2 seconds to pick or pass\n" +
+      " 1.5 seconds to pick or pass\n" +
       " Don't open boxes with X'ed "+obj_type+"s inside\n" +
       "When you're ready, click next."],
     ],
