@@ -18,10 +18,11 @@ for phase in ID OD DD; do
    echo "# $collect_file | sort by last field $sorton"
    # grab top 10
    sort -k${sorton}n $collect_file|
-    sed '1d;11q' seeded/$phase/tr1*.txt|cut -f1 |
+    sed '1d;11q' seeded/$phase/tr1*.txt |
+    cut -f1 |
     while read seedf; do
        saveto=$outd/$(basename $seedf).csv
        test -r $saveto && echo "# have $_" && continue
        $DRYRUN cp $seedf/$phase.csv $saveto
-   done
+   done || :
 done
