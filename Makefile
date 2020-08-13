@@ -29,6 +29,7 @@ soapy/wheelhouse.tar.gz: soapy/requirements.txt
 	test ! -d wheelhouse && mkdir wheelhouse
 	pip download -r requirements.txt -d wheelhouse
 	cp requirements.txt wheelhouse/
+	zip -r wheelhouse.zip wheelhouse/
 	tar -zcf wheelhouse.tar.gz wheelhouse/
 	rm -r wheelhouse
 

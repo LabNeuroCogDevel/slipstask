@@ -136,14 +136,20 @@ p = INFO['phase_type']
 
 # use psudeo-random times?
 if INFO['MR']:
-    timing = timing_path(p)
-    random.default_rng(INFO['obj_seed']).shuffle(timing)
-    # TODO: dialog to set number of blocks
-    blockinfo = {'start': 0, 'end': 3}
+    # DD has 3 mr blocks. 
+    mr_end = 3 if p == PhaseType.DD else 1
+
+    blockinfo = {'start': 0, 'end': mr_end}
     pdlg = DlgFromDict(blockinfo, title="Slips of Action/Fab Fruits: settings")
     if not pdlg.OK:
         sys.exit(1)
+
+    timingfileseed=INFO['obj_seed']+blockinfo['start']
+    timing = timing_path(p)
+    random.default_rng(timingfileseed).shuffle(timing)
     timing = timing[blockinfo['start']:blockinfo['end']]
+    # reset seed?
+    INFO['seed'] = random.default_rng(INFO['obj_seed'])
     print(f"MR: using timing files for {blockinfo['start']} to {blockinfo['end']}: {timing} ")
     ffi = FabFruitInfo(timing_files=timing, seed=INFO['seed'])
 else:
@@ -162,7 +168,20 @@ else:
 
 # set fruits/animals/veggies. will use ffi.seed for random assignment
 ffi.set_names(read_img_list(INFO['objs']))
-ffi.save_boxes(os.path.join(INFO['outdir'], 'boxes.txt'))  # will error if boxes change order/name
+boxfilename=os.path.join(INFO['outdir'], 'boxes.txt')
+if os.path.isfile(boxfilename):
+    print(f"# reading from {boxfilename}")
+    ffi.read_box_file(boxfilename)
+else:
+    print(f"# creating {boxfilename}")
+    ffi.save_boxes(boxfilename)  # will error if boxes change order/name
+
+# DEBUG
+boxes_string = "\n\t".join(["%s" % b for b in ffi.boxes])
+print(f'# generated/using\n\t{boxes_string}')
+print(f"# stored {boxfilename}\n")
+with open(boxfilename,'r') as bfile:
+   print("\t".join(["%s" % b for b in bfile.readlines()]))
 
 # psychopy takes a bit to load. import here b/c we want a speedier dialog window
 from psychopy.visual import Window

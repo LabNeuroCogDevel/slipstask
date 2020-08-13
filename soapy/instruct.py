@@ -48,19 +48,22 @@ PhaseType.ID: [
      "\n\nReady to play!?\n"],
     ],
 PhaseType.OD: [
-     ["You opened all the boxes we have! But we have too many of some of the inside "+obj_type+"s. \n" +
+     ["\nYou opened all the boxes we have!\n" +
+      "But we have too many of some of the inside "+obj_type+"s. \n" +
       "You can now get points by picking only the inside "+obj_type+"s without an X over them.\n"+
       "Pick a "+obj_type+" by using the same side that opened the box the "+obj_type+" was inside of"],
-     ["We'll tally up your score at the end. You wont know if you're right or wrong until then\n"+
-     "When you're ready to start, click next."],
+     ["\nWe'll tally up your score at the end. You wont know if you're right or wrong until then\n"+
+      "\nWhen you're ready to start, click next."],
      ],
 
      "SOA": [
-     ["New box shipments are coming in, but some of the "+obj_type+"s inside have gone bad!\n",
+     ["\n\nNew box shipments are coming in,\n"+
+      "but some of the "+obj_type+"s inside have gone bad!\n",
       "For each shipment, we have a chart showing good and bad "+obj_type+"s.\n"+
-      "Only open boxes with unspoiled "+obj_type+"s in them. Don't pick those with an <font color=red><b>X</b></font>  on them."],
+      "Only open boxes with unspoiled "+obj_type+"s in them." +
+      "\nDon't pick those with an X on them."],
      ["You will still get points for opening boxes with good "+obj_type+"s inside\n"+
-      "But <b>do not even try to open a box with a spoiled "+obj_type+"</b>.\n"+
+      "But do not even try to open a box with a spoiled "+obj_type+".\n"+
       "If you correctly open a box with spoiled "+obj_type+" inside, you'll lose points!"],
 
      ["You'll have 5 seconds to memorize the good/bad chart for each shipment.\n"+
