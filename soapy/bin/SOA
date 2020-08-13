@@ -157,6 +157,7 @@ else:
         if not pdlg.OK:
             sys.exit(1)
         phase_settings['itis'] = [float(x) for x in phase_settings['itis'].split(",")]
+        phase_settings['dur'] = float(phase_settings.get('dur', 1))
         ffi = FabFruitInfo({p: phase_settings}, seed=INFO['seed'])
 
 # set fruits/animals/veggies. will use ffi.seed for random assignment
@@ -166,8 +167,10 @@ ffi.save_boxes(os.path.join(INFO['outdir'], 'boxes.txt'))  # will error if boxes
 # psychopy takes a bit to load. import here b/c we want a speedier dialog window
 from psychopy.visual import Window
 
-res = None if INFO['fullscreen'] else [800, 600]
-win = Window(res)
+if INFO['fullscreen']:
+    win = Window(fullscr=True)
+else: 
+    win = Window([800, 600])
 
 
 # if we are testing
