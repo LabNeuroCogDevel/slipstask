@@ -4,9 +4,9 @@
 # into a datatable. each row is a seed. columns are norm std dev of X.mat and contrasts
 set -euo pipefail
 cd $(dirname $0)
-for phase in DD; do
-   for d in seeded/*/; do
-      find $d -maxdepth 3 -mindepth 3 -type f -iname 'convolve.txt' |
+for phase in DD OD ID; do
+   for d in seeded/$phase/tr*/; do
+      find $d -maxdepth 2 -mindepth 2 -type f -iname 'convolve.txt' |
        xargs perl -MFile::Basename=dirname -lne '
         $key=$2 if /(Gen|Stim).*: ([^ ]*)/;
         $h{dirname($ARGV)}{"${key}_$1"}=$2 if /^\W+(LC|h).*=.*?([0-9.]+)/;
@@ -17,6 +17,6 @@ for phase in DD; do
             %_h = %{$h{$f}};
             print join("\t",$f, @_h{@vals} )
           }
-    }'| sort -k6n |uniq > ${d%/}_$phase.txt
+    }'| sort -k6n |uniq > ${d%/}.txt
    done
 done

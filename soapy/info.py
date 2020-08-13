@@ -168,6 +168,26 @@ class FabFruitInfo:
         6             1
         7             1
         8             1
+
+        this should work for ID too
+        >>> ffi=FabFruitInfo(phases ={PhaseType.ID: DEFAULT_PHASES[PhaseType.ID]}, nbox=6)
+        >>> d = pd.DataFrame(ffi.block_timing(PhaseType.ID))
+        >>> d[(d.ttype == 'SHOW') & (d.LR1 == 'L1')].groupby('blocknum').agg({'LR1':len})
+                  LR1
+        blocknum     
+        0           2
+        1           2
+        2           2
+        3           2
+        4           2
+        5           2
+
+        and if we want only two block of ID?
+        >>> ffi=FabFruitInfo(phases={PhaseType.ID: \
+            {'itis': [0.5], 'dur': 1.5, 'fbk': 1, 'score': 2, 'blocks': 2, 'reps': 2}}, nbox=6)
+        >>> d = pd.DataFrame(ffi.block_timing(PhaseType.ID))
+        >>> d[(d.ttype == 'SHOW') & (d.LR1 == 'L1')].shape[0]
+        4
         """
 
         settings = self.phases[ptype]
@@ -208,7 +228,7 @@ class FabFruitInfo:
             # LR12 will have 2 if SOA or DD during grid (first event only)
             # TODO: maybe hardcode check ptype in SOA DD and len(LR12)==2
             LR12 = [i for i, x in enumerate(devalued_at) if bnum in x]
-            if len(LR12) == 2:
+            if len(LR12) == 2 and ptype in [PhaseType.SOA, PhaseType.DD]:
                 trls.append(trial_dict(ptype, TrialType.GRID, bnum,  -1,
                                        LR1=sides[LR12[0]],
                                        LR2=sides[LR12[1]],
@@ -219,7 +239,13 @@ class FabFruitInfo:
             # generic SHOW, ITI, end of block SCORE
             for tnum in range(ntrl_in_block):
                 LR1 = boxnamedir[tnum]
-                side_devalued = devalued_at[sides.index(LR1)]
+                sidesidx = sides.index(LR1)
+                if sidesidx >= len(devalued_at):
+                    # WARNING: we are only here when we requested fewer blocks (devals) than generated
+                    #  specificly, for ID with blocks < 6
+                    side_devalued = []
+                else:
+                    side_devalued = devalued_at[sidesidx]
                 # Show box(es)
                 trls.append(trial_dict(ptype, TrialType.SHOW, bnum,  tnum, boxnamedir[tnum],
                                        deval=bnum in side_devalued,

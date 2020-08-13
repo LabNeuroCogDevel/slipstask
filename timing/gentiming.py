@@ -5,8 +5,9 @@ import math
 import numpy as np
 import pandas as pd
 sys.path.insert(1, os.path.realpath(os.path.pardir))
+import soapy
+import soapy.info
 from soapy.task_types import TrialType, PhaseType
-from soapy.info import FabFruitInfo
 os.chdir(os.path.dirname(__file__))
 
 
@@ -20,8 +21,6 @@ os.chdir(os.path.dirname(__file__))
 # total time = 454
 
 TR = 1
-TOTAL_SECS = 454
-DUR = 1.5
 MAX_DEVAL_REP = 15
 # 36 devalued (9 blocks, 2 deval blocks rep 2x in each)
 # dont want to have devalued box (cor resp is no resp)
@@ -29,11 +28,13 @@ MAX_DEVAL_REP = 15
 
 DD = {PhaseType.DD: {
     'itis': [1, 1, 1, 2, 2, 5],  # iti dur ratio: 3x 1s dur for every 1x 5s
-    'dur': DUR,                  # time allowed for response
+    'dur': 1.5,                  # time allowed for response
     'grid': 5.0, 'score': 2,     # grid at start, score at end (durations)
     'blocks': 9, 'reps': 2,      # 9 reps with every box seen twice
     'ndevalblocks': 3,           # each box is devalued 3 times
-    'combine': True}}            # block onset times are combined into one run
+    'combine': True,
+    'total_secs': 454}}            # block onset times are combined into one run
+
 
 # ITI dist accross 108 trials like
 #      n iti_dur
@@ -41,9 +42,22 @@ DD = {PhaseType.DD: {
 #     36 2.0
 #     18 5.0
 
-# compute other setting variables
-nTR = math.ceil(TOTAL_SECS/TR)
 
+# (avg iti 2 + 1.5 show + 1 fbk)*6*2 + 2
+ID = {PhaseType.ID: {
+    'itis': [1, 1, 1, 2, 2, 5],
+    'dur': 1.5,
+    'fbk': 1,
+    'score': 2,
+    'blocks': 1,
+    'reps': 2,
+    'total_secs': 56+12}}
+
+OD = {PhaseType.OD: {
+     'itis': [1, 1, 1, 2, 2, 5],
+     'dur': 1.5,
+     'score': 2,
+     'total_secs': 140}}
 
 def rep_cnts(x, rep_max=4, reset_every=12):
     """dumb quick way to count reps - almost `rle`
@@ -157,26 +171,32 @@ def write_1d(d: pd.DataFrame, bcol='blocknum', fname=None):
 def gen_timing(_, phase_info=DD, seed_int=None):
     """make a random timing, check we don't repeat too much. run 3dDeconvolve
     """
-    global TR, DUR, TOTAL_SECS
+    global TR
 
     # what phase are we working on?
     outname=[x.name for x in phase_info.keys()]
-    if len(outname!=0):
+    if len(outname) !=1:
         raise Exception(f"expect only 1 phase key in {phase_info}")
     outname=outname[0]
+
+    p = phase_info[PhaseType[outname]]
+    TOTAL_SECS = p['total_secs']
+    DUR = p['dur']
+    # compute other setting variables
+    nTR = math.ceil(TOTAL_SECS/TR)
 
     # gen random seed
     if not seed_int:
         seed_int = int(np.random.uniform(10**10))
 
     # setup path
-    outdir = f'seeded/tr{TR}_dur{DUR}_{TOTAL_SECS}total/{seed_int}/{outname}'
+    outdir = f'seeded/{outname}/tr{TR}_dur{DUR}_{TOTAL_SECS}total/{seed_int}'
     if os.path.isdir(outdir):
         return True
 
     # generate task
     seed = np.random.default_rng(seed_int)
-    info = FabFruitInfo(phases=phase_info, seed=seed)
+    info = soapy.info.FabFruitInfo(phases=phase_info, seed=seed)
     
     # check again again incase we had a race condition when parallizing
     if os.path.isdir(outdir):
@@ -193,6 +213,7 @@ def gen_timing(_, phase_info=DD, seed_int=None):
     print('okay')
     os.makedirs(outdir, exist_ok=True)
     info.timing.to_csv(f'{outdir}/{outname}.csv')
+    print(outdir)
 
     # all onsets
     d = info.timing[info.timing.ttype == TrialType.SHOW]
@@ -213,15 +234,15 @@ def gen_timing(_, phase_info=DD, seed_int=None):
         write_1d(side_d[side_d.deval], fname=f'{outdir}/{side}_deval.1D')
         write_1d(side_d[np.logical_not(side_d.deval)], fname=f'{outdir}/{side}_val.1D')
 
-    run_decon(outdir, outname)
+    run_decon(outdir, outname, nTR, DUR)
     return True
 
 
-def run_decon(outdir, outname):
+def run_decon(outdir, outname, nTR, DUR):
     """ run deconvolve -nodata to get timining correlations
     output to textfiles for later
     """
-    global nTR, TR, DUR
+    global TR
 
     if outname in ['DD', 'SOA']:
         os.system(f"""
@@ -242,7 +263,7 @@ def run_decon(outdir, outname):
           cd {outdir};
           3dDeconvolve -nodata {nTR} {TR} \
              -polort 3 \
-             -num_stimts 3 \
+             -num_stimts 2 \
              -stim_times  1 L_val.1D    'BLOCK({DUR})' -stim_label  1 Lval \
              -stim_times  2 R_val.1D    'BLOCK({DUR})' -stim_label  2 Rval \
              -num_glt 1\
@@ -252,9 +273,9 @@ def run_decon(outdir, outname):
     else:
         raise Exception(f'unknown type {outname}')
 
-    os.system("""
-    cd {outdir};
-    1d_tool.py -cormat_cutoff 0.1 -show_cormat_warnings -infile X.xmat.1D \
+    os.system(f"""
+      cd {outdir};
+      1d_tool.py -cormat_cutoff 0.1 -show_cormat_warnings -infile X.xmat.1D \
             2>timing_cor.warn | tee timing_cor.txt
             """)
 
@@ -263,6 +284,7 @@ if __name__ == "__main__":
     for _ in range(10000):
         gen_timing(_, DD)
         gen_timing(_, ID)
+        gen_timing(_, OD)
 
     # from multiprocessing import Pool
     # p = Pool(2)
