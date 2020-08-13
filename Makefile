@@ -21,3 +21,16 @@ test: tests/.res.tap
 tests/.res.tap: $(wildcard tests/*js)
 	# npm test
 	jest --json 2>/dev/null | jest-json-to-tap > $@
+
+# https://stackoverflow.com/questions/11091623/how-to-install-packages-offline
+.ONESHELL:
+soapy/wheelhouse.tar.gz: soapy/requirements.txt
+	cd soapy
+	test ! -d wheelhouse && mkdir wheelhouse
+	pip download -r requirements.txt -d wheelhouse
+	cp requirements.txt wheelhouse/
+	tar -zcf wheelhouse.tar.gz wheelhouse/
+	rm -r wheelhouse
+
+install_depends: soapy/wheelhouse.tar.gz
+	pip install -r wheelhouse/requirements.txt --no-index --find-links wheelhouse
