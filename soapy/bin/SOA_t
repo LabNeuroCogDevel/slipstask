@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+
+# q to quit at any time?
+from psychopy.preferences import prefs
+prefs.general['shutdownKey'] = 'q'
+
+import sys
+import os
+from datetime import datetime
+from numpy import random
+from typing import Optional, List
+from soapy.task_types import PhaseType
+from soapy.info import FabFruitInfo
+from soapy.instruct import show_instruction
+from soapy.task import FabFruitTask
+from soapy.seeded import pick_seed, info_from_seed, update_boxes
+from soapy import DEFAULT_PHASES
+
+INFO = {}  # defined in main_info
+
+
+def validate() -> bool:
+    """check inputs are sane
+    Dlg modifies global INFO dict
+    @return True if all good
+    side-effects: modify INFO
+    """
+    global INFO
+    if not INFO['ID']:
+        print("bad id")
+        return False
+    try:
+        INFO['obj_seed'] = int(INFO['obj_seed'])
+    except ValueError:
+        print(f"bad seed {INFO['obj_seed']}")
+        return False
+
+    try:
+        INFO['phase_type'] = PhaseType[INFO['phase']]
+    except KeyError:
+        print(f"bad phasetype {INFO['phase']}")
+        return False
+
+    now = datetime.now()
+    INFO['vdate'] = datetime.strftime(now, "%Y%m%d")
+    INFO['vtime'] = datetime.strftime(now, "%H:%M.%S")
+    outdir = os.path.join("task_data", INFO['ID'], INFO['vdate'])
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+
+    INFO['outdir'] = outdir
+    # reuse or pick new seed
+    seed_file = os.path.join(outdir, "seed.txt")
+    INFO['obj_seed'] = pick_seed(seed_file)
+
+    print(f"seed: {INFO['obj_seed']}")
+
+    return True
+
+
+# task settings - inside loop or we'd loos list of options
+INFO = {
+        'ID': 'test',
+        'obj_seed': 0,
+        'objs': 'fruits',
+        'phase': sys.argv[1],
+        'fullscreen': False,
+        'instruction': True,
+        'MR': len(sys.argv) > 2,
+        'quick_test': True,
+        }
+
+if not validate():
+    print("error validating")
+    sys.exit(1)
+
+# ## Start
+p = INFO['phase_type']
+
+blockinfo = {'start': 0, 'end': 0}
+# use psudeo-random times?
+if INFO['MR']:
+    # DD has 3 mr blocks.
+    blockinfo = {'start': int(sys.argv[2]), 'end': int(sys.argv[3])}
+
+ffi = info_from_seed(p, INFO['obj_seed'], blockinfo['start'], blockinfo['end'],
+                    {p: DEFAULT_PHASES[p]})
+ffi = update_boxes(ffi, INFO['objs'], INFO['outdir'])
