@@ -27,7 +27,8 @@ KEYS: KeypressDict = {'left': Direction.Left,
 
 # thumb, index, middle, ring, pincky
 # will use index to lookup
-NUM_KEYS = ["0", "1", "2" ,"3", "4"]
+NUM_KEYS = ["0", "1", "2", "3", "4"]
+
 
 def module_path() -> Filepath:
     """return path to files in module
@@ -71,7 +72,7 @@ def read_img_list(objs_type: str) -> List[str]:
     """read fruit/object names from txt file list in package data"""
     filename = image_path(f'{objs_type}.txt')
     if not os.path.isfile(filename):
-        raise Exception("Missing {objs_type} list file {filename}")
+        raise Exception(f"Missing {objs_type} list file {filename}")
     with open(filename) as f:
         names = [x.strip() for x in f.readlines()]
     return(names)
