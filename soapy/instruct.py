@@ -5,6 +5,7 @@ from soapy.info import FabFruitInfo
 from soapy.lncdtasks import dly_waitKeys
 from typing import List
 
+
 def ID_example(t, left=False, right=False):
     """draw boxes by example"""
     t.draw_box("closed", 1, 5)
@@ -14,15 +15,15 @@ def ID_example(t, left=False, right=False):
         t.draw_box("open", None, 6)
 
 
-chartsec = "5"
-respsec = "2"
+chartsec = "%s" % DEFAULT_PHASES[PhaseType.DD]['grid']
+respsec = "%s" % DEFAULT_PHASES[PhaseType.DD]['dur']
 obj_type = "fruit"
 example_type = "veggies"
 INSTRUCTIONS = {
 PhaseType.ID: [
     ["In this game, you will open tricky "+obj_type+" boxes.\n" +
      "The boxes look like this: \n",
-     lambda t: ID_example(t,left=False, right=False)],
+     lambda t: ID_example(t, left=False, right=False)],
     ["All boxes open from both the left and right.\n" +
      "You can pick which way to open the box using \n" +
      "your index or middle finger\n",
@@ -34,7 +35,7 @@ PhaseType.ID: [
      "If you pick the wrong side, the inside will appear empty and have no points.\n",
      lambda t: ID_example(t, False, True)],
 
-    ["You will get points for picking the correct side to open.\n"+
+    ["You will get points for picking the correct side to open.\n" +
      "Boxes labeled with the same "+obj_type+" on the outside always open from the same side."],
 
     ["The "+obj_type+" on the inside is different from "+obj_type+" label on the outside.\n" +
@@ -67,14 +68,14 @@ PhaseType.OD: [
       "If you correctly open a box with spoiled "+obj_type+" inside, you'll lose points!"],
 
      ["You'll have 5 seconds to memorize the good/bad chart for each shipment.\n"+
-      "Then, you will only have 1.5 seconds to open or pass each box in the shipment.\n"],
+      "Then, you will only have " + respsec + " seconds to open or pass each box in the shipment.\n"],
 
      ["You'll see how well you did at the end of each shipment,\n" +
       "but you wont know if you're right or wrong until then."],
 
      ["Remember:\n" +
       " 5 seconds to memorize the chart for this shipment\n" +
-      " 1.5 seconds to pick or pass\n" +
+      " " + respsec + " seconds to pick or pass\n" +
       " Don't open boxes with X'ed "+obj_type+"s inside\n" +
       "When you're ready, click next."],
     ],
@@ -83,7 +84,7 @@ PhaseType.DD: [
     ["Someone tried to intercept our shipments of tricky boxes and damanged some of them!\n" +
      "For each shipment, we have a chart of what boxes were damaged."],
     ["You will still get points for opening boxes with good "+obj_type+"s inside\n"+
-     "But, <b>don't even try to open a damaged box</b>.\n" +
+     "But, don't even try to open a damaged box.\n" +
      "If you open a damanged box correctly, you'll lose points!"],
     ["You'll have " + chartsec + " seconds to memorize the good/bad chart for each shipment.\n"+
      "Then, you will only have " + respsec + " second to open or pass each box in the shipment.\n"],

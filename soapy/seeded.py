@@ -8,9 +8,10 @@ from soapy.info import FabFruitInfo
 from soapy.lncdtasks import Filepath
 
 
-def info_from_seed(p: PhaseType, seed_init: int,
-                   mr_start: int = 0, mr_end: int = 0,
-                   settings=DEFAULT_PHASES) -> FabFruitInfo:
+def single_phase(p: PhaseType, seed_init: int,
+                 mr_start: int = 0, mr_end: int = 0,
+                 settings=DEFAULT_PHASES) -> FabFruitInfo:
+    """ generate info from a seed """
 
     # use psudeo-random times?
     if mr_end != 0:
@@ -28,14 +29,17 @@ def info_from_seed(p: PhaseType, seed_init: int,
         if p == PhaseType.SURVEY:
             ffi = FabFruitInfo(seed=seed)
         else:
+            print(f"non-MR {settings}")
             ffi = FabFruitInfo(settings, seed=seed)
     return ffi
 
 
-def update_boxes(ffi: FabFruitInfo, obj_type: str, outdir: Filepath) -> FabFruitInfo:
+def update_boxes(ffi: FabFruitInfo, obj_type: str,
+                 outdir: Filepath) -> FabFruitInfo:
     """ set boxes based on saved file """
     # set fruits/animals/veggies. will use ffi.seed for random assignment
     ffi.set_names(read_img_list(obj_type))
+
     boxfilename = os.path.join(outdir, 'boxes.txt')
     if os.path.isfile(boxfilename):
         print(f"# reading from {boxfilename}")
@@ -46,7 +50,7 @@ def update_boxes(ffi: FabFruitInfo, obj_type: str, outdir: Filepath) -> FabFruit
     # DEBUG
     boxes_string = "\n\t".join(["%s" % b for b in ffi.boxes])
     print(f'# generated/using\n\t{boxes_string}')
-    print(f"# stored {boxfilename}\n")
+    print(f"# stored {boxfilename}\n\t", end="")
     with open(boxfilename, 'r') as bfile:
         print("\t".join(["%s" % b for b in bfile.readlines()]))
 

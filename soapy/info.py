@@ -310,7 +310,7 @@ class FabFruitInfo:
         @param fnames - list of filename of csv
         @param td - timing dataframe
         @return dataframe w/catagorical phase and trial types
-                also updated self.timing, self.nbox, and self.devals
+        @side-effects  updated self.timing, self.nbox, and self.devals
 
         header/colnames matches dict returned by trial_dict
 
@@ -332,9 +332,26 @@ class FabFruitInfo:
         self.nbox = d.LR1[d.ttype == TrialType.SHOW].unique().size
         allphases = d.phase.unique()
         devalphase = [p for p in allphases if p in [PhaseType.SOA, PhaseType.DD]]
+        # if reading from long file, might not have blocknumber correct
+        is_all_devalblocks = [x in [PhaseType.DD, PhaseType.SOA] for x in d['phase']]
+        if all(d['blocknum'] == d['blocknum'][0]) and all(is_all_devalblocks):
+            new_blocks = np.cumsum((d['phase'] == d['phase'].shift()) & (d['ttype'] == TrialType.GRID) )
+            print(f"new blocks {new_blocks}")
+            d['blocknum'] = new_blocks
         self.devals = {p: extract_devalued(d, p) for p in devalphase}
+        print(f"read_timing devals: {self.devals}")
 
         return d
+    
+    def set_devals(self):
+        """ using self.timing to set self.devals via extract_devalued
+        @sideffect set self.devals
+        @return dataframe
+        """
+        for bx in self.boxes:
+            bx.devalued_blocks = {
+                pt: [b_i for b_i, b in enumerate(d_blks) if bx.name in b]
+                for pt, d_blks in self.devals.items()}
 
     def set_names(self, fruit_names):
         """replace L0-R2 with fruit names, add column with index
@@ -413,8 +430,17 @@ class FabFruitInfo:
 
     def read_box_file(self, fname):
         """ use read_boxes to set class info
-        side-effect: update fruits and boxes"""
-        (self.fruits, self.boxes) = read_boxes(fname)
+        side-effect: update fruits and boxes
+        will distroy devalued_blocks!?
+        """
+
+        # keep old devalued blocks
+        # likely read in from timing file by set_names
+        box_deval = {x.name: x.devalued_blocks for x in self.boxes}
+        print(box_deval)
+        self.set_devals()
+        print(box_deval)
+
         boxes_string = "\n\t".join(["%s" % b for b in self.boxes])
         print(f'# after read_box_file\n\t{boxes_string}')
 

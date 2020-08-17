@@ -13,10 +13,10 @@ DEFAULT_PHASES: PhaseDict = {
      PhaseType.ID: {'itis': [.5], 'dur': 1.5, 'fbk': 1, 'score': 2,
                     'blocks': 6, 'reps': 2},
      PhaseType.OD: {'itis': [1.5], 'dur': 1, 'score': 2},
-     PhaseType.DD: {'blocks': 9, 'reps': 2, 'dur': 1,
+     PhaseType.DD: {'blocks': 9, 'reps': 2, 'dur': 2,
                     'itis': [1, 1, 1, 2, 2, 5], 'score': 1, 'grid': 5.0,
                     'ndevalblocks': 3},
-     PhaseType.SOA: {'blocks': 9, 'reps': 2, 'dur': 1,
+     PhaseType.SOA: {'blocks': 9, 'reps': 2, 'dur': 2,
                      'itis': [1, 1, 1, 2, 2, 5], 'score': 1, 'grid': 5.0,
                      'ndevalblocks': 3}}
 

@@ -55,7 +55,9 @@ class Box:
         """
         if not choice:
             return 0
-        if btype in [PhaseType.DD, PhaseType.SOA] and bnum in self.devalued_blocks[btype]:
+        # print(f"# DEBUG: btype {btype} for {bnum} in {self.devalued_blocks}")
+        if btype in [PhaseType.DD, PhaseType.SOA] and \
+           bnum in self.devalued_blocks[btype]:
             if self.Dir == choice:
                 return -1
             else:
