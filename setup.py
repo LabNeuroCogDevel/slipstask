@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="soapy",
-    version="0.0.3", # 20200730 - animals
+    version="0.0.4", # 20200817 - many bug fixes
     author="Will Foran",
     author_email="willforn+py@gmail.com",
     description="Slips of action/Fabulious Fruits task",

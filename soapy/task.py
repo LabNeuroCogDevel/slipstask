@@ -7,10 +7,10 @@ from typing import List, Tuple, Optional
 from soapy import KEYS, NUM_KEYS, image_path
 from soapy.fruit import Fruit
 from soapy.lncdtasks import first_key, TaskTime, TaskDur, Keypress,\
-                            dly_waitKeys
+                            dly_waitKeys, wait_until, Filepath,\
+                            wait_for_scanner
 from soapy.task_types import KeypressDict, PhaseType, TrialType, SO
 from soapy.info import FabFruitInfo
-from soapy.lncdtasks import wait_until, Filepath
 
 
 def wait_numkey(onset: TaskTime) -> Tuple[int, TaskDur]:
@@ -44,7 +44,7 @@ class FabFruitTask:
                                    method='sequential',
                                    dataTypes=['cor', 'resp', 'side',
                                               'rt', 'score', 'fliptime',
-                                              'block_score'])
+                                              'block_score', 'skip'])
 
         # display objects
         self.box = visual.ImageStim(self.win, image_path('box_open.png'))
@@ -316,16 +316,23 @@ class FabFruitTask:
             # set clock if no prev trial, prev trial happens after next.
             # or current trial starts at 0
             prev = self.events.getEarlierTrial()
+            prev_dur = 0 if not prev else prev.get('dur',0)
             if prev is None or prev.onset > e.onset or e.onset == 0:
+                if prev_dur > 0:
+                    print(f"waiting {prev_dur} for prev dur")
+                    core.wait(prev_dur)
+                # second round of MR. wait for scanner
+                # this is maybe a condtion we will never see
+                if prev is not None and self.timing_method == 'onset':
+                    wait_for_scanner(self.win)
+
                 starttime = core.getTime()
                 block_score = 0
-                prev_dur = 0
+
                 print(f"* new starttime {starttime:.2f} and score reset")
                 # if we don't start for a little bit of time, show fix cross
                 if e.onset > 0:
                     self.iti()
-            else:
-                prev_dur = prev.dur
 
             now = core.getTime()
 
@@ -342,13 +349,17 @@ class FabFruitTask:
             #    -- duration will be changed when e.g. rt < max wait
             if self.timing_method == "onset":
                 fliptime = starttime + e.onset
+            
+            # if timing "dur", should have set prev dur to 0
             elif self.timing_method == "dur":
+                if prev and self.events.data['skip'][self.events.thisTrialN-1] == True:
+                    prev_dur = 0
                 fliptime = now + prev_dur
             else:
                 raise Exception(f"Unknown timing_method {self.timing_method}")
 
             eta = fliptime - now
-            print(f"@{now:.2f} ({e.onset}|{prev_dur:.2f}) ETA {eta:.3f}s blk {e.blocknum} trl {e.trial}" +
+            print(f"@{now:.2f} (on{e.onset}|{prev_dur:.2f}pdur) ETA {eta:.3f}s blk {e.blocknum} trl {e.trial}" +
                   f" {e.phase} {e.ttype} {e.LR1} {e.top} {e.deval}")
 
             # how should we handle this event (trialtype)
@@ -377,7 +388,7 @@ class FabFruitTask:
 
                 # if we are running outside of scanner, don't wait for next
                 if self.timing_method == "dur":
-                    e.dur = 0
+                    self.events.addData('skip', True)
 
                 resp = first_key(e.resp)
                 e.side = self.keys.get(resp) if resp else None
@@ -414,9 +425,15 @@ class FabFruitTask:
 
                 # if score is the last in this block. wait for a key
                 nexttrial = self.events.getFutureTrial()
-                if not nexttrial or nexttrial.blocknum != e.blocknum:
+                if self.timing_method == "dur" and (not nexttrial or nexttrial.blocknum != e.blocknum):
                     # TODO: change accpet keys to not be glove box?
+                    # TODO: consider making this fixed duration e.dur
                     event.waitKeys()
+
+                # TODO: show fixation for some period of time?
+                if not nexttrial and self.timing_method == "onset":
+                    core.wait(e.dur)
+                    #self.iti()
 
             else:
                 print(f"#  doing nothing with {e.ttype}")

@@ -50,9 +50,9 @@ def update_boxes(ffi: FabFruitInfo, obj_type: str,
     # DEBUG
     boxes_string = "\n\t".join(["%s" % b for b in ffi.boxes])
     print(f'# generated/using\n\t{boxes_string}')
-    print(f"# stored {boxfilename}\n\t", end="")
-    with open(boxfilename, 'r') as bfile:
-        print("\t".join(["%s" % b for b in bfile.readlines()]))
+    #print(f"# stored {boxfilename}\n\t", end="")
+    #with open(boxfilename, 'r') as bfile:
+    #    print("\t".join(["%s" % b for b in bfile.readlines()]))
 
     return ffi
 

@@ -336,10 +336,8 @@ class FabFruitInfo:
         is_all_devalblocks = [x in [PhaseType.DD, PhaseType.SOA] for x in d['phase']]
         if all(d['blocknum'] == d['blocknum'][0]) and all(is_all_devalblocks):
             new_blocks = np.cumsum((d['phase'] == d['phase'].shift()) & (d['ttype'] == TrialType.GRID) )
-            print(f"new blocks {new_blocks}")
             d['blocknum'] = new_blocks
         self.devals = {p: extract_devalued(d, p) for p in devalphase}
-        print(f"read_timing devals: {self.devals}")
 
         return d
     
@@ -437,12 +435,10 @@ class FabFruitInfo:
         # keep old devalued blocks
         # likely read in from timing file by set_names
         box_deval = {x.name: x.devalued_blocks for x in self.boxes}
-        print(box_deval)
         self.set_devals()
-        print(box_deval)
 
         boxes_string = "\n\t".join(["%s" % b for b in self.boxes])
-        print(f'# after read_box_file\n\t{boxes_string}')
+        #print(f'# after read_box_file\n\t{boxes_string}')
 
 
 def read_boxes(fname: Filepath) -> Tuple[List[Fruit], List[Box]]:
@@ -481,7 +477,7 @@ def read_boxes(fname: Filepath) -> Tuple[List[Fruit], List[Box]]:
                  for x in res]
 
     boxes_string = "\n\t".join(["%s" % b for b in boxes])
-    print(f'# readboxes:\n\t{boxes_string}')
+    # print(f'# readboxes:\n\t{boxes_string}')
     return([f for f in fruits.values()], boxes)
 
 

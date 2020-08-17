@@ -85,7 +85,6 @@ def main_info():
             'fullscreen': False,
             'instruction': True,
             'MR': False,
-            'quick_test': True,
         }
         dlg = DlgFromDict(INFO, title="Slips of Action/Fab Fruits")
         if not dlg.OK:
@@ -146,8 +145,6 @@ else:
 
 
 # if we are testing
-if INFO.get('quick_test'):
-    ffi.timing = ffi.timing.loc[0:15]
 if INFO.get('instruction'):
     show_instruction(win, p)
 # ## Build the task
