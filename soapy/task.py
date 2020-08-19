@@ -304,7 +304,7 @@ class FabFruitTask:
         for b in self.boxes:
             (f_resp, f_rt, f_pick, f_corr) = self.fruit_fingers(b.Stim)
             (c_resp, c_rt) = self.get_confidence()
-            outf.write(f"pair {b.Sitm.name} {f_resp} {f_rt} {f_pick} {f_correct} {c_resp} {c_rt}\n")
+            outf.write(f"pair {b.Stim.name} {f_resp} {f_rt} {f_pick} {f_correct} {c_resp} {c_rt}\n")
 
         outf.close()
 

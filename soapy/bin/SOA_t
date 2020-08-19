@@ -82,3 +82,7 @@ ffi = update_boxes(ffi, INFO['objs'], INFO['outdir'])
 
 print("\nDevalued:\n\t", end="")
 print("\n\t".join([f"{b.name}: {b.devalued_blocks}" for b in ffi.boxes]))
+print("\nTiming")
+seecols = ['onset', 'ttype', 'cor_side', 'LR1', 'top', 'bottom', 'deval', 'bxidx']
+print(ffi.timing[seecols].to_csv(sep="\t"))
+

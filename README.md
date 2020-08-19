@@ -1,22 +1,17 @@
 # Slips of Action/Fabulous Fruits @ LNCD: jspsych (javascript) & psychopy (python) ports
 
-Port of *Simplified Fabulous Fruit Game*, Sanne de Wit, 2019. Developed for remote administration. see [manual](./SimplifiedFFG_Manual_2019.txt).
+Port of *Simplified Fabulous Fruit Game*, Sanne de Wit, 2019 ([manual](./SimplifiedFFG_Manual_2019.txt)).
 
-* 12 fruits: apple, bananas, cherries, coconut, grape, kiwi, lemon, melon, orange, pear, pineapple, strawberry
-  * uniquely 6 outside paired with 6 inside
+Developed for remote administration and later for MR presentation.
 
-## Example
+See https://labneurocogdevel.github.io/slipstask/ to interact with task components.
 
-### Javscript
-https://labneurocogdevel.github.io/slipstask/
 
 [<img src="./outline.svg?raw=True" height=400>](./outline.svg)
 
-### 2018 ENEURO
 
-[<img src="./task2018.jpg?raw=True" height=400>](./task2018.jpg)
+## Reference
 
-## Papers
 [de Wit et al. JEP-ABPP, 2007](https://doi.org/10.1037/0097-7403.33.1.1);
 [de Wit et al. JNSc, 2009](https://doi.org/10.1523/JNEUROSCI.1639-09.2009);
 de Wit et al. JCNSc, 2011;
@@ -25,16 +20,20 @@ Gillan et al. AmJPsychiatry, 2011;
 de Wit et al. Psychopharm, 2012;
 [Sjoerds et al.  Front. 2016](https://doi.org/10.3389/fnbeh.2016.00234) *;
 [de Wit et al. ENEURO, 2018](https://dx.doi.org/10.1523%2FENEURO.0240-18.2018)
+[<img src="./task2018.jpg?raw=True" height=300>](./task2018.jpg)
 
 ## Task
-* originally used <kbd>z</kbd> (left) and <kbd>m</kbd> (right) keys
-* now  <kbd>←</kbd> and <kbd>→</kbd>
-* measurements to calculate  devaluation sensitivity index [Sjoerds et al.  Front. 2016](https://doi.org/10.3389/fnbeh.2016.00234)
+
+### Measurement
+calculate devaluation sensitivity index [Sjoerds et al.  Front. 2016](https://doi.org/10.3389/fnbeh.2016.00234)
   > We calculated the DSI for the slips-of-action phase by subtracting percentages of responses made toward devalued outcomes from percentages of responses made toward still valuable outcomes, according to the following formula: ((N valued responses/N total responses) − (N devalued responses/N total responses)).
 
 
 ### Overview
-* SRO e.g. Apple:Right-Kiwi
+* 12 fruits: apple, bananas, cherries, coconut, grape, kiwi, lemon, melon, orange, pear, pineapple, strawberry
+  * uniquely 6 outside paired with 6 inside
+* response either Left or Right
+* `SRO` e.g. Apple:Right-Kiwi
 	* Stimulus: box labeled with Apple.
 	* Response: right key opens the box.
 	* Outcome: Kiwi is inside the box.
@@ -113,7 +112,7 @@ Discrimination Devaluation (?): Devalue stimulus instead of outcome to test. oth
 
 The task exists in two implementations here: web based javascript, and MR ready python.
 
-### Javascript
+### Javascript/jspsych + psiturk
 Using jspsych and psiturk libraries
 
 * `utils.ts` contains mkBox and Fruit class/prototype (typescript compiled to `utils.js`)
@@ -123,8 +122,8 @@ Using jspsych and psiturk libraries
 #### Heroku
  see `$HOME/.psiturkconfig` w/ `[AWS Access]` containing `aws_access_key_id` and `aws_secret_access_key`. also `psiturk-heroku-config`
 
-### Python
-The python task implementation came second. Warts from porting show: see `info.devalued_blocks` <-> TrialHanlder Dataframe, L0..R1 not generated using set_names, ...
+### Python/psychopy
+The python task implementation came second. Warts from porting show: see `info.devalued_blocks` <-> TrialHanlder Dataframe, L0..R1 not generated using `set_names`, ...
 min numpy version is 1.18 (need `numpy.random.default_rng`). 
 
 This version pays more attention to timing and psuedo-randomizes Left/Right choices.
@@ -139,12 +138,11 @@ SOA
 ```
 
 Running `SOA` opens a dialog box.
-Currently (20200803), only phase "DD" supports checking "MR."
 If MR is checked, timing files will be loaded, and an additional prompt will ask for start and end block numbers.
 Otherwise, the additional prompt will confirm timing and repitition settings for the randomly generated trials.
 
 #### Timing
-see `timing/gentiming.py`
+see `timing/gentiming.py`: generate timings and pick minimize norm std dev (`3dDeconvolve -nodata`).
 
 #### Code
 

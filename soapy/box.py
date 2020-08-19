@@ -27,9 +27,7 @@ class Box:
         'apple'
         """
         self.Stim.SO = SO.Stim
-        self.Stim.pair = self.Outcome
         self.Outcome.SO = SO.Outcome
-        self.Outcome.pair = self.Stim
         self.Stim.box = self.Outcome.box = self
 
     def score(self, btype: PhaseType, bnum: int, choice: Optional[Direction]):

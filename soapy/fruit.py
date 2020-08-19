@@ -20,7 +20,6 @@ class Fruit:
     image: str
     SO: SO
     # get direction and devalued_blocks from box.*
-    pair: 'Fruit'
     box: 'Box'
 
     def __init__(self, name):

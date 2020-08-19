@@ -90,7 +90,7 @@ class FabFruitInfo:
                 for R in sides['R']
                 for d in [True, False]
                 for Lfirst in [True, False]]
-        self.seed.shuffle(binfo)
+        self.seed.shuffle(np.array(binfo, dtype=object))
 
         trls: List[TrialDict] = []
         itis = settings['itis'] * (len(binfo)//len(settings['itis']))
@@ -415,7 +415,8 @@ class FabFruitInfo:
             if(res == boxes):
                 raise Exception(f'already saved boxes and they do not match! {boxes} vs stored {res}')
             else:
-                print(f'compared gen boxes to saved: {boxes} vs stored {res}')
+                pass
+                #print(f'compared gen boxes to saved: {boxes} vs stored {res}')
 
 
             # if boxes are already saved and match. we can continue
@@ -432,12 +433,15 @@ class FabFruitInfo:
         will distroy devalued_blocks!?
         """
 
+        # hold onto old devalued positions
+        self.box_deval = {x.name: x.devalued_blocks for x in self.boxes}
+        # update boxes and fruits
+        (self.fruits, self.boxes) = read_boxes(fname)
         # keep old devalued blocks
         # likely read in from timing file by set_names
-        box_deval = {x.name: x.devalued_blocks for x in self.boxes}
         self.set_devals()
 
-        boxes_string = "\n\t".join(["%s" % b for b in self.boxes])
+        #boxes_string = "\n\t".join(["%s" % b for b in self.boxes])
         #print(f'# after read_box_file\n\t{boxes_string}')
 
 
@@ -476,11 +480,9 @@ def read_boxes(fname: Filepath) -> Tuple[List[Fruit], List[Box]]:
                      x.group('box'))
                  for x in res]
 
-    boxes_string = "\n\t".join(["%s" % b for b in boxes])
+    # boxes_string = "\n\t".join(["%s" % b for b in boxes])
     # print(f'# readboxes:\n\t{boxes_string}')
     return([f for f in fruits.values()], boxes)
-
-
 
 
 def devalued_blocks(nblocks: int = 9, reps: int = 3, nbox: int = 6, choose: int = 2) -> Deval2DList:

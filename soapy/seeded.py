@@ -48,11 +48,13 @@ def update_boxes(ffi: FabFruitInfo, obj_type: str,
         print(f"# creating {boxfilename}")
         ffi.save_boxes(boxfilename)  # will error if boxes change order/name
     # DEBUG
-    boxes_string = "\n\t".join(["%s" % b for b in ffi.boxes])
+    showbx = ["%s" % b for b in ffi.boxes]
+    #sorted(showbx)
+    boxes_string = "\n\t".join(showbx)
     print(f'# generated/using\n\t{boxes_string}')
-    #print(f"# stored {boxfilename}\n\t", end="")
-    #with open(boxfilename, 'r') as bfile:
-    #    print("\t".join(["%s" % b for b in bfile.readlines()]))
+    # print(f"# stored {boxfilename}\n\t", end="")
+    # with open(boxfilename, 'r') as bfile:
+    #     print("\t".join(["%s" % b for b in bfile.readlines()]))
 
     return ffi
 
