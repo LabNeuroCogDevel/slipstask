@@ -1,4 +1,6 @@
 .PHONY: res test always
+.SUFFIXES:
+MAKEFLAGS += --no-builtin-rules
 
 static/js/utils.js: static/js/utils.ts
 	tsc -m es2015 --lib esnext,dom -d $<
@@ -17,10 +19,14 @@ analysis/txt/task.tsv: analysis/txt/res.json
 	#     26      12 a52a5e65fc3c43f409550dfad1f904f
 	#      1      36 a52a5e65fc3c43f409550dfad1f904f
 	git diff|sed -n s/^\+[^+]//p|cut -f1,3|sort |uniq -c|sort -k2,1|cut -f1|uniq -c|sort -k2n|egrep '\w{31}$$'
-test: tests/.res.tap
+
+test: tests/.res.tap tests/.pytests
 tests/.res.tap: $(wildcard tests/*js)
 	# npm test
 	jest --json 2>/dev/null | jest-json-to-tap > $@
+
+tests/.pytests: $(wildcard pytest/*.py soapy/*py)
+	python -m pytest --tap-stream pytest/ soapy/ --doctest-modules | tee $@
 
 # https://stackoverflow.com/questions/11091623/how-to-install-packages-offline
 .ONESHELL:
