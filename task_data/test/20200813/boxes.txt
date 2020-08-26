@@ -1,0 +1,6 @@
+R0: cherries -> lemon (Direction.Right)
+L0: melon -> kiwi (Direction.Left)
+R1: coconut -> grape (Direction.Right)
+L1: pineapple -> bananas (Direction.Left)
+R2: strawberry -> apple (Direction.Right)
+L2: pear -> orange (Direction.Left)

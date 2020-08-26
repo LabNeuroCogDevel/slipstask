@@ -323,8 +323,11 @@ class FabFruitTask:
                     core.wait(prev_dur)
                 # second round of MR. wait for scanner
                 # this is maybe a condtion we will never see
+                # 20200826 - OD hits this! why is prev none?
                 if prev is not None and self.timing_method == 'onset':
-                    wait_for_scanner(self.win)
+                    print(f"DEBUG: at event {self.events.thisN} but prev is wierd?!")
+                    print(f"DEUBG: dur {e.dur} on {e.onset} vs prev.on {prev.onset}")
+                #    wait_for_scanner(self.win)
 
                 starttime = core.getTime()
                 block_score = 0
@@ -379,7 +382,7 @@ class FabFruitTask:
                 # e.g.
                 #  self.trial(PhaseType.SOA, 1, [3])
                 #  self.trial(PhaseType.OD, 1, [2, 3], deval_idx=0)  # top deval
-                (fliptime, e.resp, e.rt) = self.trial(e.phase, e.blocknum, e.bxidx[0], fliptime, deval_idx)
+                (fliptime, e.resp, e.rt) = self.trial(e.phase, e.blocknum, e.bxidx[0], fliptime, deval_idx, e.dur)
                 print(f"  resp: {e.resp}")
 
                 # indicate we pushed a button by changing the screen
