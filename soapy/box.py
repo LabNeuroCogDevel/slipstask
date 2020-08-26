@@ -55,7 +55,7 @@ class Box:
             return 0
         # print(f"# DEBUG: btype {btype} for {bnum} in {self.devalued_blocks}")
         if btype in [PhaseType.DD, PhaseType.SOA] and \
-           bnum in self.devalued_blocks[btype]:
+           bnum in self.devalued_blocks.get(btype, []):
             if self.Dir == choice:
                 return -1
             else:

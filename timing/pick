@@ -5,24 +5,27 @@ set -euo pipefail
 # 20200803 - send lowest norm std dev files to soapy package
 # so they are avaible for picking pseudo random timings
 #
+TR=0.7 # which TR to use
 env|grep -q ^DRYRUN=.&&DRYRUN=echo||DRYRUN=
 set -euo pipefail
 cd $(dirname $0)
-for phase in ID OD DD; do
-   outd=../soapy/timing/$phase
-   test -d $outd || mkdir -p $_
-   # what file do we want to use
-   collect_file=$(ls seeded/$phase/tr1*.txt)
-   # sort on last column. last GLM
-   sorton=$(sed 1q $collect_file|awk '{print NF}')
-   echo "# $collect_file | sort by last field $sorton"
-   # grab top 10
-   sort -k${sorton}n $collect_file|
-    sed '1d;11q' seeded/$phase/tr1*.txt |
-    cut -f1 |
-    while read seedf; do
-       saveto=$outd/$(basename $seedf).csv
-       test -r $saveto && echo "# have $_" && continue
-       $DRYRUN cp $seedf/$phase.csv $saveto
-   done || :
+for nbox in 4 6; do
+   for phase in ID OD DD; do
+      outd=../soapy/timing/$phase/$nbox
+      test -d $outd || mkdir -p $_
+      # what file do we want to use
+      collect_file=$(ls seeded/$phase/tr$TR*$nbox*.txt)
+      # sort on last column. last GLM
+      sorton=$(sed 1q $collect_file|awk '{print NF}')
+      echo "# $collect_file | sort by last field $sorton"
+      # grab top 10
+      sort -k${sorton}n $collect_file|
+       sed '1d;11q' |
+       cut -f1 |
+       while read seedf; do
+          saveto=$outd/$(basename $seedf).csv
+          test -r $saveto && echo "# have $_" && continue
+          $DRYRUN cp $seedf/$phase.csv $saveto
+      done || :
+   done
 done

@@ -20,21 +20,40 @@ os.chdir(os.path.dirname(__file__))
 # want maybe 10 seconds at the end to finish hrf
 # total time = 454
 
-TR = 1
+TR = .7
+DUR = 2
 MAX_DEVAL_REP = 15
+ENDDUR = 12  # how long to wait at the end
+NBOX = 4
+
+# iti's randomized by  combos * blocks
+# want to be whole number for consistant times
+#  for ID/OD length is:  nboxes [4|6] * nsides [2] / len(iti) [8|6]
+iti_lists ={
+  6: [1, 1, 1, 2, 2, 5],
+  4: [1, 1, 1, 1,
+      2, 2, 2,
+      5]}
+
+
 # 36 devalued (9 blocks, 2 deval blocks rep 2x in each)
 # dont want to have devalued box (cor resp is no resp)
 # shown right after another one more than 7 different times
 
 DD = {PhaseType.DD: {
-    'itis': [1, 1, 1, 2, 2, 5],  # iti dur ratio: 3x 1s dur for every 1x 5s
-    'dur': 1.5,                  # time allowed for response
+    'itis': iti_lists[NBOX],  # iti dur ratio: 3x 1s dur for every 1x 5s
+    'dur': DUR,                  # time allowed for response
     'grid': 5.0, 'score': 2,     # grid at start, score at end (durations)
     'blocks': 9, 'reps': 2,      # 9 reps with every box seen twice
     'ndevalblocks': 3,           # each box is devalued 3 times
-    'combine': True,
-    'total_secs': 454}}            # block onset times are combined into one run
+    'combine': True}}            # block onset times are combined into one run    #'total_secs': 454}}
 
+# 20200825 - 12 blocks where each box is devalued 6 times gives a balence devalue dist.
+# 6deval*4boxes vs 3deval*6boxes
+if NBOX == 4:
+    DD[PhaseType.DD]['blocks'] = 12
+    DD[PhaseType.DD]['ndevalblocks'] = 6
+    MAX_DEVAL_REP = 18
 
 # ITI dist accross 108 trials like
 #      n iti_dur
@@ -45,19 +64,24 @@ DD = {PhaseType.DD: {
 
 # (avg iti 2 + 1.5 show + 1 fbk)*6*2 + 2
 ID = {PhaseType.ID: {
-    'itis': [1, 1, 1, 2, 2, 5],
-    'dur': 1.5,
+    'itis': iti_lists[NBOX],
+    'dur': DUR,
     'fbk': 1,
+    'blocks': 8,
+    'combine': True,
     'score': 2,
-    'blocks': 1,
-    'reps': 2,
-    'total_secs': 56+12}}
+    'reps': 2}}  # 2 reps * 6 boxes = 12 per block
 
+# 2/12 = 2 score seconds for every 12 trials
+
+# Score every block at end of block
+# 36*(2*2)
 OD = {PhaseType.OD: {
-     'itis': [1, 1, 1, 2, 2, 5],
-     'dur': 1.5,
-     'score': 2,
-     'total_secs': 140}}
+     'itis': iti_lists[NBOX],
+     'dur': DUR,
+     'score': 2}}
+     #'total_secs': 140}}
+
 
 def rep_cnts(x, rep_max=4, reset_every=12):
     """dumb quick way to count reps - almost `rle`
@@ -104,8 +128,8 @@ def rep_okay(cntd, min_single):
     >>> rep_okay({4:3, 0:1}, 1)
     {4: 3, 0: 1} has too many 4+s
     False
-    >>> rep_okay({2:7, 0:1}, 1)
-    {2: 7, 0: 1} has too many 2s
+    >>> rep_okay({2:11, 0:1}, 1)
+    {2: 11, 0: 1} has too many 2s
     False
     >>> rep_okay({2:2, 0:1}, 1)
     True
@@ -171,32 +195,30 @@ def write_1d(d: pd.DataFrame, bcol='blocknum', fname=None):
 def gen_timing(_, phase_info=DD, seed_int=None):
     """make a random timing, check we don't repeat too much. run 3dDeconvolve
     """
-    global TR
+    global TR, NBOX
 
     # what phase are we working on?
-    outname=[x.name for x in phase_info.keys()]
-    if len(outname) !=1:
+    outname = [x.name for x in phase_info.keys()]
+    if len(outname) != 1:
         raise Exception(f"expect only 1 phase key in {phase_info}")
-    outname=outname[0]
+    outname = outname[0]
 
     p = phase_info[PhaseType[outname]]
-    TOTAL_SECS = p['total_secs']
-    DUR = p['dur']
+    dur = p['dur']
     # compute other setting variables
-    nTR = math.ceil(TOTAL_SECS/TR)
 
     # gen random seed
     if not seed_int:
         seed_int = int(np.random.uniform(10**10))
 
     # setup path
-    outdir = f'seeded/{outname}/tr{TR}_dur{DUR}_{TOTAL_SECS}total/{seed_int}'
+    outdir = f'seeded/{outname}/tr{TR}_nbox{NBOX}_dur{dur}_end{ENDDUR}/{seed_int}'
     if os.path.isdir(outdir):
         return True
 
     # generate task
     seed = np.random.default_rng(seed_int)
-    info = soapy.info.FabFruitInfo(phases=phase_info, seed=seed)
+    info = soapy.info.FabFruitInfo(phases=phase_info, nbox=NBOX, seed=seed)
     
     # check again again incase we had a race condition when parallizing
     if os.path.isdir(outdir):
@@ -234,25 +256,28 @@ def gen_timing(_, phase_info=DD, seed_int=None):
         write_1d(side_d[side_d.deval], fname=f'{outdir}/{side}_deval.1D')
         write_1d(side_d[np.logical_not(side_d.deval)], fname=f'{outdir}/{side}_val.1D')
 
-    run_decon(outdir, outname, nTR, DUR)
+    total_time = info.timing.iloc[-1].onset + info.timing.iloc[-1].dur + ENDDUR
+    print(f"{outname}: {total_time}s")
+
+    run_decon(outdir, outname, dur, total_time)
     return True
 
 
-def run_decon(outdir, outname, nTR, DUR):
+def run_decon(outdir, outname, dur, total_time):
     """ run deconvolve -nodata to get timining correlations
     output to textfiles for later
     """
     global TR
-
+    nTR = math.ceil(total_time/TR)
     if outname in ['DD', 'SOA']:
         os.system(f"""
           cd {outdir};
           3dDeconvolve -nodata {nTR} {TR} \
              -polort 3 \
              -num_stimts 3 \
-             -stim_times  1 L_val.1D    'BLOCK({DUR})' -stim_label  1 Lval \
-             -stim_times  2 R_val.1D    'BLOCK({DUR})' -stim_label  2 Rval \
-             -stim_times  3 trials_deval.1D  'BLOCK({DUR})' -stim_label  3 deval \
+             -stim_times  1 L_val.1D    'BLOCK({dur})' -stim_label  1 Lval \
+             -stim_times  2 R_val.1D    'BLOCK({dur})' -stim_label  2 Rval \
+             -stim_times  3 trials_deval.1D  'BLOCK({dur})' -stim_label  3 deval \
              -num_glt 2\
              -gltsym "SYM: +Lval -Rval" -glt_label 1 L-R \
              -gltsym "SYM: +.5*Lval +.5*Rval -deval" -glt_label 2 val-deval \
@@ -264,8 +289,8 @@ def run_decon(outdir, outname, nTR, DUR):
           3dDeconvolve -nodata {nTR} {TR} \
              -polort 3 \
              -num_stimts 2 \
-             -stim_times  1 L_val.1D    'BLOCK({DUR})' -stim_label  1 Lval \
-             -stim_times  2 R_val.1D    'BLOCK({DUR})' -stim_label  2 Rval \
+             -stim_times  1 L_val.1D    'BLOCK({dur})' -stim_label  1 Lval \
+             -stim_times  2 R_val.1D    'BLOCK({dur})' -stim_label  2 Rval \
              -num_glt 1\
              -gltsym "SYM: +Lval -Rval" -glt_label 1 L-R \
              -x1D X.xmat.1D | tee convolve.txt;
@@ -281,10 +306,10 @@ def run_decon(outdir, outname, nTR, DUR):
 
 
 if __name__ == "__main__":
-    for _ in range(10000):
+    for _ in range(1000):
+        # gen_timing(_, ID)
+        # gen_timing(_, OD)
         gen_timing(_, DD)
-        gen_timing(_, ID)
-        gen_timing(_, OD)
 
     # from multiprocessing import Pool
     # p = Pool(2)

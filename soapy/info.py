@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import re
 import os.path
+import math
 from typing import List, Dict, Tuple, Optional
 from soapy import DEFAULT_PHASES, FIRST_ONSET
 from soapy.task_types import PhaseDict, PhaseType, Deval2DList, TrialType,\
@@ -93,28 +94,37 @@ class FabFruitInfo:
         self.seed.shuffle(np.array(binfo, dtype=object))
 
         trls: List[TrialDict] = []
-        itis = settings['itis'] * (len(binfo)//len(settings['itis']))
-        onset = 0
-        for i in range(len(binfo)):  # 36 trls
-            LR = binfo[i][1]
-            deval_top = binfo[i][0]
-            # SHOW
-            trls.append(trial_dict(PhaseType.OD, TrialType.SHOW, 1,  i, LR1=LR[0],
-                                   LR2=LR[1],
-                                   deval=deval_top,
-                                   onset=onset,
-                                   dur=settings['dur']))
-            # ITI
-            trls.append(trial_dict(PhaseType.OD, TrialType.ITI, 1, i, LR[0],
-                                   LR2=LR[1],
-                                   onset=trls[-1]['end'],
-                                   dur=itis[i]))
-            onset = trls[-1]['end']
+        itis = settings['itis'] * math.ceil(len(binfo)/len(settings['itis']))
+        self.seed.shuffle(itis)
 
-        # SCORE
-        trls.append(trial_dict(PhaseType.OD, TrialType.SCORE, 1, -1, '',
-                               onset=trls[-1]['end'],
-                               dur=settings['score']))
+        for bnum in range(settings.get('blocks', 1)):
+            for i in range(len(binfo)):  # 36 trls
+                # maybe we want all blocks in this phase to be together
+                # (MR block)
+                if bnum > 0 and settings.get('combine', False):
+                    onset = trls[-1]['end']
+                else:
+                    onset = FIRST_ONSET
+
+                LR = binfo[i][1]
+                deval_top = binfo[i][0]
+                # SHOW
+                trls.append(trial_dict(PhaseType.OD, TrialType.SHOW, 1,  i, LR1=LR[0],
+                                       LR2=LR[1],
+                                       deval=deval_top,
+                                       onset=onset,
+                                       dur=settings['dur']))
+                # ITI
+                trls.append(trial_dict(PhaseType.OD, TrialType.ITI, 1, i, LR[0],
+                                       LR2=LR[1],
+                                       onset=trls[-1]['end'],
+                                       dur=itis[i]))
+                onset = trls[-1]['end']
+
+            # SCORE
+            trls.append(trial_dict(PhaseType.OD, TrialType.SCORE, 1, -1, '',
+                                   onset=trls[-1]['end'],
+                                   dur=settings['score']))
 
         return trls
 
@@ -210,11 +220,11 @@ class FabFruitInfo:
         if len(settings['itis']) > ntrl_in_block:
             itis = settings['itis'][0:ntrl_in_block]
         else:
-            itis = settings['itis'] * (ntrl_in_block//len(settings['itis']))
+            itis = settings['itis'] * \
+                    math.ceil(ntrl_in_block/len(settings['itis']))
 
         # start at time zero
-
-        onset=FIRST_ONSET
+        onset = FIRST_ONSET
         for bnum in range(settings['blocks']):
             # maybe we want all blocks in this phase to be together (MR block)
             if bnum > 0 and settings.get('combine', False):
@@ -226,7 +236,8 @@ class FabFruitInfo:
             self.seed.shuffle(itis)
             self.seed.shuffle(boxnamedir)
             # LR12 will have 2 if SOA or DD during grid (first event only)
-            # TODO: maybe hardcode check ptype in SOA DD and len(LR12)==2
+            # N.B. devalued_blocks() should error before GRID !=2 devalued
+            #      -- but we could only devalue 1 if wanted. this would break
             LR12 = [i for i, x in enumerate(devalued_at) if bnum in x]
             if len(LR12) == 2 and ptype in [PhaseType.SOA, PhaseType.DD]:
                 trls.append(trial_dict(ptype, TrialType.GRID, bnum,  -1,
@@ -262,7 +273,8 @@ class FabFruitInfo:
                     onset = trls[-1]['end']
 
                 # ITI
-                trls.append(trial_dict(ptype, TrialType.ITI, bnum, tnum, boxnamedir[tnum],
+                trls.append(trial_dict(ptype, TrialType.ITI, bnum, tnum,
+                                       boxnamedir[tnum],
                                        onset=onset,
                                        dur=itis[tnum]))
                 onset = trls[-1]['end']
@@ -356,8 +368,13 @@ class FabFruitInfo:
         @param fruit_names: names for the box stim and outcome labels
         @return new dataframe
         also update self.timing and create self.fruits and self.boxes
-        >>> ffi = FabFruitInfo(nbox=2) # use default phase settings, but different number of boxes
+        >>> ffi = FabFruitInfo(nbox=2, phases={PhaseType.ID: DEFAULT_PHASES[PhaseType.ID]}) # use default phase settings, but different number of boxes
         >>> d = ffi.set_names(["s1","s2", "o1", "o2"])
+        >>> b = [b.Outcome.name for b in ffi.boxes] + [b.Stim.name for b in ffi.boxes]
+        >>> sorted(b)
+        ['o1', 'o2', 's1', 's2']
+
+
         """
 
         (self.fruits, self.boxes) = make_boxes(fruit_names, self.devals, self.nbox, self.seed)
@@ -401,7 +418,7 @@ class FabFruitInfo:
         @return True if wrote to file, False if no need.
         Excpetion if what we'd write is different than what we have
 
-        >>> ffi = FabFruitInfo(nbox=2)
+        >>> ffi = FabFruitInfo(nbox=2,phases={PhaseType.ID: DEFAULT_PHASES[PhaseType.ID]})
         >>> d = ffi.set_names(["s1","s2", "o1", "o2"])
         >>> ffi.save_boxes('/tmp/bnames.txt', ftest=False)
         True
@@ -451,14 +468,14 @@ def read_boxes(fname: Filepath) -> Tuple[List[Fruit], List[Box]]:
     used to recover after save_boxes() for survey
     @param fname
     @return (fruits, boxes)
-    >>> ffi = FabFruitInfo(nbox=2, seed=np.random.default_rng(1))
-    >>> d = ffi.set_names(["s1","s2", "o1", "o2"])
+    >>> ffi = FabFruitInfo(nbox=2, phases={PhaseType.ID: DEFAULT_PHASES[PhaseType.ID]}, seed=np.random.default_rng(1))
+    >>> d = ffi.set_names(["o1","s1", "s2", "o2"])
     >>> f = '/tmp/box_read_test.txt'
     >>> ffi.save_boxes(f, False)
     True
     >>> (f,b) = read_boxes(f)
     >>> b
-    [R0: o1 -> s2 (Direction.Right), L0: o2 -> s1 (Direction.Left)]
+    [L0: o1 -> s1 (Direction.Left), R0: o2 -> s2 (Direction.Right)]
     """
     boxre = re.compile("^(?P<box>.*): (?P<stim>.*) -> (?P<outcome>.*) \((?P<dir>.*)\)$")
     with open(fname) as f:
@@ -490,12 +507,21 @@ def devalued_blocks(nblocks: int = 9, reps: int = 3, nbox: int = 6, choose: int 
     generate assignments for SOA - slips of action
     9 blocks w/ 12 trials each (2 outcomes per bloc devalued), 108 trials total. (N.B. `6C2 == 15`)
     each outcome devalued 3 times (36 devalued, 72 valued)
+    reps * nbox == choose * nblocks
     @param nblocks - number of blocks where 2/6 are randomly devalued (9)
-    @param reps - number of repeats for each box (2)
+    @param reps - number of repeats for each box (3) - times devalued
     @param nbox - number of boxes (6)
     @param choose - number of blocks per box (2)
     @return per box devalued indexes e.g. [[0,5], [1,3], [0,1], ...] = first box devalued at block 0 and 5, 2nd @ 1&3, ...
+    >>> devalued_blocks(9,3,6) #doctest:+ELLIPSIS
+    [[...
+    >>> devalued_blocks(9,4,6) #doctest:+ELLIPSIS
+    Traceback (most recent call last):
+      ...
+    ValueError: number of times a box is devalued ...
     """
+    if reps * nbox != choose * nblocks:
+        raise ValueError(f"number of times a box is devalued * number of boxes != deval/block * nblocks: {reps}*{nbox} != {choose} * {nblocks}")
     need_redo = False  # recurse if bad draw
     block_deval = [0] * nblocks  # number of devalued boxes in each block (max `choose`)
     bx_deval_on: List[List[int]] = [[]] * nbox  # box X devalued block [[block,block,block], [...], ...]
@@ -519,7 +545,7 @@ def devalued_blocks(nblocks: int = 9, reps: int = 3, nbox: int = 6, choose: int 
 
 
 def make_boxes(fruit_names: List[str],
-               deval_dict: List[Dict[PhaseType, List[str]]],
+               deval_dict: Dict[PhaseType, List[str]],
                nbox=None,
                seed=None) -> Tuple[List[Fruit], List[Box]]:
     """ make boxes for the task. consistant across all blocks
@@ -574,9 +600,12 @@ def make_boxes(fruit_names: List[str],
     boxes = []
     for i in range(nbox):
         bxname = names[i]
-        devalued_blocks = {
-            pt: [b_i for b_i, b in enumerate(d_blks) if bxname in b]
-            for pt, d_blks in deval_dict.items()}
+        if len(deval_dict.keys()) == 0:
+            devalued_blocks = {}
+        else:
+            devalued_blocks = {
+                pt: [b_i for b_i, b in enumerate(d_blks) if bxname in b]
+                for pt, d_blks in deval_dict.items()}
         # find devalue index
         # add box
         boxes.append(Box(Stim=fruits[i],
