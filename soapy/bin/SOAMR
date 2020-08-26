@@ -150,6 +150,7 @@ else:
             'date': ymd(),
             'FullScreen': False,
             'Instructions': False,
+            'boxes': 4,
             'doit': len(sys.argv) > 3,
             'seed': 0}
     setup_outdir(info)
@@ -161,7 +162,7 @@ phase_seq = [PhaseType[x] for x in SEQUENCE[start:len(SEQUENCE)]]
 for p in phase_seq:
     # survey is not designed for MR
     nMR = 0 if p == PhaseType.SURVEY else 1
-    ffi = single_phase(p, info['seed'], 0, nMR, None)
+    ffi = single_phase(p, info['seed'], 0, nMR, None, nbox=info['boxes'])
     # destroys devalued_blocks?
     # info.py| set_names -> make_boxes -> seeded shuffle
     # task.py| this_score = bx.score(e.phase, e.blocknum, e.side)

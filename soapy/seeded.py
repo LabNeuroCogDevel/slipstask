@@ -10,13 +10,14 @@ from soapy.lncdtasks import Filepath
 
 def single_phase(p: PhaseType, seed_init: int,
                  mr_start: int = 0, mr_end: int = 0,
-                 settings=DEFAULT_PHASES) -> FabFruitInfo:
+                 settings=DEFAULT_PHASES,
+                 nbox: int = 6) -> FabFruitInfo:
     """ generate info from a seed """
 
     # use psudeo-random times?
     if mr_end != 0:
         timingfileseed = seed_init + mr_start
-        timing = timing_path(p)
+        timing = timing_path(p, nbox)
         random.default_rng(timingfileseed).shuffle(timing)
         timing = timing[mr_start:mr_end]
         # reset seed?

@@ -53,7 +53,7 @@ DD = {PhaseType.DD: {
 if NBOX == 4:
     DD[PhaseType.DD]['blocks'] = 12
     DD[PhaseType.DD]['ndevalblocks'] = 6
-    MAX_DEVAL_REP = 18
+    MAX_DEVAL_REP = 20
 
 # ITI dist accross 108 trials like
 #      n iti_dur
@@ -307,8 +307,8 @@ def run_decon(outdir, outname, dur, total_time):
 
 if __name__ == "__main__":
     for _ in range(1000):
-        # gen_timing(_, ID)
-        # gen_timing(_, OD)
+        gen_timing(_, ID)
+        gen_timing(_, OD)
         gen_timing(_, DD)
 
     # from multiprocessing import Pool

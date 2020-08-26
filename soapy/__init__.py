@@ -39,7 +39,7 @@ def module_path() -> Filepath:
     return soapy.__loader__.path
 
 
-def timing_path(phase: PhaseType = PhaseType.DD) -> List[Filepath]:
+def timing_path(phase: PhaseType = PhaseType.DD, nbox: int = 6) -> List[Filepath]:
     """find timing files for a given phase
     likely only to be for DD
     @param phase - PhaseType to find timing files for
@@ -48,7 +48,7 @@ def timing_path(phase: PhaseType = PhaseType.DD) -> List[Filepath]:
     from glob import glob
     mpath = module_path()
     root = os.path.dirname(mpath)
-    tpath = os.path.join(root, "timing", phase.name)
+    tpath = os.path.join(root, "timing", phase.name, str(nbox))
     if not os.path.isdir(tpath):
         raise Exception(f"no path to timing for phase {phase.name}: {tpath}")
     return glob(os.path.join(tpath, "*.csv"))
