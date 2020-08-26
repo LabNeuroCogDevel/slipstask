@@ -24,7 +24,7 @@ TR = .7
 DUR = 2
 MAX_DEVAL_REP = 15
 ENDDUR = 12  # how long to wait at the end
-NBOX = 4
+NBOX = 6
 
 # iti's randomized by  combos * blocks
 # want to be whole number for consistant times

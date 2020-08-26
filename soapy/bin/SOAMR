@@ -58,9 +58,11 @@ def ymd() -> str:
 
 
 def setup_outdir(d):
-    """@side-effect: update d with outdir. must have id and date"""
+    """@side-effect: update d with outdir. must have id, date, and boxes"""
     d.update({'outdir':
-              os.path.join("soa_data", str(d['id']), d['date'])})
+              os.path.join("slips_data",
+                           str(d['id']),
+                           f"{d['date']}_{d['boxes']}boxes")})
 
 
 def mkdir_seed(d) -> int:
@@ -76,6 +78,7 @@ def mkdir_seed(d) -> int:
     # N.B. this should also update the gui
     seed = pick_seed(seed_file, d['seed'])
     return seed
+
 
 class SOADlg:
     def __init__(self):
@@ -141,19 +144,13 @@ class SOADlg:
 if len(sys.argv) < 2:
     info_dlg = SOADlg()
     info = info_dlg.set_data()
-    # psychopy takes a bit to load.
-    from psychopy.visual import Window
-    if info['FullScreen']:
-        win = Window(fullscr=True)
-    else:
-        win = Window([800, 600])
 else:
     info = {'id': sys.argv[1],
             'start': sys.argv[2],
             'date': ymd(),
             'FullScreen': False,
             'Instructions': False,
-            'boxes': 4,
+            'boxes': 6,
             'doit': len(sys.argv) > 3,
             'seed': 0}
     setup_outdir(info)
@@ -161,6 +158,14 @@ else:
 
 start = SEQUENCE.index(info['start'])
 phase_seq = [PhaseType[x] for x in SEQUENCE[start:len(SEQUENCE)]]
+
+if info.get('doit', True):
+    # psychopy takes a bit to load.
+    from psychopy.visual import Window
+    if info['FullScreen']:
+        win = Window(fullscr=True)
+    else:
+        win = Window([800, 600])
 
 for p in phase_seq:
     # survey is not designed for MR
@@ -185,7 +190,7 @@ for p in phase_seq:
     # ## Build the task
     task = FabFruitTask(win, ffi)
     vtime = datetime.strftime(datetime.now(), "%H:%M.%S")
-    task.save_path = os.path.join(info['outdir'], f"{vtime}_{p.name}.csv")
+    task.save_path = os.path.join(info['outdir'], f"{p.name}_{vtime}.csv")
     # do it
     if p == PhaseType.SURVEY:
         task.survey()

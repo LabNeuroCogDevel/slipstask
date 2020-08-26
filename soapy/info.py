@@ -6,7 +6,7 @@ import math
 from typing import List, Dict, Tuple, Optional
 from soapy import DEFAULT_PHASES, FIRST_ONSET
 from soapy.task_types import PhaseDict, PhaseType, Deval2DList, TrialType,\
-                             TrialDict, Direction
+                             TrialDict, Direction, SO
 from soapy.lncdtasks import Filepath, TaskTime, TaskDur
 from soapy.box import Box
 from soapy.fruit import Fruit
@@ -98,13 +98,14 @@ class FabFruitInfo:
         self.seed.shuffle(itis)
 
         for bnum in range(settings.get('blocks', 1)):
+            # maybe we want all blocks in this phase to be together
+            # (MR block)
+            if bnum > 0 and settings.get('combine', False):
+                onset = trls[-1]['end']
+            else:
+                onset = FIRST_ONSET
+
             for i in range(len(binfo)):  # 36 trls
-                # maybe we want all blocks in this phase to be together
-                # (MR block)
-                if bnum > 0 and settings.get('combine', False):
-                    onset = trls[-1]['end']
-                else:
-                    onset = FIRST_ONSET
 
                 LR = binfo[i][1]
                 deval_top = binfo[i][0]
@@ -476,8 +477,10 @@ def read_boxes(fname: Filepath) -> Tuple[List[Fruit], List[Box]]:
     >>> (f,b) = read_boxes(f)
     >>> b
     [L0: o1 -> s1 (Direction.Left), R0: o2 -> s2 (Direction.Right)]
+    >>> f[0]
+    o1: SO.Stim Direction.Left 
     """
-    boxre = re.compile("^(?P<box>.*): (?P<stim>.*) -> (?P<outcome>.*) \((?P<dir>.*)\)$")
+    boxre = re.compile("^(?P<box>.*): (?P<stim>.*) -> (?P<outcome>.*) \((Direction\.)?(?P<dir>.*)\)$")
     with open(fname) as f:
         lines = f.readlines()
     res = [boxre.search(x) for x in lines]
@@ -489,13 +492,21 @@ def read_boxes(fname: Filepath) -> Tuple[List[Fruit], List[Box]]:
     fruits = {x.group(t): Fruit(x.group(t))
               for t in ['stim', 'outcome']
               for x in res}
-    for line in res:
-        boxes = [Box(fruits[x.group('stim')],
-                     fruits[x.group('outcome')],
-                     x.group('dir'),
-                     {},
-                     x.group('box'))
-                 for x in res]
+    boxes = [Box(fruits[x.group('stim')],
+                 fruits[x.group('outcome')],
+                 Direction[x.group('dir')],
+                 {},
+                 x.group('box'))
+             for x in res]
+
+    # TODO: why isn't this dones by Box() ??
+    for b in boxes:
+        b.Stim.SO = SO.Stim
+        b.Stim.box = b
+        b.Outcome.SO = SO.Outcome
+        b.Outcome.box = b
+
+
 
     # boxes_string = "\n\t".join(["%s" % b for b in boxes])
     # print(f'# readboxes:\n\t{boxes_string}')

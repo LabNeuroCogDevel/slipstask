@@ -28,4 +28,4 @@ class Fruit:
 
     def __repr__(self) -> str:
         return f"{self.name}: {self.SO} {self.box.Dir} " +\
-            ",".join(["%d" % x for x in self.box.devalued_blocks.get(PhaseType.SOA, 0)])
+            ",".join(["%d" % x for x in self.box.devalued_blocks.get(PhaseType.SOA, [])])

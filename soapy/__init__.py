@@ -22,12 +22,13 @@ DEFAULT_PHASES: PhaseDict = {
 
 KEYS: KeypressDict = {'left': Direction.Left,
                       'right': Direction.Right,
-                      '1': Direction.Left,
-                      '2': Direction.Right}
+                      '2': Direction.Left,
+                      '3': Direction.Right}
 
 # thumb, index, middle, ring, pincky
 # will use index to lookup
-NUM_KEYS = ["0", "1", "2", "3", "4"]
+# reversed so picky is index 0 => least confident
+NUM_KEYS = ["5", "4", "3", "2", "1"]
 
 
 def module_path() -> Filepath:

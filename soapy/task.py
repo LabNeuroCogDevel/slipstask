@@ -12,6 +12,9 @@ from soapy.lncdtasks import first_key, TaskTime, TaskDur, Keypress,\
 from soapy.task_types import KeypressDict, PhaseType, TrialType, SO
 from soapy.info import FabFruitInfo
 
+box_states = {PhaseType.ID: "closed", PhaseType.OD: "open",
+              PhaseType.SOA: "open", PhaseType.DD: "closed"}
+
 
 def wait_numkey(onset: TaskTime) -> Tuple[int, TaskDur]:
     """ wait for keypress in use NUM_KEY and get numeric value
@@ -169,11 +172,12 @@ class FabFruitTask:
         resp = event.waitKeys(keyList=self.keys.keys())
         resp = first_key(resp)
         rt: TaskDur = core.getTime() - onset
-        correct: bool = self.keys[resp] == fruit.box.Dir.name
+        correct: bool = self.keys[resp] == fruit.box.Dir
         return (resp, rt, correct)
 
     def get_confidence(self, mesg: str = "How confident are you?") -> Tuple[int, TaskDur]:
         """ put up confidence image and wait for 1-5 key push
+        N.B. NUM_KEYS are reversed so using thumb ("1" returns "4", and pinky "5" returns "0")
         @param msg text shown, default "how confident are you"
         @return (resp, rt)
         """
@@ -204,7 +208,7 @@ class FabFruitTask:
         # but if we have two boxes to draw, align vert. (block = OD)
         for i, bn in enumerate(show_boxes):
             pos = i - (2 if len(show_boxes) > 1 else 0)  # 0 or -2, -1
-            self.draw_box("closed", bn, pos, deval_idx == i)
+            self.draw_box(box_states[btype], bn, pos, deval_idx == i)
 
         # START
         # NB. neg wait time treated like no wait
@@ -262,11 +266,11 @@ class FabFruitTask:
                        if f.name != this_outcome.name and f.SO == SO.Outcome]
         self.info.seed.shuffle(show_fruits)
         # take out one at random (only have 5 fingers)
-        show_fruits = show_fruits[0:(len(self.boxes)-1)]
+        show_fruits = show_fruits[0:(len(self.boxes)-2)]
         # and put the correct answer in
         show_fruits.append(this_outcome)
         self.info.seed.shuffle(show_fruits)
-        print(f'showing {show_fruits}')
+        print(f'{this_outcome.name}; showing {[f.name for f in show_fruits]}')
 
         # put a fruit on each finger
         fingure_ends = [
@@ -292,18 +296,24 @@ class FabFruitTask:
 
     def survey(self):
         """ run through fruit and box survey"""
-        outf = open(os.path.join(self.save_path, "survey.txt"), "w")
-        outf.write(f"type disp f_resp f_rt pick iscorrect c_resp c_rt\n")
+        outf = open(os.path.join(self.save_path), "w")
+        outf.write("type disp f_resp f_rt pick iscorrect c_resp c_rt\n")
         # TODO make random order
         for f in self.fruits:
             print(f"showing {f}")
             (f_resp, f_rt, f_correct) = self.fruit_only(f)
+            print(f"*  side: {f_resp}=>{self.keys[f_resp].name} vs {f.box.Dir}: {f_correct}")
+
             (c_resp, c_rt) = self.get_confidence()
+            print(f"*  confidence: {c_resp}")
             outf.write(f"side {f.name} {f_resp} {f_rt} {self.keys[f_resp]} {f_correct} {c_resp} {c_rt}\n")
 
         for b in self.boxes:
-            (f_resp, f_rt, f_pick, f_corr) = self.fruit_fingers(b.Stim)
+            (f_resp, f_rt, f_pick, f_correct) = self.fruit_fingers(b.Stim)
+            print(f"*  pair: {f_resp}=>{f_pick} vs {f.box}: {f_correct}")
+
             (c_resp, c_rt) = self.get_confidence()
+            print(f"*  confidence: {c_resp}")
             outf.write(f"pair {b.Stim.name} {f_resp} {f_rt} {f_pick} {f_correct} {c_resp} {c_rt}\n")
 
         outf.close()
