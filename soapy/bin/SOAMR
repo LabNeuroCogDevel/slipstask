@@ -19,6 +19,9 @@ from soapy.seeded import pick_seed, single_phase, update_boxes
 
 SEQUENCE = ['ID', 'OD', 'DD', 'SURVEY']
 
+# save dir/files along side this script
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
 
 def show_error(msg) -> bool:
     """quick dialog popup to report issues"""

@@ -379,7 +379,7 @@ class FabFruitTask:
                 # e.g.
                 #  self.trial(PhaseType.SOA, 1, [3])
                 #  self.trial(PhaseType.OD, 1, [2, 3], deval_idx=0)  # top deval
-                (fliptime, e.resp, e.rt) = self.trial(e.phase, e.blocknum, e.bxidx[0], fliptime, deval_idx)
+                (fliptime, e.resp, e.rt) = self.trial(e.phase, e.blocknum, e.bxidx[0], fliptime, deval_idx, e.dur)
                 print(f"  resp: {e.resp}")
 
                 # indicate we pushed a button by changing the screen
