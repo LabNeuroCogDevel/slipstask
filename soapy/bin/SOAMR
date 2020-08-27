@@ -12,12 +12,12 @@ from psychopy.gui import Dlg, DlgFromDict
 from typing import Optional, List, Tuple, Dict
 from soapy.task_types import PhaseType
 from soapy.instruct import show_instruction
-from soapy.task import FabFruitTask
+from soapy.task import FabFruitTask, core
 from soapy.lncdtasks import wait_for_scanner, Filepath
-from soapy import DEFAULT_PHASES, image_path, read_img_list, timing_path
+from soapy import DEFAULT_PHASES, image_path, read_img_list, timing_path, ENDDUR
 from soapy.seeded import pick_seed, single_phase, update_boxes
 
-SEQUENCE = ['ID', 'OD', 'DD', 'SURVEY']
+SEQUENCE = ['ID', 'OD', 'SOA', 'DD', 'SURVEY']
 
 # save dir/files along side this script
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -168,6 +168,9 @@ if info.get('doit', True):
         win = Window([800, 600])
 
 for p in phase_seq:
+    if info['Instructions']:
+        show_instruction(win, p)
+
     # survey is not designed for MR
     nMR = 0 if p == PhaseType.SURVEY else 1
     ffi = single_phase(p, info['seed'], 0, nMR, None, nbox=info['boxes'])
@@ -198,3 +201,8 @@ for p in phase_seq:
         starttime = wait_for_scanner(win)
         task.run(starttime)
         task.save_progress()
+        # wait for scanner to end
+        print(f"*** waiting {ENDDUR} seconds to end {p.name}")
+        task.iti()
+        core.wait(ENDDUR)
+        
