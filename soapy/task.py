@@ -13,7 +13,7 @@ from soapy.task_types import KeypressDict, PhaseType, TrialType, SO, Direction
 from soapy.info import FabFruitInfo
 
 box_states = {PhaseType.ID: "closed", PhaseType.OD: "open",
-              PhaseType.SOA: "open", PhaseType.DD: "closed"}
+              PhaseType.SOA: "closed", PhaseType.DD: "closed"}
 
 
 def wait_numkey(onset: TaskTime) -> Tuple[int, TaskDur]:
