@@ -9,7 +9,7 @@ from soapy.fruit import Fruit
 from soapy.lncdtasks import first_key, TaskTime, TaskDur, Keypress,\
                             dly_waitKeys, wait_until, Filepath,\
                             wait_for_scanner
-from soapy.task_types import KeypressDict, PhaseType, TrialType, SO
+from soapy.task_types import KeypressDict, PhaseType, TrialType, SO, Direction
 from soapy.info import FabFruitInfo
 
 box_states = {PhaseType.ID: "closed", PhaseType.OD: "open",
@@ -70,12 +70,56 @@ class FabFruitTask:
                                     pos=(0, h/2), size=(w/2, h/5))
         self.textBox = visual.TextStim(self.win)
 
-    def draw_box(self, boxtype, box_number:Optional[int], offset=0, devalue=False) -> Tuple[float, float]:
+        self.arrowBox = visual.TextStim(self.win, color='darkgray',
+                                        pos=(0, -.6*h), height=.2)  # ← or →
+
+    def show_arrows(self, picked_dir: Direction, cor: Optional[bool] = None):
+        """draw arrows for left and right.
+        default to two gray arrows.
+        if side is not none picked_dir side black
+        if cor make side blue if matches
+        @param picked_dir what arrow to color
+        @param fbk        feedback gets actual color
+        @sideeffect       draws to screen"""
+        Xit = False
+        # not yet feedback. just color what we picked before saying right or wrong
+        if cor is None:
+            color = "black"
+        # good feedback, show blue
+        elif cor:
+            color = "blue"
+        # feedback show wrong. or we have nothing to show
+        else:
+            Xit = picked_dir != Direction.No
+            color = "darkgray"
+        
+        w_offset = 0.08
+        a_h = self.arrowBox.pos[1]
+        for sinfo in [{'side': Direction.Left, 'text': "<", 'sign': -1},
+                      {'side': Direction.Right,'text': ">", 'sign':  1}]:
+            self.arrowBox.pos = (sinfo['sign']*w_offset, a_h)
+            self.arrowBox.text = sinfo['text']
+            if picked_dir == sinfo['side']:
+                self.arrowBox.color = color
+            else:
+                self.arrowBox.color = "darkgray"
+            self.arrowBox.draw()
+
+            if Xit and picked_dir == sinfo['side']:
+                self.X.pos = self.arrowBox.pos
+                # hacky - move X over and reset size after. inefficent
+                s = self.X.size
+                self.X.size = (s[0]*self.arrowBox.height/s[1], self.arrowBox.height)
+                self.X.draw()
+                self.X.size = s
+        
+
+    def draw_box(self, boxtype, box_number: Optional[int], offset=0, devalue=False) -> Tuple[float, float]:
         """draw a box and fruit
         @param boxtype - open or closed
         @param box_number - which box to draw
         @param offset - 0 is center (default).
-                        -2 is above -1 is below
+                       -2 is above -1 is below
                         1 to 6 is grid (1-3 top left to right, 4-6 bottom L->R)
         @param devalue - should we draw an X over it?
         @param position of drawn box
@@ -210,6 +254,12 @@ class FabFruitTask:
             pos = i - (2 if len(show_boxes) > 1 else 0)  # 0 or -2, -1
             self.draw_box(box_states[btype], bn, pos, deval_idx == i)
 
+        # show response arrows only if we have one centered box.
+        # NB. feedback keeps arrows only on PhaseType.ID
+        # SOA and DD both see arrows, but they are only indicators. never change color
+        if len(show_boxes) == 1:
+            self.show_arrows(Direction.No)
+
         # START
         # NB. neg wait time treated like no wait
         wait_until(onset, verbose=True)
@@ -219,13 +269,16 @@ class FabFruitTask:
         rt: Optional[TaskDur] = None
         if dur > 0:
             print(f'  wait-for-response for {dur}sec')
-            # NB. if two keys are held down, will re port both!
+            # NB. if two keys are held down, will report both!
             # make this None
             resp = event.waitKeys(maxWait=dur - .01, keyList=self.keys.keys())
             rt = core.getTime() - onset
+            
         return (fliptime, resp, rt)
 
-    def fbk(self, show_box: Optional[int], score: int, onset: TaskTime = 0) -> TaskTime:
+    def fbk(self, show_box: Optional[int], score: int,
+            onset: TaskTime = 0,
+            side: Direction = Direction.No) -> TaskTime:
         """ give feedback - only for ID
         @param show_boxes - which box idx to show
         @param score - score to display (see Box.score())
@@ -237,11 +290,22 @@ class FabFruitTask:
         self.draw_box("open", show_box, 0)
 
         self.textBox.pos = self.scoreBox.pos
+        # yellow if correct
+        # red if not
+        if(score >= 1):
+            self.scoreBox.fillColor = 'yellow'
+            self.textBox.color = 'black'
+        else:
+            self.scoreBox.fillColor = 'red'
+            self.textBox.color = 'white'
+
         self.textBox.text = "%d" % score
-        self.textBox.color = 'black'
         self.textBox.height = .1
         self.scoreBox.draw()
         self.textBox.draw()
+
+        # show correct side
+        self.show_arrows(side, score>0)
 
         wait_until(onset)
         return self.win.flip()
@@ -389,19 +453,28 @@ class FabFruitTask:
                 # e.g.
                 #  self.trial(PhaseType.SOA, 1, [3])
                 #  self.trial(PhaseType.OD, 1, [2, 3], deval_idx=0)  # top deval
-                (fliptime, e.resp, e.rt) = self.trial(e.phase, e.blocknum, e.bxidx[0], fliptime, deval_idx, e.dur)
-                print(f"  resp: {e.resp}")
+                show_boxes = e.bxidx[0]  # nested array
+                (fliptime, e.resp, e.rt) = self.trial(e.phase, e.blocknum, show_boxes, fliptime, deval_idx, e.dur)
+
+                resp = first_key(e.resp)
+                e.side = self.keys.get(resp) if resp else None
+                print(f"  resp: {e.resp} => {e.side}")
 
                 # indicate we pushed a button by changing the screen
-                if e.resp and self.timing_method == "onset":
-                    self.win.flip()
+                # to highlight arrow that was pushed
+                if e.side and self.timing_method == "onset":
+                    # if ID, show choice while waiting for feedback
+                    # otherwise show early iti
+                    if e.phase == PhaseType.ID:
+                        self.draw_box(box_states[e.phase], show_boxes[0])
+                        self.show_arrows(e.side)
+                        self.win.flip()
+                    else:
+                        self.iti()
 
                 # if we are running outside of scanner, don't wait for next
                 if self.timing_method == "dur":
                     self.events.addData('skip', True)
-
-                resp = first_key(e.resp)
-                e.side = self.keys.get(resp) if resp else None
 
                 this_score = bx.score(e.phase, e.blocknum, e.side)
                 block_score += this_score
@@ -419,7 +492,8 @@ class FabFruitTask:
                 bi = e.bxidx[0][0]
                 # bx = self.boxes[bi]
                 this_score = self.events.getEarlierTrial().score
-                fliptime = self.fbk(bi, this_score, fliptime)
+                this_side = self.events.getEarlierTrial().side
+                fliptime = self.fbk(bi, this_score, fliptime, this_side)
 
             elif e.ttype == TrialType.GRID:
                 fliptime = self.grid(e.phase, e.bxidx[0], fliptime)

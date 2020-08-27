@@ -8,7 +8,7 @@ except:
     from typing_extensions import TypedDict
 
 # Types
-Direction = Enum('Direction', 'Left Right None')
+Direction = Enum('Direction', 'Left Right No')
 SO = Enum('SO', 'Stim Outcome')
 PhaseType = Enum('PhaseType', 'ID OD SOA DD SURVEY')
 TrialType = Enum('TrialType', 'GRID SHOW FBK ITI SCORE')
