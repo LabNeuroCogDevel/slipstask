@@ -7,6 +7,18 @@ from soapy.task_types import PhaseType
 from soapy.info import FabFruitInfo
 from soapy.lncdtasks import Filepath
 
+class fake_rng:
+    def __init__(self, seed=None):
+        print(f"using old seed! {seed}")
+        if seed and seed >  2**32 - 1:
+            seed = 30
+            print(f"too large using {seed}")
+        random.seed(seed)
+    def shuffle(self, x):
+        random.shuffle(x)
+
+if not hasattr(random,'default_rng'):
+    random.default_rng = fake_rng
 
 def single_phase(p: PhaseType, seed_init: int,
                  mr_start: int = 0, mr_end: int = 0,
