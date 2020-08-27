@@ -23,7 +23,7 @@ os.chdir(os.path.dirname(__file__))
 TR = .7
 DUR = 2
 MAX_DEVAL_REP = 15
-ENDDUR = 6  # how long to wait at the end
+ENDDUR = soapy.ENDDUR  # how long to wait at the end, 6 seconds 20200826
 NBOX = 6
 
 # iti's randomized by  combos * blocks

@@ -9,6 +9,8 @@ import soapy
 # ## default task settings for each phase
 FIRST_ONSET: TaskTime = 3
 
+ENDDUR: TaskTime = 6  # how long to wait at the end
+
 DEFAULT_PHASES: PhaseDict = {
      PhaseType.ID: {'itis': [.5], 'dur': 2, 'fbk': 1, 'score': 2,
                     'blocks': 6, 'reps': 2},
@@ -18,7 +20,9 @@ DEFAULT_PHASES: PhaseDict = {
                     'ndevalblocks': 3},
      PhaseType.SOA: {'blocks': 9, 'reps': 2, 'dur': 2,
                      'itis': [1.5], 'score': 1, 'grid': 5.0,
-                     'ndevalblocks': 3}}
+                     'ndevalblocks': 3},
+     # SURVEY doesn't have any phase info, but needs to pretend (HACKY KLUDGE)
+     PhaseType.SURVEY: {'blocks': 1, 'reps': 1, 'itis': [1], 'dur': 1, 'score': 0}}
 
 KEYS: KeypressDict = {'left': Direction.Left,
                       'right': Direction.Right,

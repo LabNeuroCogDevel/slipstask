@@ -56,9 +56,10 @@ class FabFruitTask:
         self.confidence = visual.ImageStim(self.win, image_path("confidence.png"))
         self.hand = visual.ImageStim(self.win, image_path("hand_only.png"))
         # downsize hands
-        if(self.win.size[1] <= 600):
-            self.confidence.size *= .5
-            self.hand.size *= .5
+        # previously only for half screen. but why not all screens
+        # if(self.win.size[1] <= 600): 
+        self.confidence.size *= .5
+        self.hand.size *= .5
         # bottom align
         self.confidence.pos[1] = -1 + self.confidence.size[1]/2
         self.hand.pos[1] = -1 + self.hand.size[1]/2
@@ -71,7 +72,7 @@ class FabFruitTask:
         self.textBox = visual.TextStim(self.win)
 
         self.arrowBox = visual.TextStim(self.win, color='darkgray',
-                                        pos=(0, -.6*h), height=.2)  # ← or →
+                                        pos=(0, -.7*h), height=.2)  # ← or →
 
     def show_arrows(self, picked_dir: Direction, cor: Optional[bool] = None):
         """draw arrows for left and right.
@@ -433,8 +434,10 @@ class FabFruitTask:
                 raise Exception(f"Unknown timing_method {self.timing_method}")
 
             eta = fliptime - now
-            print(f"@{now:.2f} (on{e.onset}|{prev_dur:.2f}pdur) ETA {eta:.3f}s blk {e.blocknum} trl {e.trial}" +
-                  f" {e.phase} {e.ttype} {e.LR1} {e.top} {e.deval}")
+            print(f"\n@{now:.2f}:{self.events.thisN}/{self.events.nTotal} " +
+                  f"\ton{e.onset}|{prev_dur:.2f}pdur\n" +
+                  f"\tETA {eta:.3f}s trl {e.trial} blk {e.blocknum}" +
+                  f"\n\t{e.phase} {e.ttype} {e.LR1} {e.top} {e.deval}")
 
             # how should we handle this event (trialtype)
             if e.ttype == TrialType.SHOW:

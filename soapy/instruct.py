@@ -56,28 +56,24 @@ PhaseType.OD: [
      ["\nWe'll tally up your score at the end. You wont know if you're right or wrong until then\n"+
       "\nWhen you're ready to start, click next."],
      ],
-
-     "SOA": [
-     ["\n\nNew box shipments are coming in,\n"+
-      "but some of the "+obj_type+"s inside have gone bad!\n",
-      "For each shipment, we have a chart showing good and bad "+obj_type+"s.\n"+
-      "Only open boxes with unspoiled "+obj_type+"s in them." +
-      "\nDon't pick those with an X on them."],
-     ["You will still get points for opening boxes with good "+obj_type+"s inside\n"+
-      "But do not even try to open a box with a spoiled "+obj_type+".\n"+
-      "If you correctly open a box with spoiled "+obj_type+" inside, you'll lose points!"],
-
-     ["You'll have 5 seconds to memorize the good/bad chart for each shipment.\n"+
-      "Then, you will only have " + respsec + " seconds to open or pass each box in the shipment.\n"],
-
-     ["You'll see how well you did at the end of each shipment,\n" +
-      "but you wont know if you're right or wrong until then."],
-
-     ["Remember:\n" +
-      " 5 seconds to memorize the chart for this shipment\n" +
-      " " + respsec + " seconds to pick or pass\n" +
-      " Don't open boxes with X'ed "+obj_type+"s inside\n" +
-      "When you're ready, click next."],
+PhaseType.SOA: [
+    ["New box shipments are coming in,\n"+
+     "but some of the "+obj_type+"s inside have gone bad!\n"+
+     "For each shipment, we have a chart showing good and bad "+obj_type+"s.\n"+
+     "Only open boxes with unspoiled "+obj_type+"s in them." +
+     "\nDon't pick those with an X on them."],
+    ["You will still get points for opening boxes with good "+obj_type+"s inside\n"+
+     "But do not even try to open a box with a spoiled "+obj_type+".\n"+
+     "If you correctly open a box with spoiled "+obj_type+" inside, you'll lose points!"],
+    ["You'll have " + chartsec + " seconds to memorize the good/bad chart for each shipment.\n"+
+     "Then, you will only have " + respsec + " second to open or pass each box in the shipment.\n"],
+    ["You'll see how well you did at the end of each shipment,\n" +
+     "but you wont know if you're right or wrong until then."],
+    ["Remember:\n " +
+     chartsec + "  seconds to memorize the chart\n " +
+     respsec + " second to pick or pass\n " +
+     "Don't open boxes where the outside label is X'ed out\n" +
+     "When you're ready, click next."]
     ],
 
 PhaseType.DD: [
@@ -104,7 +100,7 @@ PhaseType.SURVEY: [
       "  the way to open the box labeled with or containing each "+obj_type+".\n" +
       "  what outside "+obj_type+" label pair with which inside "+obj_type+".\n" +
       "  and how confident you are about each answer.\n"],
-    ["When answering, " +
+    ["\nWhen answering,\n" +
       "  to pick left or right, push the keyboard arrow keys or click the arrow.\n" +
       "  to pick a "+obj_type+"'s pair, push the number label on the keyboard or using the mouse.\n" +
       "  to rank your confidence, move the slider and click continue.\n" +
