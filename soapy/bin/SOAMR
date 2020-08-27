@@ -23,6 +23,30 @@ SEQUENCE = ['ID', 'OD', 'SOA', 'DD', 'SURVEY']
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
+# log to a file
+# user2033758
+# https://stackoverflow.com/questions/14906764/how-to-redirect-stdout-to-both-file-and-console-with-scripting
+class Unbuffered:
+    def __init__(self, stream):
+        outdir = os.path.join("slips_data","logs")
+        if not os.path.isdir(outdir):
+            os.makedirs(outdir)
+        dt = datetime.strftime(datetime.now(), "tasklog_%Y%m%d_%H.%M.%S.txt")
+        self.loghandle = open(os.path.join(outdir, dt), 'w')
+        self.stream = stream
+
+    def write(self, data):
+        self.stream.write(data)
+        self.stream.flush()
+        self.loghandle.write(data)    # Write the data of stdout here to a text file as well
+
+    def flush(self, *argv):
+        self.stream.flush()
+        self.loghandle.flush()
+
+sys.stdout = Unbuffered(sys.stdout)
+
+
 def show_error(msg) -> bool:
     """quick dialog popup to report issues"""
     d = Dlg(title=msg)
