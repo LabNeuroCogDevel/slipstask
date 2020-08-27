@@ -537,7 +537,7 @@ class FabFruitTask:
         if not self.save_path:
             print(f"WARNING: trying to save buth no 'save_path' given")
             return
-        self.events.saveAsText(self.save_path)
+        self.events.saveAsText(self.save_path, appendFile=False)
 
     def instruction(self, top: str, func, bottom="(push any key)", flip=True) -> Keypress:
         """print some text and run an arbitraty function"""

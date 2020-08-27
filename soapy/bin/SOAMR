@@ -192,7 +192,7 @@ for p in phase_seq:
         show_instruction(win, p)
     # ## Build the task
     task = FabFruitTask(win, ffi)
-    vtime = datetime.strftime(datetime.now(), "%H:%M.%S")
+    vtime = datetime.strftime(datetime.now(), "%H%M.%S")
     task.save_path = os.path.join(info['outdir'], f"{p.name}_{vtime}.csv")
     # do it
     if p == PhaseType.SURVEY:
@@ -201,6 +201,7 @@ for p in phase_seq:
         starttime = wait_for_scanner(win)
         task.run(starttime)
         task.save_progress()
+        task.events.saveAsWideText(task.save_path.replace('.csv','_wide.csv'))
         # wait for scanner to end
         print(f"*** waiting {ENDDUR} seconds to end {p.name}")
         task.iti()
