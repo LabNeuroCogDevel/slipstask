@@ -165,7 +165,7 @@ if info.get('doit', True):
     if info['FullScreen']:
         win = Window(fullscr=True)
     else:
-        win = Window([800, 600])
+        win = Window([800, 600]) #, screen=1)
 
 for p in phase_seq:
     if info['Instructions']:

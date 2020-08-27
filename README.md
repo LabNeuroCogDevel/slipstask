@@ -134,10 +134,10 @@ This version pays more attention to timing and psuedo-randomizes Left/Right choi
 pip install -e 'git+https://github.com/LabNeuroCogDevel/slipstask'
 
 # with e.g. ~/.local/bin in $PATH
-SOA
+SOAMR
 ```
 
-Running `SOA` opens a dialog box.
+Running `SOAMR` opens a dialog box.
 If MR is checked, timing files will be loaded, and an additional prompt will ask for start and end block numbers.
 Otherwise, the additional prompt will confirm timing and repitition settings for the randomly generated trials.
 
@@ -147,5 +147,5 @@ see `timing/gentiming.py`: generate timings and pick minimize norm std dev (`3dD
 #### Code
 
 * `soapy/__init__.py` - default task settings
-* `soapy/bin/SOA` - default launcher
+* `soapy/bin/SOAMR` - default launcher
 * `soapy/images` has links from `static/images`: pngs and obj lists (.txt)

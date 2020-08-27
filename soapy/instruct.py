@@ -49,7 +49,7 @@ PhaseType.ID: [
      "\n\nReady to play!?\n"],
     ],
 PhaseType.OD: [
-     ["\nYou opened all the boxes we have!\n" +
+     ["\n\nYou opened all the boxes we have!\n" +
       "But we have too many of some of the inside "+obj_type+"s. \n" +
       "You can now get points by picking only the inside "+obj_type+"s without an X over them.\n"+
       "Pick a "+obj_type+" by using the same side that opened the box the "+obj_type+" was inside of"],
@@ -57,19 +57,19 @@ PhaseType.OD: [
       "\nWhen you're ready to start, click next."],
      ],
 PhaseType.SOA: [
-    ["New box shipments are coming in,\n"+
+    ["\nNew box shipments are coming in,\n"+
      "but some of the "+obj_type+"s inside have gone bad!\n"+
      "For each shipment, we have a chart showing good and bad "+obj_type+"s.\n"+
      "Only open boxes with unspoiled "+obj_type+"s in them." +
      "\nDon't pick those with an X on them."],
-    ["You will still get points for opening boxes with good "+obj_type+"s inside\n"+
+    ["\nYou will still get points for opening boxes with good "+obj_type+"s inside\n"+
      "But do not even try to open a box with a spoiled "+obj_type+".\n"+
      "If you correctly open a box with spoiled "+obj_type+" inside, you'll lose points!"],
     ["You'll have " + chartsec + " seconds to memorize the good/bad chart for each shipment.\n"+
      "Then, you will only have " + respsec + " second to open or pass each box in the shipment.\n"],
     ["You'll see how well you did at the end of each shipment,\n" +
      "but you wont know if you're right or wrong until then."],
-    ["Remember:\n " +
+    ["\nRemember:\n " +
      chartsec + "  seconds to memorize the chart\n " +
      respsec + " second to pick or pass\n " +
      "Don't open boxes where the outside label is X'ed out\n" +
@@ -79,14 +79,14 @@ PhaseType.SOA: [
 PhaseType.DD: [
     ["Someone tried to intercept our shipments of tricky boxes and damanged some of them!\n" +
      "For each shipment, we have a chart of what boxes were damaged."],
-    ["You will still get points for opening boxes with good "+obj_type+"s inside\n"+
+    ["\nYou will still get points for opening boxes with good "+obj_type+"s inside\n"+
      "But, don't even try to open a damaged box.\n" +
      "If you open a damanged box correctly, you'll lose points!"],
-    ["You'll have " + chartsec + " seconds to memorize the good/bad chart for each shipment.\n"+
+    ["\nYou'll have " + chartsec + " seconds to memorize the good/bad chart for each shipment.\n"+
      "Then, you will only have " + respsec + " second to open or pass each box in the shipment.\n"],
     ["You'll see how well you did at the end of each shipment,\n" +
      "but you wont know if you're right or wrong until then."],
-    ["Remember:\n " +
+    ["\nRemember:\n " +
      chartsec + "  seconds to memorize the chart\n " +
      respsec + " second to pick or pass\n " +
      "Don't open boxes where the outside label is X'ed out\n" +
@@ -96,11 +96,11 @@ PhaseType.SURVEY: [
     ["You are almost done!\n"+
      "We just have a few questions we want to ask you about the game.\n" +
      "We want to know how well you feel like you learned about the tricky boxes."],
-    ["In this section, we'll ask you about\n" +
+    ["\n\nIn this section, we'll ask you about\n" +
       "  the way to open the box labeled with or containing each "+obj_type+".\n" +
       "  what outside "+obj_type+" label pair with which inside "+obj_type+".\n" +
       "  and how confident you are about each answer.\n"],
-    ["\nWhen answering,\n" +
+    ["\n\n\nWhen answering,\n" +
       "  to pick left or right, push the keyboard arrow keys or click the arrow.\n" +
       "  to pick a "+obj_type+"'s pair, push the number label on the keyboard or using the mouse.\n" +
       "  to rank your confidence, move the slider and click continue.\n" +

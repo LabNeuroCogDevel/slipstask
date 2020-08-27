@@ -91,13 +91,15 @@ class FabFruitInfo:
                 for R in sides['R']
                 for d in [True, False]
                 for Lfirst in [True, False]]
-        self.seed.shuffle(np.array(binfo, dtype=object))
 
         trls: List[TrialDict] = []
         itis = settings['itis'] * math.ceil(len(binfo)/len(settings['itis']))
         self.seed.shuffle(itis)
 
         for bnum in range(settings.get('blocks', 1)):
+
+            fromidx = list(range(len(binfo)))
+            self.seed.shuffle(fromidx)
             # maybe we want all blocks in this phase to be together
             # (MR block)
             if bnum > 0 and settings.get('combine', False):
@@ -106,11 +108,12 @@ class FabFruitInfo:
                 onset = FIRST_ONSET
 
             for i in range(len(binfo)):  # 36 trls
+                ii = fromidx[i]
 
-                LR = binfo[i][1]
-                deval_top = binfo[i][0]
+                LR = binfo[ii][1]
+                deval_top = binfo[ii][0]
                 # SHOW
-                trls.append(trial_dict(PhaseType.OD, TrialType.SHOW, 1,  i, LR1=LR[0],
+                trls.append(trial_dict(PhaseType.OD, TrialType.SHOW, 1,  i, LR[0],
                                        LR2=LR[1],
                                        deval=deval_top,
                                        onset=onset,

@@ -316,8 +316,8 @@ class FabFruitTask:
         @param stim - stim fruit. outcome pair will be among shown
         @return index of response (thumb to pinky), RT, picked, correct """
         self.textBox.text = "What is this label's pair"
-        self.textBox.pos = (0, .8)
-        self.fruit.pos = (0, .7)
+        self.textBox.pos = (0, .9)
+        self.fruit.pos = (0, .65)
         self.fruit.setImage(stim.image)
         self.textBox.draw()
         self.fruit.draw()
