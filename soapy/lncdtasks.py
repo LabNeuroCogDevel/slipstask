@@ -23,10 +23,10 @@ def first_key(resp: List[str]) -> Optional[str]:
         resp = resp[0]
     return resp
 
-def dly_waitKeys(dly, *kargs):
+def dly_waitKeys(dly, **kargs):
     from psychopy.event import waitKeys
     wait(dly)
-    resp = waitKeys(*kargs)
+    resp = waitKeys(**kargs)
     return(resp)
 
 def wait_for_scanner(win, keys:List[str] =["equal", "asciicircum"], msg:Optional[str]=None) -> TaskTime:

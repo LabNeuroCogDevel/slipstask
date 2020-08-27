@@ -540,7 +540,7 @@ class FabFruitTask:
         self.events.saveAsText(self.save_path, appendFile=False,
                                fileCollisionMethod='overwrite')
 
-    def instruction(self, top: str, func, bottom="(push any key)", flip=True) -> Keypress:
+    def instruction(self, top: str, func, bottom="(spacebar to cont.)", flip=True) -> Keypress:
         """print some text and run an arbitraty function"""
 
         # instructions are not timing sensitive.
@@ -563,5 +563,5 @@ class FabFruitTask:
             func(self)
         if flip:
             self.win.flip()
-        key = dly_waitKeys(.5)
+        key = dly_waitKeys(.5, keyList=['space', '0', 'return'])
         return key
