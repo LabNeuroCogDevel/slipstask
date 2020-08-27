@@ -45,7 +45,7 @@ class FabFruitTask:
         self.timing_method = timing_method  # alternative "dur"
         self.events = TrialHandler(info.timing.to_dict('records'), 1,
                                    method='sequential',
-                                   dataTypes=['cor', 'resp', 'side',
+                                   dataTypes=['resp', 'side',
                                               'rt', 'score', 'fliptime',
                                               'block_score', 'skip'])
 
@@ -485,6 +485,7 @@ class FabFruitTask:
                 print(f"  #resp {resp} @ {e.rt:.2f}s is {e.side} =>  {this_score} pts; total: {block_score}")
                 self.events.addData('score', e.score)
                 self.events.addData('rt', e.rt)
+                self.events.addData('side', e.side)
                 self.events.addData('resp', ",".join(e.resp) if resp else None)
 
             elif e.ttype == TrialType.ITI:
