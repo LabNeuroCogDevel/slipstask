@@ -9,8 +9,8 @@ TR=0.7 # which TR to use
 env|grep -q ^DRYRUN=.&&DRYRUN=echo||DRYRUN=
 set -euo pipefail
 cd $(dirname $0)
-for nbox in 4 6; do
-   for phase in ID OD DD; do
+for nbox in 6; do
+   for phase in ID OD SOA DD; do
       outd=../soapy/timing/$phase/$nbox
       test -d $outd || mkdir -p $_
       # what file do we want to use

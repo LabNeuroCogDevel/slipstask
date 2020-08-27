@@ -4,7 +4,7 @@
 # into a datatable. each row is a seed. columns are norm std dev of X.mat and contrasts
 set -euo pipefail
 cd $(dirname $0)
-for phase in DD OD ID; do
+for phase in DD OD ID SOA; do
    for d in seeded/$phase/tr*/; do
       find $d -maxdepth 2 -mindepth 2 -type f -iname 'convolve.txt' |
        xargs perl -MFile::Basename=dirname -lne '

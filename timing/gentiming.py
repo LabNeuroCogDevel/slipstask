@@ -23,7 +23,7 @@ os.chdir(os.path.dirname(__file__))
 TR = .7
 DUR = 2
 MAX_DEVAL_REP = 15
-ENDDUR = 12  # how long to wait at the end
+ENDDUR = 6  # how long to wait at the end
 NBOX = 6
 
 # iti's randomized by  combos * blocks
@@ -48,6 +48,8 @@ DD = {PhaseType.DD: {
     'ndevalblocks': 3,           # each box is devalued 3 times
     'combine': True}}            # block onset times are combined into one run    #'total_secs': 454}}
 
+SOA = {PhaseType.SOA: DD[PhaseType.DD]}
+
 # 20200825 - 12 blocks where each box is devalued 6 times gives a balence devalue dist.
 # 6deval*4boxes vs 3deval*6boxes
 if NBOX == 4:
@@ -66,7 +68,7 @@ if NBOX == 4:
 ID = {PhaseType.ID: {
     'itis': iti_lists[NBOX],
     'dur': DUR,
-    'fbk': 1,
+    'fbk': 2,
     'blocks': 8,
     'combine': True,
     'score': 2,
@@ -310,6 +312,7 @@ if __name__ == "__main__":
         gen_timing(_, ID)
         gen_timing(_, OD)
         gen_timing(_, DD)
+        gen_timing(_, SOA)
 
     # from multiprocessing import Pool
     # p = Pool(2)
