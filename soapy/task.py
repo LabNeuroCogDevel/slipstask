@@ -506,6 +506,7 @@ class FabFruitTask:
                 # print("score: %d" % self.events.getEarlierTrial().score)
                 self.message(f'In this block you scored {block_score} pnts', fliptime)
                 self.events.addData('block_score', block_score)
+                block_score = 0  # reset block points after showing
 
                 # if score is the last in this block. wait for a key
                 nexttrial = self.events.getFutureTrial()
