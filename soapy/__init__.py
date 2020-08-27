@@ -100,11 +100,11 @@ def example(task):
     task.draw_box('open', 1, 1, True)
     task.win.flip()
 
-    task.trial(PhaseType.ID, 1, [2])
-    task.trial(PhaseType.DD, 1, [3])
-    task.trial(PhaseType.SOA, 1, [3])
-    task.trial(PhaseType.OD, 1, [2, 3], deval_idx=0)  # top deval
-    task.trial(PhaseType.OD, 1, [2, 3], deval_idx=1)  # bottom deval
+    task.trial(PhaseType.ID, [2])
+    task.trial(PhaseType.DD, [3])
+    task.trial(PhaseType.SOA, [3])
+    task.trial(PhaseType.OD, [2, 3], deval_idx=0)  # top deval
+    task.trial(PhaseType.OD, [2, 3], deval_idx=1)  # bottom deval
 
 
 if __name__ == "__main__":
