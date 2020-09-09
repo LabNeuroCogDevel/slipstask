@@ -13,7 +13,7 @@ from soapy.task_types import KeypressDict, PhaseType, TrialType, SO, Direction
 from soapy.info import FabFruitInfo
 
 box_states = {PhaseType.ID: "closed", PhaseType.OD: "open",
-              PhaseType.SOA: "open", PhaseType.DD: "closed"}
+              PhaseType.SOA: "closed", PhaseType.DD: "closed"}
 
 
 def wait_numkey(onset: TaskTime) -> Tuple[int, TaskDur]:
@@ -45,7 +45,7 @@ class FabFruitTask:
         self.timing_method = timing_method  # alternative "dur"
         self.events = TrialHandler(info.timing.to_dict('records'), 1,
                                    method='sequential',
-                                   dataTypes=['cor', 'resp', 'side',
+                                   dataTypes=['resp', 'resp_side',
                                               'rt', 'score', 'fliptime',
                                               'block_score', 'skip'])
 
@@ -233,13 +233,13 @@ class FabFruitTask:
         onset = self.win.flip()
         return wait_numkey(onset)
 
-    def trial(self, btype: PhaseType, block_num: int, show_boxes: List[int],
-              onset: TaskTime = 0, deval_idx: int = 1, dur: TaskDur = 1) -> Tuple[TaskTime, List[Keypress], Optional[TaskDur]]:
+    def trial(self, btype: PhaseType, show_boxes: List[int],
+              onset: TaskTime = 0, deval_idx: int = 1,
+              dur: TaskDur = 1) -> Tuple[TaskTime, List[Keypress], Optional[TaskDur]]:
         """run a trial, flipping at onset
         @param btype - block type: what to show, how to score
         @param show_boxes - what box(es) to show
         @param deval_idx - for DD 0 to deval top, 1 to devalue bottom
-        @param block_num - what block are we on
         @return (fliptime, resp, rt) - key of response, how long til push could both be None
         """
 
@@ -434,7 +434,7 @@ class FabFruitTask:
                 raise Exception(f"Unknown timing_method {self.timing_method}")
 
             eta = fliptime - now
-            print(f"\n@{now:.2f}:{self.events.thisN}/{self.events.nTotal} " +
+            print(f"\n@{now:.2f}s {self.events.thisN}/{self.events.nTotal} " +
                   f"\ton{e.onset}|{prev_dur:.2f}pdur\n" +
                   f"\tETA {eta:.3f}s trl {e.trial} blk {e.blocknum}" +
                   f"\n\t{e.phase} {e.ttype} {e.LR1} {e.top} {e.deval}")
@@ -457,7 +457,7 @@ class FabFruitTask:
                 #  self.trial(PhaseType.SOA, 1, [3])
                 #  self.trial(PhaseType.OD, 1, [2, 3], deval_idx=0)  # top deval
                 show_boxes = e.bxidx[0]  # nested array
-                (fliptime, e.resp, e.rt) = self.trial(e.phase, e.blocknum, show_boxes, fliptime, deval_idx, e.dur)
+                (fliptime, e.resp, e.rt) = self.trial(e.phase, show_boxes, fliptime, deval_idx, e.dur)
 
                 resp = first_key(e.resp)
                 e.side = self.keys.get(resp) if resp else None
@@ -485,6 +485,8 @@ class FabFruitTask:
                 print(f"  #resp {resp} @ {e.rt:.2f}s is {e.side} =>  {this_score} pts; total: {block_score}")
                 self.events.addData('score', e.score)
                 self.events.addData('rt', e.rt)
+                if e.side:
+                    self.events.addData('resp_side', e.side.name)
                 self.events.addData('resp', ",".join(e.resp) if resp else None)
 
             elif e.ttype == TrialType.ITI:
@@ -537,9 +539,10 @@ class FabFruitTask:
         if not self.save_path:
             print(f"WARNING: trying to save buth no 'save_path' given")
             return
-        self.events.saveAsText(self.save_path, appendFile=False)
+        self.events.saveAsText(self.save_path, appendFile=False,
+                               fileCollisionMethod='overwrite')
 
-    def instruction(self, top: str, func, bottom="(push any key)", flip=True) -> Keypress:
+    def instruction(self, top: str, func, bottom="(spacebar to cont.)", flip=True) -> Keypress:
         """print some text and run an arbitraty function"""
 
         # instructions are not timing sensitive.
@@ -562,5 +565,5 @@ class FabFruitTask:
             func(self)
         if flip:
             self.win.flip()
-        key = dly_waitKeys(.5)
+        key = dly_waitKeys(.5, keyList=['space', '0', 'return'])
         return key

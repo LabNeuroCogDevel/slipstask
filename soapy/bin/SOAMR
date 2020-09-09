@@ -23,6 +23,30 @@ SEQUENCE = ['ID', 'OD', 'SOA', 'DD', 'SURVEY']
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
+# log to a file
+# user2033758
+# https://stackoverflow.com/questions/14906764/how-to-redirect-stdout-to-both-file-and-console-with-scripting
+class Unbuffered:
+    def __init__(self, stream):
+        outdir = os.path.join("slips_data", "logs")
+        if not os.path.isdir(outdir):
+            os.makedirs(outdir)
+        dt = datetime.strftime(datetime.now(), "tasklog_%Y%m%d_%H.%M.%S.txt")
+        self.loghandle = open(os.path.join(outdir, dt), 'w')
+        self.stream = stream
+
+    def write(self, data):
+        self.stream.write(data)
+        self.stream.flush()
+        self.loghandle.write(data)    # Write the data of stdout here to a text file as well
+
+    def flush(self, *argv):
+        self.stream.flush()
+        self.loghandle.flush()
+
+sys.stdout = Unbuffered(sys.stdout)
+
+
 def show_error(msg) -> bool:
     """quick dialog popup to report issues"""
     d = Dlg(title=msg)
@@ -58,14 +82,14 @@ def ymd() -> str:
 
 
 def setup_outdir(d):
-    """@side-effect: update d with outdir. must have id, date, and boxes"""
+    """@side-effect: update d with outdir. must have id and date"""
     d.update({'outdir':
               os.path.join("slips_data",
                            str(d['id']),
-                           f"{d['date']}_{d['boxes']}boxes")})
+                           f"{d['date']}")})
 
 
-def mkdir_seed(d) -> int:
+def mkdir_seed(d) -> Optional[int]:
     """ given dict with outdir and 'seed' interger
     return seed read from file if exists
     @side-effect make directory
@@ -86,7 +110,7 @@ class SOADlg:
           DlgInfo('id', 10000),
           DlgInfo('date', ymd(), isfixed=True),
           DlgInfo('start', 'ID', SEQUENCE),
-          DlgInfo('boxes', 6, [4, 6]),
+          DlgInfo('OnlyOne', False),
           DlgInfo('Instructions', True),
           DlgInfo('FullScreen', True),
           DlgInfo('seed', 0)]
@@ -150,7 +174,7 @@ else:
             'date': ymd(),
             'FullScreen': False,
             'Instructions': False,
-            'boxes': 6,
+            'OnlyOne': True,
             'doit': len(sys.argv) > 3,
             'seed': 0}
     setup_outdir(info)
@@ -173,7 +197,7 @@ for p in phase_seq:
 
     # survey is not designed for MR
     nMR = 0 if p == PhaseType.SURVEY else 1
-    ffi = single_phase(p, info['seed'], 0, nMR, None, nbox=info['boxes'])
+    ffi = single_phase(p, info['seed'], 0, nMR, None, nbox=6)
     # destroys devalued_blocks?
     # info.py| set_names -> make_boxes -> seeded shuffle
     # task.py| this_score = bx.score(e.phase, e.blocknum, e.side)
@@ -185,6 +209,9 @@ for p in phase_seq:
         print(f"# skipping. give 3rd argument to {sys.argv[0]} to actually run")
         seecols = ['onset', 'ttype', 'cor_side', 'LR1', 'top', 'bottom', 'deval', 'bxidx']
         print(ffi.timing[seecols].to_csv(sep="\t"))
+
+        if info.get('OnlyOne', False):
+            break
         continue
 
     # if we are testing
@@ -201,9 +228,11 @@ for p in phase_seq:
         starttime = wait_for_scanner(win)
         task.run(starttime)
         task.save_progress()
-        task.events.saveAsWideText(task.save_path.replace('.csv','_wide.csv'))
+        task.events.saveAsWideText(task.save_path.replace('.csv', '_wide.csv'))
         # wait for scanner to end
         print(f"*** waiting {ENDDUR} seconds to end {p.name}")
         task.iti()
         core.wait(ENDDUR)
-        
+
+    if info.get('OnlyOne', False):
+        break

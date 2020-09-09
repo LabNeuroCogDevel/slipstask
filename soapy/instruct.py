@@ -129,6 +129,7 @@ def show_instruction(win, phase: PhaseType):
         else:
             j = j + 1
 
+
 def practice(win, obj_type='animals'):
     """run a practice version of the task
     @param win - psychopy window
