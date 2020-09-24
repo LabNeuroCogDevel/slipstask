@@ -40,6 +40,7 @@ soapy/wheelhouse.tar.gz: soapy/requirements.txt
 	rm -r wheelhouse
 
 install_depends: soapy/wheelhouse.tar.gz
+	# also see run_SOA.bat
 	pip install -r wheelhouse/requirements.txt --no-index --find-links wheelhouse
 	# copy static/images into soapy/images
 	# "C:\Users\foranw\AppData\Local\PsychoPy3\python.exe" -m pip install -r wheelhouse\\requirements.txt --no-index --find-links wheelhouse
