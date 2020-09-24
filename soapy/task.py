@@ -21,10 +21,17 @@ def wait_numkey(onset: TaskTime) -> Tuple[int, TaskDur]:
     @param onset time to make rt relative to last flip
     @return (index of resp, RT)
     """
-    resp = event.waitKeys(keyList=NUM_KEYS)
-    resp = first_key(resp)
-    rt = core.getTime() - onset
-    return (NUM_KEYS.index(resp), rt)
+    key_idx = -2
+    while key_idx < 0:
+        resp = event.waitKeys(keyList=NUM_KEYS)
+        resp = first_key(resp)
+        rt = core.getTime() - onset
+        key_idx = NUM_KEYS.index(resp) if resp else -1
+        if key_idx == -1:
+            # TODO: maybe report the initial RT?
+            print("WARNING: two keys pushed, waiting for just one!")
+
+    return (key_idx, rt)
 
 
 class FabFruitTask:
@@ -217,7 +224,7 @@ class FabFruitTask:
         resp = event.waitKeys(keyList=self.keys.keys())
         resp = first_key(resp)
         rt: TaskDur = core.getTime() - onset
-        correct: bool = self.keys[resp] == fruit.box.Dir
+        correct: bool = self.keys.get(resp) == fruit.box.Dir
         return (resp, rt, correct)
 
     def get_confidence(self, mesg: str = "How confident are you?") -> Tuple[int, TaskDur]:
@@ -364,14 +371,16 @@ class FabFruitTask:
         outf = open(os.path.join(self.save_path), "w")
         outf.write("type disp f_resp f_rt pick iscorrect c_resp c_rt\n")
         # TODO make random order
+        print(self.fruits)
         for f in self.fruits:
             print(f"showing {f}")
             (f_resp, f_rt, f_correct) = self.fruit_only(f)
-            print(f"*  side: {f_resp}=>{self.keys[f_resp].name} vs {f.box.Dir}: {f_correct}")
+            f_name = self.keys[f_resp].name if self.keys.get(f_resp) else "TWO_KEYS!"
+            print(f"*  side: {f_resp}=>{f_name} vs {f.box.Dir}: {f_correct}")
 
             (c_resp, c_rt) = self.get_confidence()
             print(f"*  confidence: {c_resp}")
-            outf.write(f"side {f.name} {f_resp} {f_rt} {self.keys[f_resp]} {f_correct} {c_resp} {c_rt}\n")
+            outf.write(f"side {f.name} {f_resp} {f_rt} {self.keys.get(f_resp)} {f_correct} {c_resp} {c_rt}\n")
 
         for b in self.boxes:
             (f_resp, f_rt, f_pick, f_correct) = self.fruit_fingers(b.Stim)
