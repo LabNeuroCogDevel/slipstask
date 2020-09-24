@@ -369,18 +369,18 @@ class FabFruitTask:
     def survey(self):
         """ run through fruit and box survey"""
         outf = open(os.path.join(self.save_path), "w")
-        outf.write("type disp f_resp f_rt pick iscorrect c_resp c_rt\n")
-        # TODO make random order
-        print(self.fruits)
+        outf.write("type disp f_resp f_rt pick iscorrect correct c_resp c_rt\n")
+
+        # N.B. side (L|R) order of self.fruits is already random
         for f in self.fruits:
             print(f"showing {f}")
             (f_resp, f_rt, f_correct) = self.fruit_only(f)
-            f_name = self.keys[f_resp].name if self.keys.get(f_resp) else "TWO_KEYS!"
-            print(f"*  side: {f_resp}=>{f_name} vs {f.box.Dir}: {f_correct}")
+            f_side = self.keys[f_resp].name if self.keys.get(f_resp) else "TWO_KEYS"
+            print(f"*  side: {f_resp}=>{f_side} vs {f.box.Dir}: {f_correct}")
 
             (c_resp, c_rt) = self.get_confidence()
             print(f"*  confidence: {c_resp}")
-            outf.write(f"side {f.name} {f_resp} {f_rt} {self.keys.get(f_resp)} {f_correct} {c_resp} {c_rt}\n")
+            outf.write(f"side {f.name} {f_resp} {f_rt} {f_side} {f_correct} {f.box.Dir.name} {c_resp} {c_rt}\n")
 
         for b in self.boxes:
             (f_resp, f_rt, f_pick, f_correct) = self.fruit_fingers(b.Stim)
@@ -388,7 +388,7 @@ class FabFruitTask:
 
             (c_resp, c_rt) = self.get_confidence()
             print(f"*  confidence: {c_resp}")
-            outf.write(f"pair {b.Stim.name} {f_resp} {f_rt} {f_pick} {f_correct} {c_resp} {c_rt}\n")
+            outf.write(f"pair {b.Stim.name} {f_resp} {f_rt} {f_pick} {f_correct} {b.Outcome.name} {c_resp} {c_rt}\n")
 
         outf.close()
 
