@@ -21,3 +21,9 @@ order name dur(seconds)
 3     SOA  502
 4     DD   502
 ```
+
+see 
+```
+grep ENDDUR soapy/__init__.py
+tail -qn1 soapy/timing/*/6/*csv|cut -d, -f2,9|uniq |sed 's/,/ /;s/PhaseType.//'|while read t d; do echo $t $(echo $d + 6 | bc); done
+```
