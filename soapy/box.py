@@ -30,6 +30,34 @@ class Box:
         self.Outcome.SO = SO.Outcome
         self.Stim.box = self.Outcome.box = self
 
+    def score_raw(self, choice: Optional[Direction], isdeval: bool):
+        """ score without knowing about particular block
+        @param choice - participant selected open direction Left, Right, or None
+        @param isdeval - has this box been devalud
+        @return score (-1,0,1)
+        >>> bx = Box(Fruit('apple'),Fruit('kiwi'), Direction.Left, {}, 'TestBox')
+        >>> bx.score(Direction.Left, False)
+        1
+        >>> bx.score(Direction.Left, True)
+        -1
+        >>> bx.score(Direction.Right, True)
+        0
+        >>> bx.score(Direction.Right, False)
+        0
+        """
+        if not choice:
+            return 0
+        if isdeval:
+            if self.Dir == choice:
+                return -1
+            else:
+                return 0
+        else:
+            if self.Dir == choice:
+                return 1
+            else:
+                return 0
+
     def score(self, btype: PhaseType, bnum: int, choice: Optional[Direction]):
         """get score for box
         @param btype - blocktype
@@ -51,20 +79,10 @@ class Box:
         >>> bx.score(PhaseType.SOA, 3, None)
         0
         """
-        if not choice:
-            return 0
         # print(f"# DEBUG: btype {btype} for {bnum} in {self.devalued_blocks}")
-        if btype in [PhaseType.DD, PhaseType.SOA] and \
-           bnum in self.devalued_blocks.get(btype, []):
-            if self.Dir == choice:
-                return -1
-            else:
-                return 0
-        else:
-            if self.Dir == choice:
-                return 1
-            else:
-                return 0
+        isdeval =  btype in [PhaseType.DD, PhaseType.SOA] and \
+           bnum in self.devalued_blocks.get(btype, [])
+        return self.score_raw(choice, isdeval)
 
     def __repr__(self) -> str:
         return f"{self.name}: {self.Stim.name} -> {self.Outcome.name} ({self.Dir})"

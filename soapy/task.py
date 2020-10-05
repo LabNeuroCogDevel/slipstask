@@ -9,7 +9,7 @@ from soapy.fruit import Fruit
 from soapy.lncdtasks import first_key, TaskTime, TaskDur, Keypress,\
                             dly_waitKeys, wait_until, Filepath,\
                             wait_for_scanner
-from soapy.task_types import KeypressDict, PhaseType, TrialType, SO, Direction
+from soapy.task_types import KeypressDict, PhaseType, TrialType, SO, Direction, TimeTypes
 from soapy.info import FabFruitInfo
 
 box_states = {PhaseType.ID: "closed", PhaseType.OD: "open",
@@ -38,7 +38,7 @@ class FabFruitTask:
     save_path: Optional[Filepath]
 
     def __init__(self, win, info: FabFruitInfo, keys: KeypressDict = KEYS,
-                 timing_method: str = "onset"):
+                 timing_method: TimeTypes = TimeTypes.onset):
         self.win = win
 
         # settings
@@ -47,14 +47,9 @@ class FabFruitTask:
         self.boxes = info.boxes
         self.keys = keys
         self.save_path = None
-
-        # timing
-        self.timing_method = timing_method  # alternative "dur"
-        self.events = TrialHandler(info.timing.to_dict('records'), 1,
-                                   method='sequential',
-                                   dataTypes=['resp', 'resp_side',
-                                              'rt', 'score', 'fliptime',
-                                              'block_score', 'skip'])
+        
+        if timing_method != TimeTypes.block:
+            self.set_times(timing_method)
 
         # display objects
         self.box = visual.ImageStim(self.win, image_path('box_open.png'))
@@ -80,6 +75,16 @@ class FabFruitTask:
 
         self.arrowBox = visual.TextStim(self.win, color='darkgray',
                                         pos=(0, -.7*h), height=.2)  # ← or →
+
+    def set_times(self, timing_method: TimeTypes):
+        # timing
+        self.timing_method = timing_method  # alternative "dur"
+        self.events = TrialHandler(self.info.timing.to_dict('records'), 1,
+                                   method='sequential',
+                                   dataTypes=['resp', 'resp_side',
+                                              'rt', 'score', 'fliptime',
+                                              'block_score', 'skip'])
+
 
     def show_arrows(self, picked_dir: Direction, cor: Optional[bool] = None):
         """draw arrows for left and right.
@@ -280,7 +285,7 @@ class FabFruitTask:
             # NB. if two keys are held down, will report both!
             # make this None
             resp = event.waitKeys(maxWait=dur - .01, keyList=self.keys.keys())
-            rt = core.getTime() - onset
+            rt = core.getTime() - fliptime
             
         return (fliptime, resp, rt)
 
@@ -407,7 +412,7 @@ class FabFruitTask:
                     core.wait(prev_dur)
                 # second round of MR. wait for scanner
                 # this is maybe a condtion we will never see
-                if prev is not None and self.timing_method == 'onset':
+                if prev is not None and self.timing_method == TimeTypes.onset:
                     wait_for_scanner(self.win)
 
                 starttime = core.getTime()
@@ -431,11 +436,11 @@ class FabFruitTask:
             # if we are using onset timing method, use preprogramed onsset times
             # if duration, wait until the previous duration
             #    -- duration will be changed when e.g. rt < max wait
-            if self.timing_method == "onset":
+            if self.timing_method == TimeTypes.onset:
                 fliptime = starttime + e.onset
             
             # if timing "dur", should have set prev dur to 0
-            elif self.timing_method == "dur":
+            elif self.timing_method == TimeTypes.onset:
                 if prev and self.events.data['skip'][self.events.thisTrialN-1] == True:
                     prev_dur = 0
                 fliptime = now + prev_dur
@@ -474,7 +479,7 @@ class FabFruitTask:
 
                 # indicate we pushed a button by changing the screen
                 # to highlight arrow that was pushed
-                if e.side and self.timing_method == "onset":
+                if e.side and self.timing_method == TimeTypes.onset:
                     # if ID, show choice while waiting for feedback
                     # otherwise show early iti
                     if e.phase == PhaseType.ID:
@@ -485,7 +490,7 @@ class FabFruitTask:
                         self.iti()
 
                 # if we are running outside of scanner, don't wait for next
-                if self.timing_method == "dur":
+                if self.timing_method == TimeTypes.dur:
                     self.events.addData('skip', True)
 
                 this_score = bx.score(e.phase, e.blocknum, e.side)
@@ -524,13 +529,13 @@ class FabFruitTask:
 
                 # if score is the last in this block. wait for a key
                 nexttrial = self.events.getFutureTrial()
-                if self.timing_method == "dur" and (not nexttrial or nexttrial.blocknum != e.blocknum):
+                if self.timing_method == TimeTypes.dur and (not nexttrial or nexttrial.blocknum != e.blocknum):
                     # TODO: change accpet keys to not be glove box?
                     # TODO: consider making this fixed duration e.dur
                     event.waitKeys()
 
                 # TODO: show fixation for some period of time?
-                if not nexttrial and self.timing_method == "onset":
+                if not nexttrial and self.timing_method == TimeTypes.onset:
                     core.wait(e.dur)
                     #self.iti()
 

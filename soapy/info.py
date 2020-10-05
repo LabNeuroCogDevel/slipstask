@@ -30,7 +30,7 @@ class FabFruitInfo:
                  phases: Optional[PhaseDict] = None,
                  timing_files: Optional[List[Filepath]] = None,
                  nbox: int = 6,
-                 seed=None):
+                 seed=None, alwaysTiming=True):
         if seed is None:
             seed = np.random.default_rng()
         self.seed = seed
@@ -38,9 +38,20 @@ class FabFruitInfo:
         self.timing = []
         self.nbox = nbox
 
-        # ## timing
-        # use timing files if we have them, otherwise phases if given those
-        # if neither, use DEFAULT_PHASES
+        if alwaysTiming:
+            self.set_timing(timing_files, phases)
+        else:
+            self.devals = {}
+
+        sides = [Direction.Left, Direction.Right]*(self.nbox//2)
+        seed.shuffle(sides)
+
+    def set_timing(self, timing_files, phases):
+        """use timing files if we have them, otherwise phases if given those
+        if neither, use DEFAULT_PHASES
+        TODO: timing should be own class.
+         needed for: to_df, OD, block_timing
+        """
         if timing_files:
             self.read_timing(timing_files)
             self.phases = None
@@ -55,9 +66,6 @@ class FabFruitInfo:
             d = self.to_df()
             # set nbox, deval, and timing
             self.read_timing(td=d)
-
-        sides = [Direction.Left, Direction.Right]*(self.nbox//2)
-        seed.shuffle(sides)
 
     def OD(self):
         """ timing for OD trials
@@ -382,6 +390,9 @@ class FabFruitInfo:
         """
 
         (self.fruits, self.boxes) = make_boxes(fruit_names, self.devals, self.nbox, self.seed)
+        if self.timing is None or len(self.timing)==0:
+            return None
+
         self.timing['top'] = ''
         self.timing['bottom'] = ''
         self.timing['bxidx'] = [[[]]] * self.timing.shape[0]

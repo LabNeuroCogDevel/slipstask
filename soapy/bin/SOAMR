@@ -15,7 +15,7 @@ from soapy.instruct import show_instruction
 from soapy.task import FabFruitTask, core
 from soapy.lncdtasks import wait_for_scanner, Filepath
 from soapy import DEFAULT_PHASES, image_path, read_img_list, timing_path, ENDDUR
-from soapy.seeded import pick_seed, single_phase, update_boxes
+from soapy.seeded import pick_seed, single_phase, update_boxes, mkdir_seed
 
 SEQUENCE = ['ID', 'OD', 'SOA', 'DD', 'SURVEY']
 
@@ -89,20 +89,6 @@ def setup_outdir(d):
                            f"{d['date']}")})
 
 
-def mkdir_seed(d) -> Optional[int]:
-    """ given dict with outdir and 'seed' interger
-    return seed read from file if exists
-    @side-effect make directory
-    """
-    if not os.path.exists(d['outdir']):
-        os.makedirs(d['outdir'])
-
-    # reuse or pick new seed
-    seed_file = os.path.join(d['outdir'], "seed.txt")
-    # N.B. this should also update the gui
-    seed = pick_seed(seed_file, d['seed'])
-    return seed
-
 
 class SOADlg:
     def __init__(self):
@@ -157,7 +143,7 @@ class SOADlg:
             return (False, "bad/no seed: must be a whole number")
 
         try:
-            seed = mkdir_seed(d)
+            seed = mkdir_seed(d['outdir'], d['seed'])
             self.data[self.names.index('seed')].val = seed
         except Exception as err:
             return (False, f"{err}")
@@ -178,7 +164,7 @@ else:
             'doit': len(sys.argv) > 3,
             'seed': 0}
     setup_outdir(info)
-    info['seed'] = mkdir_seed(info)
+    info['seed'] = mkdir_seed(d['outdir'], d['seed'])
 
 start = SEQUENCE.index(info['start'])
 phase_seq = [PhaseType[x] for x in SEQUENCE[start:len(SEQUENCE)]]

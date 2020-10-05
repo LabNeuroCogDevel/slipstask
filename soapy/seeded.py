@@ -112,3 +112,18 @@ def pick_seed(seed_file: Filepath, init: int = 0) -> Optional[int]:
 
     return seed
 
+
+def mkdir_seed(seed_dir, seed) -> Optional[int]:
+    """ find seed integer from directory or set
+    @return seed read from file if exists
+    @param seed_dir - dirctory with seed.txt (will make if DNE)
+    @param seed - seed to pick or set
+    @side-effect make directory
+    """
+    if not os.path.exists(seed_dir):
+        os.makedirs(seed_dir)
+
+    # reuse or pick new seed
+    seed_file = os.path.join(seed_dir, "seed.txt")
+    seed = pick_seed(seed_file, seed)
+    return seed
