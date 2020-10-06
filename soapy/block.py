@@ -85,12 +85,16 @@ def shuffle_okay(dirs, nstrikes=2):
     prevdir=reset_cnt(Direction.No)
     strikes=0
     for d in dirs:
+        if prevdir['rep'] > 2:
+            strikes += 1
+
         if prevdir['dir'] != d:
-            if prevdir['rep'] > 2:
-                strikes += 1
             prevdir=reset_cnt(d)
         else:
             prevdir['rep'] += 1
+    # catch last
+    if prevdir['rep'] > 2:
+        strikes += 1
     return strikes < nstrikes
 
 def shuffle_box_idx(boxes, seed, nbox=6, rep=2):

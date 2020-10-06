@@ -36,13 +36,13 @@ class Box:
         @param isdeval - has this box been devalud
         @return score (-1,0,1)
         >>> bx = Box(Fruit('apple'),Fruit('kiwi'), Direction.Left, {}, 'TestBox')
-        >>> bx.score(Direction.Left, False)
+        >>> bx.score_raw(Direction.Left, False)
         1
-        >>> bx.score(Direction.Left, True)
+        >>> bx.score_raw(Direction.Left, True)
         -1
-        >>> bx.score(Direction.Right, True)
+        >>> bx.score_raw(Direction.Right, True)
         0
-        >>> bx.score(Direction.Right, False)
+        >>> bx.score_raw(Direction.Right, False)
         0
         """
         if not choice:
