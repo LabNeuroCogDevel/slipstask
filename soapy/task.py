@@ -582,5 +582,5 @@ class FabFruitTask:
             func(self)
         if flip:
             self.win.flip()
-        key = dly_waitKeys(.5, keyList=['space', '0', 'return'])
+        key = dly_waitKeys(.5, keyList=['space', '0', 'return', 'left', 'right'])
         return key

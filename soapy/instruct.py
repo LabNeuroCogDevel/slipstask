@@ -2,8 +2,6 @@ from soapy.task_types import PhaseType
 from soapy import DEFAULT_PHASES, read_img_list
 from soapy.task import FabFruitTask
 from soapy.info import FabFruitInfo
-from soapy.lncdtasks import dly_waitKeys
-from typing import List
 
 
 def ID_example(t, left=False, right=False):
@@ -20,6 +18,16 @@ respsec = "%s" % DEFAULT_PHASES[PhaseType.DD]['dur']
 obj_type = "fruit"
 example_type = "veggies"
 INSTRUCTIONS = {
+'ID_mprage': [
+    ["\n\n\nJust like before:\nLearn how to open all the boxes and get the most points!\n" +
+     "Remember what "+obj_type+"s are inside the boxes too.\n" +
+     "\n\nReady to play!?\n"],
+    ],
+'ID_end': [
+    ["\n\n\nJust like before:\nLearn how to open all the boxes and get the most points!\n" +
+     "Remember what "+obj_type+"s are inside the boxes too.\n" +
+     "\n\nReady to play!?\n"],
+    ],
 PhaseType.ID: [
     ["In this game, you will open tricky "+obj_type+" boxes.\n" +
      "The boxes look like this: \n",
@@ -109,7 +117,7 @@ PhaseType.SURVEY: [
 }
 
 
-def show_instruction(win, phase: PhaseType):
+def show_instruction(win, phase: PhaseType, instkey=None):
     """ present instructions
     @param win - window for fake task
     @param phase - phase to give instructions on
@@ -120,12 +128,14 @@ def show_instruction(win, phase: PhaseType):
     ffi.set_names(read_img_list(example_type))
     t = FabFruitTask(win, ffi)
     j = 0
-    while j < len(INSTRUCTIONS[phase]):
-        i = INSTRUCTIONS[phase][j]
+    instruct_list = INSTRUCTIONS.get(instkey, INSTRUCTIONS[phase])
+    while j < len(instruct_list):
+        i = instruct_list[j]
         func = i[1] if len(i) > 1 else None
         resp = t.instruction(i[0], func)
-        if resp == "left" and j > 0:
-            j = j - 1
+        if resp == "left":
+            if j > 0:
+                j = j - 1
         else:
             j = j + 1
 

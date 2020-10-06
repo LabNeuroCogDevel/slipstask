@@ -26,20 +26,18 @@ prefs.general['shutdownKey'] = 'q'
 
 import sys
 import os
+import re
 from datetime import datetime
 from numpy import random
-from psychopy.gui import Dlg, DlgFromDict
-from typing import Optional, List, Tuple, Dict
 from soapy.task_types import PhaseType, TrialType, TimeTypes, TaskTime, Direction, TaskDur
-from soapy.box import Box
-from soapy.instruct import show_instruction
+from soapy.instruct import show_instruction, INSTRUCTIONS
 from soapy.info import FabFruitInfo
 from soapy.task import FabFruitTask, core, event
 from soapy.lncdtasks import wait_for_scanner, wait_until, Filepath, first_key
-from soapy import DEFAULT_PHASES, image_path, read_img_list, timing_path, ENDDUR
-from soapy.seeded import pick_seed, single_phase, update_boxes, mkdir_seed
+from soapy import read_img_list, timing_path
+from soapy.seeded import single_phase, update_boxes #, mkdir_seed
 from soapy.gui import ymd, SOADlg, DlgInfo
-from soapy.logstdout import default_logfile
+from soapy.logstdout import default_logfile, log_stdout
 from soapy.block import ID_blk, slips_blk
 
 # save dir/files along side this script
@@ -54,8 +52,8 @@ DURS = {'score': 2,
         'timeout': 2,
         'fbk': 1,
         'iti': 1,
-        'OFF': 40,}
-MPRAGE_DUR: TaskDur = 6.4*60
+        'OFF': 40,
+        'mprage': 6.4*60}
 
 info = {'id': '1', #sys.argv[1],
         'start': 'ID',# sys.argv[2],
@@ -67,11 +65,13 @@ info = {'id': '1', #sys.argv[1],
         'seed': 0}
 
 SEQUENCE = ['ID_start','ID_mprage','ID_end', 'OD', 'SOA','DD']
+
 def main(argv, info={}):
     dlg = SOADlg()
     dlg.data = [
         DlgInfo('id', info.get('id', 1000)),
         DlgInfo('date', ymd(), isfixed=True),
+        DlgInfo('Instructions', info.get('Instructions', True)),
         DlgInfo('FullScreen', info.get('FullScreen', True)),
         DlgInfo('run', info.get('run', SEQUENCE[0]), SEQUENCE),
         DlgInfo('seed', info.get('seed',0)),]
@@ -81,7 +81,7 @@ def main(argv, info={}):
     #setup_outdir(info)
     #info['outdir'] = '/tmp/soamix'
     #info['seed'] = mkdir_seed(info['outdir'], info['seed'])
-    default_logfile(info['outdir'])
+    log_stdout(default_logfile(info['outdir']))
 
 
     # get box info
@@ -99,16 +99,39 @@ def main(argv, info={}):
     task = FabFruitTask(win, ffi, timing_method=TimeTypes.block)
 
 
+    # DD and second ID use same settings as ID_start and SOA
+    # but we want them to be distinct from their pair
+    # so we change the seed a bit
+    # NB. maybe bad for picking ID timing files. 
+    #     better to use the same seed and increment index?
+    if info['run'] in ['ID_end', 'DD']:
+        seed = random.default_rng(info['seed']+1)
 
+
+    log_fname = os.path.join(info['outdir'],f"{info['run']}_%H.%M.%S.csv")
+    log_fname = datetime.strftime(datetime.now(), log_fname)
+    run_log = open(log_fname, 'w')
+
+    phase = PhaseType[re.match('(ID|OD|SOA|DD)', info['run'])[0]]
+    print(phase)
+    if info.get('Instructions',True):
+        print(f"## Instructions for {phase}")
+        show_instruction(win, phase, info['run'])
+
+    print(f"## RUNNING {info['run']}")
     if info['run'] in ['ID_start', 'ID_end']:
         print("Not implemented yet!")
     elif info['run'] == 'ID_mprage':
-        ID_blk(task, MPRAGE_DUR, DURS, seed)
+        ID_blk(task, DURS, seed, fout=run_log)
     elif info['run'] == 'OD':
         print("Not implemented yet!")
     elif info['run'] in ['SOA', 'DD']:
-        phase=PhaseType[info['run']]
-        slips_blk(task, DURS, seed, phase=phase)
+        slips_blk(task, DURS, seed, phase=phase, fout=run_log)
+    else:
+        print(f"## unkown run type {info['run']}")
+
+
+    # onto the next one
     win.close()
     return info
 
@@ -118,6 +141,6 @@ if __name__ == "__main__":
     while last_run != SEQUENCE[-1]:
         cur_idx = SEQUENCE.index(last_run) 
         info['run'] = SEQUENCE[cur_idx+1]
-        info = main(sys.argv)
+        info = main(sys.argv, info)
         last_run = info.get('run',SEQUENCE[0])
 

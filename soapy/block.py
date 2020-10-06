@@ -22,8 +22,22 @@ class ResponseOut:
         resp = first_key(resp)
         self.side = keys.get(resp) if resp else None
         self.score = box.score_raw(self.side, isdeval)
+        self.deval = isdeval
     def __repr__(self):
-        return f"{self.side} ({self.resp_raw}) @ {self.rt:.2f}s => {self.score}"
+        return f"{self.side} ({self.resp_raw}) @ {self.rt:.2f}s => {self.score} (deval? {self.deval})"
+
+def block_out_header(fout=None):
+    """ write header for log run log file
+    @param fout - file to write to. default: None (no write)
+    see also see EventOut.write
+    """
+    if not fout:
+        return
+
+    fout.write('total_time, phase,ttype,blocknum,'+
+               'trial,LR1,deval,onset,cor_side,block_score_raw,'+
+               'fliptime_raw,resp_raw,rt_raw,score_raw,'+
+               'side_raw,fruit_outside,fruit_inside,extra')
 
 
 class EventOut:
@@ -51,7 +65,7 @@ class EventOut:
         return msg
         
 
-    def write(self, tnum=0, block_score=0, bnum=0, starttime=0, fout=None):
+    def write(self, tnum=0, block_score=0, bnum=0, starttime=0, fout=None, extra=None):
         """
         @param tnum        trial number
         @param block_score total score for this block
@@ -59,21 +73,29 @@ class EventOut:
         """
         total_time = core.getTime() - starttime
         print(f"@{total_time:.1f}={tnum:02d}: {self}; total: {block_score}")
+
+        # also see block_out_header
         # headers like 
-        # total_time, phase,ttype,blocknum,trial,LR1,deval,onset,cor_side,block_score_raw,fliptime_raw,resp_raw,rt_raw,score_raw,side_raw
+        # total_time, phase,ttype,blocknum,trial,LR1,deval,onset,cor_side,block_score_raw,fliptime_raw,resp_raw,rt_raw,score_raw,side_raw, fruit_outside, fruit_inside, extra
         if fout:
             # need a fake resp object
             if self.resp is None:
-                none_dict = {k: None for k in ["deval", "score", "resp_raw", "rt", "side"]}
+                none_dict = {k: "" for k in ["deval", "score", "resp_raw", "rt", "side"]}
                 self.resp = type('',(object,),none_dict)()
             if self.box is None:
-                none_dict = {k: None for k in ["name", "Dir"]}
-                self.resp = type('',(object,),none_dict)()
-            fout.write(",".join(total_time,
+                none_dict = {k: "" for k in ["name", "Dir"]}
+                self.box = type('',(object,),none_dict)()
+                fruit_inside = ""
+                fruit_outside = ""
+            else:
+                fruit_inside = self.box.Stim.name
+                fruit_outside = self.box.Outcome.name
+            fout.write(",".join([str(x) for x in [total_time,
                 self.phase, self.event, bnum, tnum,
                 self.box.name, self.resp.deval, self.fliptime - starttime,
-                self.box.Dir, block_score_raw, self.fliptime,
-                self.resp.resp_raw, self.resp.rt, self.resp.score, self.resp.side))
+                self.box.Dir, block_score, self.fliptime,
+                self.resp.resp_raw, self.resp.rt, self.resp.score,
+                self.resp.side, fruit_outside, fruit_inside, extra]]))
 
 def reset_cnt(d):
     """quick struct for counting reps"""
@@ -205,12 +227,13 @@ def slips_blk(task, DURS, seed, phase=PhaseType.SOA, fout=None):
     starttime = wait_for_scanner(task.win)
     next_flip = starttime
     for bnum, block_devaled_idxs in enumerate(deval_idxs):
+        extra_col = f"{phase.name}_{len(block_devaled_idxs)}"
         # grid
         show_boxes = shuffle_box_idx(task.info.boxes, seed)
         block_score = 0
         fliptime = task.grid(phase, block_devaled_idxs, next_flip)
         event = EventOut(phase, None, fliptime, TrialType.GRID)
-        event.write(0, block_score, bnum, starttime)
+        event.write(0, block_score, bnum, starttime, fout, extra_col)
         next_flip = fliptime + DURS['grid']
 
         # trial
@@ -223,12 +246,12 @@ def slips_blk(task, DURS, seed, phase=PhaseType.SOA, fout=None):
                                   onset=next_flip, dur=DURS['timeout'])
             event.read_resp(trl_info, box_idx in block_devaled_idxs)
             block_score += event.resp.score
-            event.write(trl_num, block_score, bnum, starttime)
+            event.write(trl_num, block_score, bnum, starttime, fout, extra_col)
 
             # 1second iti matches javascript
             fliptime = task.iti() # fliptime could be trl_info[0]
             event = EventOut(phase, box, fliptime, TrialType.ITI)
-            event.write(trl_num, block_score, bnum, starttime)
+            event.write(trl_num, block_score, bnum, starttime, fout, extra_col)
             next_flip = fliptime + DURS['iti']
 
         fliptime = task.message(f"You scored {block_score} pnts\n\n" + 
@@ -240,7 +263,7 @@ def slips_blk(task, DURS, seed, phase=PhaseType.SOA, fout=None):
         if bnum in switch_blocks:
             fliptime = task.iti(next_flip)
             event = EventOut(phase, box, fliptime, TrialType.ITI)
-            event.write(trl_num, block_score, bnum, starttime)
+            event.write(trl_num, block_score, bnum, starttime, fout)
             next_flip = fliptime + DURS['OFF']
             print(f"# OFF waiting {DURS['OFF']} seconds until {next_flip:.2f}")
             # default trial() intentionally errors if waiting more than 30seconds
@@ -251,7 +274,7 @@ def slips_blk(task, DURS, seed, phase=PhaseType.SOA, fout=None):
     wait_until(fliptime + DURS['score'])
 
     
-def ID_blk(task, mprage_dur:TaskDur, DURS, seed, fout=None):
+def ID_blk(task, DURS, seed, fout=None):
     # mprage takes 6.5 minutes.
     # allow 6 seconds to end and display score 
     show_boxes = shuffle_box_idx(task.info.boxes, seed)
@@ -267,20 +290,20 @@ def ID_blk(task, mprage_dur:TaskDur, DURS, seed, fout=None):
             trl_info = task.trial(PhaseType.ID, [box_idx], onset=nextflip, dur=None)
             event.read_resp(trl_info)
             block_score += event.resp.score
-            event.write(trl_num, block_score, bnum, starttime)
+            event.write(trl_num, block_score, bnum, starttime, fout, 'ID_mprage')
     
             # give feedback
             fliptime = task.fbk(box_idx, event.resp.score, side=event.resp.side)
             event = EventOut(PhaseType.ID, box, fliptime, TrialType.FBK)
-            event.write(trl_num, block_score, bnum, starttime)
+            event.write(trl_num, block_score, bnum, starttime, fout, 'ID_mprage')
             nextflip = fliptime + DURS['fbk']
-            if core.getTime() - starttime > mprage_dur:
+            if core.getTime() - starttime > DURS['mprage']:
                 have_time = False
                 break
     
         fliptime = task.message(f"In this block you scored {block_score} pnts!", nextflip)
         event = EventOut(PhaseType.ID, None, fliptime, TrialType.SCORE)
-        event.write(0, block_score, bnum, starttime=starttime)
+        event.write(0, block_score, bnum, starttime, fout, 'ID_mprage')
     
         # reset block for next go
         show_boxes = shuffle_box_idx(task.info.boxes, seed)

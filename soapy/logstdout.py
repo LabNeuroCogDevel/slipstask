@@ -8,8 +8,18 @@ import sys
 from datetime import datetime
 
 
-def log_stdout(logname=None):
-    "wrapper for everything"
+def log_stdout(logname):
+    """wrapper for adding a log handler to sys.stdout
+    @param logname - where to save file
+    @sideffect - write to logname and stdout
+    N.B. will not nest loghandlers"""
+    if type(sys.stdout) == WriteTwice:
+        print(f"# stdout already redirected to {sys.stdout.fname}.\n" +
+              f"# NOT redirecting to {logname}.\n" +
+              f"# unset with 'sys.stdout = sys.stdout.stream'")
+        return
+
+    print(f"# stdout now also to file '{logname}'")
     sys.stdout = WriteTwice(sys.stdout, logname)
 
 
@@ -25,6 +35,7 @@ class WriteTwice:
             fname = default_logfile()
         self.loghandle = open(fname, 'w')
         self.stream = stream
+        self.fname = fname
 
     def write(self, data):
         "write stream to std out and to file"
