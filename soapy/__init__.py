@@ -6,6 +6,7 @@ from soapy.task_types import \
 from soapy.lncdtasks import TaskTime, Filepath
 import soapy
 
+__version__ = "0.1.0"
 # ## default task settings for each phase
 FIRST_ONSET: TaskTime = 3
 

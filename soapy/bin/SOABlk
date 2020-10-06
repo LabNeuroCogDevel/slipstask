@@ -70,12 +70,12 @@ SEQUENCE = ['ID_start','ID_mprage','ID_end', 'OD', 'SOA','DD', 'SURVEY']
 def main(argv, info={}):
     dlg = SOADlg()
     dlg.data = [
-        DlgInfo('id', info.get('id', 1000)),
-        DlgInfo('date', ymd(), isfixed=True),
-        DlgInfo('Instructions', info.get('Instructions', True)),
-        DlgInfo('FullScreen', info.get('FullScreen', True)),
         DlgInfo('run', info.get('run', SEQUENCE[0]), SEQUENCE),
-        DlgInfo('seed', info.get('seed',0)),]
+        DlgInfo('Instructions', info.get('Instructions', True)),
+        DlgInfo('id', info.get('id', 1000), isfixed='id' in info.keys()),
+        DlgInfo('date', ymd(), isfixed=True),
+        DlgInfo('FullScreen', info.get('FullScreen', True)),
+        DlgInfo('seed', info.get('seed',0),isfixed='id' in info.keys()),]
     info = dlg.set_data()
 
 
@@ -87,9 +87,8 @@ def main(argv, info={}):
 
 
     from psychopy.visual import Window
-    print(info)
-    if info.get('FullScreen',False):
-        win = Window() 
+    if info.get('FullScreen', False):
+        win = Window(fullscr=True) 
     else:
         win = Window([800, 600]) #, screen=1)
 
