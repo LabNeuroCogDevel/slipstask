@@ -1,8 +1,9 @@
 from psychopy import core
 from soapy import KEYS
-from soapy.task_types import PhaseType, TrialType, Direction, KeypressDict, TaskTime
+from soapy.task_types import PhaseType, TrialType, Direction,\
+                             KeypressDict, TaskTime, TaskDur
 from soapy.box import Box
-from soapy.lncdtasks import first_key
+from soapy.lncdtasks import wait_for_scanner, wait_until, first_key
 import numpy as np
 
 
@@ -114,7 +115,7 @@ def shuffle_box_idx(boxes, seed, nbox=6, rep=2):
             break
     return block_idxs
 
-## SOA
+## SOA/DD 
 # evenly distribute indexes of devaled box. make sure we have 1 left and 1 right
 def deval_2(boxes, seed):
     """always devaluing one left and one right"""
@@ -145,3 +146,152 @@ def deval_4(boxes, seed):
                 if good]
     seed.shuffle(deval_idxs)
     return deval_idxs
+
+
+def slips_blk(task, DURS, seed, phase=PhaseType.SOA, fout=None):
+    """   
+    @param task - FabFruitTask object with boxes
+    @param DURS - dict with durations. keys: grid, score, iti, timeout, OFF
+    @param phase - DD or SOA [default: SOA]
+    @param fout - where to save file [default: None]
+    
+    @side-effect: execute ~10min run for given phase type
+
+     blks: dv0 OFF 2dv2 OFF 2dv4 OFF 2dv2 OFF 2dv4 OFF
+     time:  40  40   80  40   80  40   80  40   80  40 | 560 (9.33 min)
+     trls:  12   0   24   0   24   0   24   0   24   0 | 108
+
+    
+     5 second grid
+     2 second score
+     12 x 
+       1.3 seconds avg rt in 3 pilot MR is 
+       1 second iti 
+       + (extra .7 ontop of rt for correct no resonse
+          for the 2 or 4 devalued (each box seen twice)
+     blk total = 12 * (1+1.3) + 5 +2  # 35 seconds (+ .7*2*2 or .7*4*2)
+     2 per 80 seconds => 2 ON for each 40s OFF 
+    
+     2 reps of: 1x dv0 , 2x dv2, 2x dv4. 5*80 + 3*40 == 520 == 8.67 min
+    
+     have 9 L/R matched pairs for each dv2 and dv4. using 8
+      len(deval_2(task.info.boxes,seed)) == 9
+      len(deval_4(task.info.boxes,seed)) == 9
+    """
+    
+    all_deval_idxs = {
+        0: [[]]*9,
+        2: deval_2(task.info.boxes, seed),
+        4: deval_4(task.info.boxes, seed)}
+
+    for k in all_deval_idxs:
+        seed.shuffle(all_deval_idxs[k])
+
+    draws = [0, 2, 2, 4, 4]
+    seed.shuffle(draws)
+    switch_blocks=[] # len == len(draws) == 5
+    deval_idxs = []  # len == 9 (len(draws)*2 - 1)
+    i=0
+    # draw twice from all but 0 devalued (only one dv0)
+    for d in draws:
+        deval_idxs.append(all_deval_idxs[d].pop())
+        if d != 0:
+            deval_idxs.append(all_deval_idxs[d].pop())
+            i+=1
+        switch_blocks.append(i)
+        i+=1
+
+
+    starttime = wait_for_scanner(task.win)
+    next_flip = starttime
+    for bnum, block_devaled_idxs in enumerate(deval_idxs):
+        # grid
+        show_boxes = shuffle_box_idx(task.info.boxes, seed)
+        block_score = 0
+        fliptime = task.grid(phase, block_devaled_idxs, next_flip)
+        event = EventOut(phase, None, fliptime, TrialType.GRID)
+        event.write(0, block_score, bnum, starttime)
+        next_flip = fliptime + DURS['grid']
+
+        # trial
+        for trl_num, box_idx in enumerate(show_boxes):
+            box = task.boxes[box_idx]
+
+            # 2 second timeout matches javascript
+            event = EventOut(phase, box)
+            trl_info = task.trial(phase, [box_idx],
+                                  onset=next_flip, dur=DURS['timeout'])
+            event.read_resp(trl_info, box_idx in block_devaled_idxs)
+            block_score += event.resp.score
+            event.write(trl_num, block_score, bnum, starttime)
+
+            # 1second iti matches javascript
+            fliptime = task.iti() # fliptime could be trl_info[0]
+            event = EventOut(phase, box, fliptime, TrialType.ITI)
+            event.write(trl_num, block_score, bnum, starttime)
+            next_flip = fliptime + DURS['iti']
+
+        fliptime = task.message(f"You scored {block_score} pnts\n\n" + 
+                                f"Block {bnum+1}/{len(deval_idxs)}!", next_flip)
+        next_flip = fliptime + DURS['score']
+
+        # moving to different number of devalued items. need OFF period
+        # N.B. currently have wait block at very end
+        if bnum in switch_blocks:
+            fliptime = task.iti(next_flip)
+            event = EventOut(phase, box, fliptime, TrialType.ITI)
+            event.write(trl_num, block_score, bnum, starttime)
+            next_flip = fliptime + DURS['OFF']
+            print(f"# OFF waiting {DURS['OFF']} seconds until {next_flip:.2f}")
+            # default trial() intentionally errors if waiting more than 30seconds
+            # get around that by waiting here for a bit
+            wait_until(fliptime + DURS['OFF']-.1, maxwait=DURS['OFF'])
+
+    fliptime = task.message(f"Finished {phase.name}!", next_flip)
+    wait_until(fliptime + DURS['score'])
+
+    
+def ID_blk(task, mprage_dur:TaskDur, DURS, seed, fout=None):
+    # mprage takes 6.5 minutes.
+    # allow 6 seconds to end and display score 
+    show_boxes = shuffle_box_idx(task.info.boxes, seed)
+    block_score = 0
+    have_time = True
+    bnum = 0
+    starttime = wait_for_scanner(task.win)
+    nextflip = starttime
+    while have_time:
+        for trl_num, box_idx in enumerate(show_boxes):
+            box = task.info.boxes[box_idx]
+            event = EventOut(PhaseType.ID, box)
+            trl_info = task.trial(PhaseType.ID, [box_idx], onset=nextflip, dur=None)
+            event.read_resp(trl_info)
+            block_score += event.resp.score
+            event.write(trl_num, block_score, bnum, starttime)
+    
+            # give feedback
+            fliptime = task.fbk(box_idx, event.resp.score, side=event.resp.side)
+            event = EventOut(PhaseType.ID, box, fliptime, TrialType.FBK)
+            event.write(trl_num, block_score, bnum, starttime)
+            nextflip = fliptime + DURS['fbk']
+            if core.getTime() - starttime > mprage_dur:
+                have_time = False
+                break
+    
+        fliptime = task.message(f"In this block you scored {block_score} pnts!", nextflip)
+        event = EventOut(PhaseType.ID, None, fliptime, TrialType.SCORE)
+        event.write(0, block_score, bnum, starttime=starttime)
+    
+        # reset block for next go
+        show_boxes = shuffle_box_idx(task.info.boxes, seed)
+        block_score = 0
+        bnum += 1
+        nextflip=fliptime + DURS['score']
+    
+        # when mprage is just about over. we wont start a new block
+        # so need to wait here so participant has time to read score
+        if not have_time:
+            wait_until(nextflip)
+
+    fliptime = task.message(f"Finished ID!", nextflip)
+    wait_until(fliptime + DURS['score'])

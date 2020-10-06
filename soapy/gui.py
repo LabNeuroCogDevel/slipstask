@@ -68,6 +68,7 @@ def mkdir_seed(d) -> Optional[int]:
 
 class SOADlg:
     def __init__(self):
+        SEQUENCE = ['ID', 'OD', 'SOA', 'DD', 'SURVEY']
         self.data = [
           DlgInfo('id', 10000),
           DlgInfo('date', ymd(), isfixed=True),
@@ -76,10 +77,10 @@ class SOADlg:
           DlgInfo('Instructions', True),
           DlgInfo('FullScreen', True),
           DlgInfo('seed', 0)]
-        self.names = [i.name for i in self.data]
 
     def get_data(self) -> Dict:
         """turn self.data's list into a dict"""
+        self.names = [i.name for i in self.data]
         d = {i.name: i.val for i in self.data}
         setup_outdir(d)
 
@@ -114,7 +115,7 @@ class SOADlg:
         if not d['id']:
             return (False, "Bad ID!")
         try:
-            d['seed'] = int(d['seed'])
+            d['seed'] = int(d.get('seed',0))
         except ValueError:
             return (False, "bad/no seed: must be a whole number")
 

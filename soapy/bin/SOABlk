@@ -3,8 +3,6 @@
 TODO: 
  * finish SOA timing/confirm
  * write to file
- * gui interface
- * DD (SOA and ID to function)
  * ID split timing
 
 
@@ -36,13 +34,13 @@ from soapy.task_types import PhaseType, TrialType, TimeTypes, TaskTime, Directio
 from soapy.box import Box
 from soapy.instruct import show_instruction
 from soapy.info import FabFruitInfo
-from soapy.task import FabFruitTask, core
-from soapy.lncdtasks import wait_for_scanner, wait_until, Filepath
+from soapy.task import FabFruitTask, core, event
+from soapy.lncdtasks import wait_for_scanner, wait_until, Filepath, first_key
 from soapy import DEFAULT_PHASES, image_path, read_img_list, timing_path, ENDDUR
 from soapy.seeded import pick_seed, single_phase, update_boxes, mkdir_seed
-from soapy.gui import ymd
+from soapy.gui import ymd, SOADlg, DlgInfo
 from soapy.logstdout import default_logfile
-from soapy.block import EventOut, shuffle_box_idx, deval_2, deval_4
+from soapy.block import ID_blk, slips_blk
 
 # save dir/files along side this script
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -57,6 +55,7 @@ DURS = {'score': 2,
         'fbk': 1,
         'iti': 1,
         'OFF': 40,}
+MPRAGE_DUR: TaskDur = 6.4*60
 
 info = {'id': '1', #sys.argv[1],
         'start': 'ID',# sys.argv[2],
@@ -66,148 +65,59 @@ info = {'id': '1', #sys.argv[1],
         'OnlyOne': True,
         'doit': len(sys.argv) > 3,
         'seed': 0}
-#setup_outdir(info)
-info['outdir'] = '/tmp/soamix'
-info['seed'] = mkdir_seed(info['outdir'], info['seed'])
-default_logfile(info['outdir'])
+
+SEQUENCE = ['ID_start','ID_mprage','ID_end', 'OD', 'SOA','DD']
+def main(argv, info={}):
+    dlg = SOADlg()
+    dlg.data = [
+        DlgInfo('id', info.get('id', 1000)),
+        DlgInfo('date', ymd(), isfixed=True),
+        DlgInfo('FullScreen', info.get('FullScreen', True)),
+        DlgInfo('run', info.get('run', SEQUENCE[0]), SEQUENCE),
+        DlgInfo('seed', info.get('seed',0)),]
+    info = dlg.set_data()
 
 
-# get box info
-# and make sure it matches directory
-seed = random.default_rng(info['seed'])
-ffi = FabFruitInfo(seed=seed, alwaysTiming=False)
-ffi.set_names(read_img_list('fruits'))
-ffi = update_boxes(ffi, 'fruits', info['outdir'])
-
-from psychopy.visual import Window
-win = Window([800, 600]) #, screen=1)
-task = FabFruitTask(win, ffi, timing_method=TimeTypes.block)
+    #setup_outdir(info)
+    #info['outdir'] = '/tmp/soamix'
+    #info['seed'] = mkdir_seed(info['outdir'], info['seed'])
+    default_logfile(info['outdir'])
 
 
+    # get box info
+    # and make sure it matches directory
+    seed = random.default_rng(info['seed'])
+    ffi = FabFruitInfo(seed=seed, alwaysTiming=False)
+    ffi.set_names(read_img_list('fruits'))
+    ffi = update_boxes(ffi, 'fruits', info['outdir'])
+
+    from psychopy.visual import Window
+    if info.get('FullScreen',False):
+        win = Window() 
+    else:
+        win = Window([800, 600]) #, screen=1)
+    task = FabFruitTask(win, ffi, timing_method=TimeTypes.block)
 
 
-task.message('ID')
-core.wait(1)
-# mprage takes 6.5 minutes.
-# allow 6 seconds to end and display score 
-mprage_dur: TaskDur = 6.4*60
-show_boxes = shuffle_box_idx(ffi.boxes, seed)
-block_score = 0
-have_time = False
-bnum = 0
-starttime = wait_for_scanner(win)
-nextflip = starttime
-while have_time:
-    for trl_num, box_idx in enumerate(show_boxes):
-        box = ffi.boxes[box_idx]
-        event = EventOut(PhaseType.ID, box)
-        trl_info = task.trial(PhaseType.ID, [box_idx], onset=nextflip, dur=None)
-        event.read_resp(trl_info)
-        block_score += event.resp.score
-        event.write(trl_num, block_score, bnum, starttime)
 
-        # give feedback
-        fliptime = task.fbk(box_idx, event.resp.score, side=event.resp.side)
-        event = EventOut(PhaseType.ID, box, fliptime, TrialType.FBK)
-        event.write(trl_num, block_score, bnum, starttime)
-        nextflip = fliptime + DURS['fbk']
-        if core.getTime() - starttime > mprage_dur:
-            have_time = False
-            break
+    if info['run'] in ['ID_start', 'ID_end']:
+        print("Not implemented yet!")
+    elif info['run'] == 'ID_mprage':
+        ID_blk(task, MPRAGE_DUR, DURS, seed)
+    elif info['run'] == 'OD':
+        print("Not implemented yet!")
+    elif info['run'] in ['SOA', 'DD']:
+        phase=PhaseType[info['run']]
+        slips_blk(task, DURS, seed, phase=phase)
+    win.close()
+    return info
 
-    fliptime = task.message(f"In this block you scored {block_score} pnts!", nextflip)
-    event = EventOut(PhaseType.ID, None, fliptime, TrialType.SCORE)
-    event.write(0, block_score, bnum, starttime=starttime)
+if __name__ == "__main__":
+    info = main(sys.argv)
+    last_run = info.get('run',SEQUENCE[0])
+    while last_run != SEQUENCE[-1]:
+        cur_idx = SEQUENCE.index(last_run) 
+        info['run'] = SEQUENCE[cur_idx+1]
+        info = main(sys.argv)
+        last_run = info.get('run',SEQUENCE[0])
 
-    # reset block for next go
-    show_boxes = shuffle_box_idx(ffi.boxes, seed)
-    block_score = 0
-    bnum += 1
-    nextflip=fliptime + DURS['score']
-
-    # when mprage is just about over. we wont start a new block
-    # so need to wait here so participant has time to read score
-    if not have_time:
-        wait_until(nextflip)
-
-
-# 5 second grid
-# 2 second score
-# 12 x 
-#   1.3 seconds avg rt in 3 pilot MR is 
-#   1 second iti 
-#   + (extra .7 ontop of rt for correct no resonse
-#      for the 2 or 4 devalued (each box seen twice)
-# blk total = 12 * (1+1.3) + 5 +2  # 35 seconds (+ .7*2*2 or .7*4*2)
-# 2 per 80 seconds => 2 ON for each 40s OFF 
-#
-# 2 reps of: 1x dv0 , 2x dv2, 2x dv4. 5*80 + 3*40 == 520 == 8.67 min
-#
-# ALTERNATIVE
-#  1x dv0, 40OFF, 3x dv2, 40OFF, 3x dv4 => 10.67 min
-
-# means we leave half of the pairs for each deval set unexplored
-# len(deval_2(ffi.boxes,seed)) == 9
-# len(deval_4(ffi.boxes,seed)) == 9
-    
-task.message('SOA')
-core.wait(1)
-# ideally, same seed means we generate the same sequence
-# when we run for SOARUN=1 and SOARUN=2
-all_deval_idxs = {
-    0: [[]]*9,
-    2: deval_2(ffi.boxes, seed),
-    4: deval_4(ffi.boxes, seed)}
-
-SOARUN=1 # 1 or 2. could go up to 4?
-start, end = ( x + 2*(SOARUN-1) for x in [0,2])
-deval_idxs = [[],
-              *all_deval_idxs[2][start:end],
-              *all_deval_idxs[4][start:end]]
-
-starttime = wait_for_scanner(win)
-next_flip = starttime
-for bnum, block_devaled_idxs in enumerate(deval_idxs):
-    # grid
-    show_boxes = shuffle_box_idx(ffi.boxes, seed)
-    block_score = 0
-    fliptime = task.grid(PhaseType.SOA, block_devaled_idxs, next_flip)
-    event = EventOut(PhaseType.SOA, None, fliptime, TrialType.GRID)
-    event.write(0, block_score, bnum, starttime)
-    next_flip = fliptime + DURS['grid']
-
-    # trial
-    for trl_num, box_idx in enumerate(show_boxes):
-        box = task.boxes[box_idx]
-
-        # 2 second timeout matches javascript
-        event = EventOut(PhaseType.SOA, box)
-        trl_info = task.trial(PhaseType.SOA, [box_idx],
-                              onset=next_flip, dur=DURS['timeout'])
-        event.read_resp(trl_info, box_idx in block_devaled_idxs)
-        block_score += event.resp.score
-        event.write(trl_num, block_score, bnum, starttime)
-
-        # 1second iti matches javascript
-        fliptime = task.iti()
-        event = EventOut(PhaseType.SOA, box, fliptime, TrialType.ITI)
-        event.write(trl_num, block_score, bnum, starttime)
-        next_flip = fliptime + DURS['iti']
-
-    fliptime = task.message(f"In this block you scored {block_score} pnts!", next_flip)
-    next_flip = fliptime + DURS['score']
-
-    # moving to different number of devalued items. need OFF period
-    # N.B. currently have wait block at very end
-    if bnum + 1 >= len(deval_idxs) or len(deval_idxs[bnum]) != len(deval_idxs[bnum+1]):
-        fliptime = task.iti(next_flip)
-        event = EventOut(PhaseType.SOA, box, fliptime, TrialType.ITI)
-        event.write(trl_num, block_score, bnum, starttime)
-        next_flip = fliptime + DURS['OFF']
-        print(f"# OFF waiting {DURS['OFF']} seconds until {next_flip:.2f}")
-        # default trial() intentionally errors if waiting more than 30seconds
-        # get around that by waiting here for a bit
-        wait_until(fliptime + DURS['OFF']-.1, maxwait=DURS['OFF'])
-
-fliptime = task.message(f"Finished {SOARUN}/2 of this type!", next_flip)
-wait_until(fliptime + DURS['score'])
