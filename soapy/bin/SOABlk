@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 """
+TODO: 
+ * finish SOA timing/confirm
+ * write to file
+ * gui interface
+ * DD (SOA and ID to function)
+ * ID split timing
+
+
 1. More training trials
 The thought was we could do maybe 2 learning blocks at the start while acquiring BOLD, then a whole bunch of extra blocks (with faster timing) while they do the mprage (~6-8 min?), then 2 more blocks with fmri.  That way, we’d see the start and end of the learning phase, but still get them a lot of training trials.
 
@@ -47,7 +55,8 @@ DURS = {'score': 2,
         'grid': 5,
         'timeout': 2,
         'fbk': 1,
-        'iti': 1,}
+        'iti': 1,
+        'OFF': 40,}
 
 info = {'id': '1', #sys.argv[1],
         'start': 'ID',# sys.argv[2],
@@ -127,16 +136,42 @@ while have_time:
 # 12 x 
 #   1.3 seconds avg rt in 3 pilot MR is 
 #   1 second iti 
-# blk total = 12 * (1+1.3) + 5 +2  # 35 seconds (+ .6*2*2 or .6*4*2)
+#   + (extra .7 ontop of rt for correct no resonse
+#      for the 2 or 4 devalued (each box seen twice)
+# blk total = 12 * (1+1.3) + 5 +2  # 35 seconds (+ .7*2*2 or .7*4*2)
+# 2 per 80 seconds => 2 ON for each 40s OFF 
+#
+# 2 reps of: 1x dv0 , 2x dv2, 2x dv4. 5*80 + 3*40 == 520 == 8.67 min
+#
+# ALTERNATIVE
+#  1x dv0, 40OFF, 3x dv2, 40OFF, 3x dv4 => 10.67 min
+
+# means we leave half of the pairs for each deval set unexplored
+# len(deval_2(ffi.boxes,seed)) == 9
+# len(deval_4(ffi.boxes,seed)) == 9
+    
 task.message('SOA')
 core.wait(1)
+# ideally, same seed means we generate the same sequence
+# when we run for SOARUN=1 and SOARUN=2
+all_deval_idxs = {
+    0: [[]]*9,
+    2: deval_2(ffi.boxes, seed),
+    4: deval_4(ffi.boxes, seed)}
+
+SOARUN=1 # 1 or 2. could go up to 4?
+start, end = ( x + 2*(SOARUN-1) for x in [0,2])
+deval_idxs = [[],
+              *all_deval_idxs[2][start:end],
+              *all_deval_idxs[4][start:end]]
+
 starttime = wait_for_scanner(win)
-deval_idxs = deval_4(ffi.boxes, seed)
+next_flip = starttime
 for bnum, block_devaled_idxs in enumerate(deval_idxs):
     # grid
     show_boxes = shuffle_box_idx(ffi.boxes, seed)
     block_score = 0
-    fliptime = task.grid(PhaseType.SOA, block_devaled_idxs, 0)
+    fliptime = task.grid(PhaseType.SOA, block_devaled_idxs, next_flip)
     event = EventOut(PhaseType.SOA, None, fliptime, TrialType.GRID)
     event.write(0, block_score, bnum, starttime)
     next_flip = fliptime + DURS['grid']
@@ -159,5 +194,20 @@ for bnum, block_devaled_idxs in enumerate(deval_idxs):
         event.write(trl_num, block_score, bnum, starttime)
         next_flip = fliptime + DURS['iti']
 
-    fliptime = task.message(f"In this block you scored {block_score} pnts!")
-    wait_until(fliptime + DURS['score'])
+    fliptime = task.message(f"In this block you scored {block_score} pnts!", next_flip)
+    next_flip = fliptime + DURS['score']
+
+    # moving to different number of devalued items. need OFF period
+    # N.B. currently have wait block at very end
+    if bnum + 1 >= len(deval_idxs) or len(deval_idxs[bnum]) != len(deval_idxs[bnum+1]):
+        fliptime = task.iti(next_flip)
+        event = EventOut(PhaseType.SOA, box, fliptime, TrialType.ITI)
+        event.write(trl_num, block_score, bnum, starttime)
+        next_flip = fliptime + DURS['OFF']
+        print(f"# OFF waiting {DURS['OFF']} seconds until {next_flip:.2f}")
+        # default trial() intentionally errors if waiting more than 30seconds
+        # get around that by waiting here for a bit
+        wait_until(fliptime + DURS['OFF']-.1, maxwait=DURS['OFF'])
+
+fliptime = task.message(f"Finished {SOARUN}/2 of this type!", next_flip)
+wait_until(fliptime + DURS['score'])

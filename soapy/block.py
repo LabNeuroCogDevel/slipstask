@@ -3,6 +3,7 @@ from soapy import KEYS
 from soapy.task_types import PhaseType, TrialType, Direction, KeypressDict, TaskTime
 from soapy.box import Box
 from soapy.lncdtasks import first_key
+import numpy as np
 
 
 class ResponseOut:
