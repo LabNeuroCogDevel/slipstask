@@ -24,12 +24,12 @@ from datetime import datetime
 from numpy import random
 from psychopy.gui import Dlg, DlgFromDict
 from typing import Optional, List, Tuple, Dict
-from soapy.task_types import PhaseType, TrialType, TimeTypes, TaskTime, Direction
+from soapy.task_types import PhaseType, TrialType, TimeTypes, TaskTime, Direction, TaskDur
 from soapy.box import Box
 from soapy.instruct import show_instruction
 from soapy.info import FabFruitInfo
 from soapy.task import FabFruitTask, core
-from soapy.lncdtasks import wait_for_scanner, first_key, Filepath
+from soapy.lncdtasks import wait_for_scanner, wait_until, Filepath
 from soapy import DEFAULT_PHASES, image_path, read_img_list, timing_path, ENDDUR
 from soapy.seeded import pick_seed, single_phase, update_boxes, mkdir_seed
 from soapy.gui import ymd
@@ -39,6 +39,15 @@ from soapy.block import EventOut, shuffle_box_idx, deval_2, deval_4
 # save dir/files along side this script
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
+# 5 seconds to take in the grid
+# 2 seconds until SOA/DD is assumed pass
+# 2 seconds to see the score at the end of every 12 (6 blocks twice)
+# 1 second for SOA/DD iti
+DURS = {'score': 2,
+        'grid': 5,
+        'timeout': 2,
+        'fbk': 1,
+        'iti': 1,}
 
 info = {'id': '1', #sys.argv[1],
         'start': 'ID',# sys.argv[2],
@@ -68,46 +77,87 @@ task = FabFruitTask(win, ffi, timing_method=TimeTypes.block)
 
 
 
+task.message('ID')
+core.wait(1)
+# mprage takes 6.5 minutes.
+# allow 6 seconds to end and display score 
+mprage_dur: TaskDur = 6.4*60
 show_boxes = shuffle_box_idx(ffi.boxes, seed)
-starttime=core.getTime()
 block_score = 0
-for trl_num, box_idx in enumerate(show_boxes):
-    box = ffi.boxes[box_idx]
-    event = EventOut(PhaseType.ID, box)
-    trl_info = task.trial(PhaseType.ID, [box_idx], dur=2)
-    event.read_resp(trl_info)
-    block_score += event.resp.score
-    event.write(trl_num, block_score, starttime=starttime)
+have_time = False
+bnum = 0
+starttime = wait_for_scanner(win)
+nextflip = starttime
+while have_time:
+    for trl_num, box_idx in enumerate(show_boxes):
+        box = ffi.boxes[box_idx]
+        event = EventOut(PhaseType.ID, box)
+        trl_info = task.trial(PhaseType.ID, [box_idx], onset=nextflip, dur=None)
+        event.read_resp(trl_info)
+        block_score += event.resp.score
+        event.write(trl_num, block_score, bnum, starttime)
 
-    # give feedback
-    fliptime = task.fbk(box_idx, event.resp.score, side=event.resp.side)
-    event = EventOut(PhaseType.ID, box, fliptime, TrialType.FBK)
-    event.write(trl_num, block_score, starttime=starttime)
-    core.wait(1.5)
+        # give feedback
+        fliptime = task.fbk(box_idx, event.resp.score, side=event.resp.side)
+        event = EventOut(PhaseType.ID, box, fliptime, TrialType.FBK)
+        event.write(trl_num, block_score, bnum, starttime)
+        nextflip = fliptime + DURS['fbk']
+        if core.getTime() - starttime > mprage_dur:
+            have_time = False
+            break
+
+    fliptime = task.message(f"In this block you scored {block_score} pnts!", nextflip)
+    event = EventOut(PhaseType.ID, None, fliptime, TrialType.SCORE)
+    event.write(0, block_score, bnum, starttime=starttime)
+
+    # reset block for next go
+    show_boxes = shuffle_box_idx(ffi.boxes, seed)
+    block_score = 0
+    bnum += 1
+    nextflip=fliptime + DURS['score']
+
+    # when mprage is just about over. we wont start a new block
+    # so need to wait here so participant has time to read score
+    if not have_time:
+        wait_until(nextflip)
 
 
-deval_idxs = deval_4(seed)
+# 5 second grid
+# 2 second score
+# 12 x 
+#   1.3 seconds avg rt in 3 pilot MR is 
+#   1 second iti 
+# blk total = 12 * (1+1.3) + 5 +2  # 35 seconds (+ .6*2*2 or .6*4*2)
+task.message('SOA')
+core.wait(1)
+starttime = wait_for_scanner(win)
+deval_idxs = deval_4(ffi.boxes, seed)
 for bnum, block_devaled_idxs in enumerate(deval_idxs):
     # grid
     show_boxes = shuffle_box_idx(ffi.boxes, seed)
     block_score = 0
     fliptime = task.grid(PhaseType.SOA, block_devaled_idxs, 0)
     event = EventOut(PhaseType.SOA, None, fliptime, TrialType.GRID)
-    event.write(trl_num, block_score, starttime=starttime)
-    core.wait(5)
+    event.write(0, block_score, bnum, starttime)
+    next_flip = fliptime + DURS['grid']
 
     # trial
     for trl_num, box_idx in enumerate(show_boxes):
         box = task.boxes[box_idx]
 
+        # 2 second timeout matches javascript
         event = EventOut(PhaseType.SOA, box)
-        trl_info = task.trial(PhaseType.SOA, [box_idx], dur=2)
+        trl_info = task.trial(PhaseType.SOA, [box_idx],
+                              onset=next_flip, dur=DURS['timeout'])
         event.read_resp(trl_info, box_idx in block_devaled_idxs)
         block_score += event.resp.score
         event.write(trl_num, block_score, bnum, starttime)
 
-        # iti?
+        # 1second iti matches javascript
         fliptime = task.iti()
         event = EventOut(PhaseType.SOA, box, fliptime, TrialType.ITI)
-        event.write()
-        core.wait(.5)
+        event.write(trl_num, block_score, bnum, starttime)
+        next_flip = fliptime + DURS['iti']
+
+    fliptime = task.message(f"In this block you scored {block_score} pnts!")
+    wait_until(fliptime + DURS['score'])

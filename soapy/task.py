@@ -247,7 +247,7 @@ class FabFruitTask:
 
     def trial(self, btype: PhaseType, show_boxes: List[int],
               onset: TaskTime = 0, deval_idx: int = 1,
-              dur: TaskDur = 1) -> Tuple[TaskTime, List[Keypress], Optional[TaskDur]]:
+              dur: Optional[TaskDur] = 1) -> Tuple[TaskTime, List[Keypress], Optional[TaskDur]]:
         """run a trial, flipping at onset
         @param btype - block type: what to show, how to score
         @param show_boxes - what box(es) to show
@@ -280,11 +280,14 @@ class FabFruitTask:
         # wait for response
         resp: List[Keypress] = []
         rt: Optional[TaskDur] = None
-        if dur > 0:
+        if dur is None or dur > 0:
             print(f'  wait-for-response for {dur}sec')
             # NB. if two keys are held down, will report both!
             # make this None
-            resp = event.waitKeys(maxWait=dur - .01, keyList=self.keys.keys())
+            if dur:
+                resp = event.waitKeys(maxWait=dur - .01, keyList=self.keys.keys())
+            else:
+                resp = event.waitKeys(keyList=self.keys.keys())
             rt = core.getTime() - fliptime
             
         return (fliptime, resp, rt)

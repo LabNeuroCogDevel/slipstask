@@ -1,3 +1,4 @@
+from psychopy import core
 from soapy import KEYS
 from soapy.task_types import PhaseType, TrialType, Direction, KeypressDict, TaskTime
 from soapy.box import Box
@@ -54,15 +55,19 @@ class EventOut:
         @param block_score total score for this block
         @param fout        what file to write to
         """
-        print(f"{tnum}: {self}; total: {block_score}")
+        total_time = core.getTime() - starttime
+        print(f"@{total_time:.1f}={tnum:02d}: {self}; total: {block_score}")
         # headers like 
-        # phase,ttype,blocknum,trial,LR1,deval,onset,cor_side,block_score_raw,fliptime_raw,resp_raw,rt_raw,score_raw,side_raw
+        # total_time, phase,ttype,blocknum,trial,LR1,deval,onset,cor_side,block_score_raw,fliptime_raw,resp_raw,rt_raw,score_raw,side_raw
         if fout:
             # need a fake resp object
             if self.resp is None:
                 none_dict = {k: None for k in ["deval", "score", "resp_raw", "rt", "side"]}
                 self.resp = type('',(object,),none_dict)()
-            fout.write(",".join(
+            if self.box is None:
+                none_dict = {k: None for k in ["name", "Dir"]}
+                self.resp = type('',(object,),none_dict)()
+            fout.write(",".join(total_time,
                 self.phase, self.event, bnum, tnum,
                 self.box.name, self.resp.deval, self.fliptime - starttime,
                 self.box.Dir, block_score_raw, self.fliptime,
@@ -110,12 +115,13 @@ def shuffle_box_idx(boxes, seed, nbox=6, rep=2):
 
 ## SOA
 # evenly distribute indexes of devaled box. make sure we have 1 left and 1 right
-def deval_2(seed, nbox=6):
+def deval_2(boxes, seed):
     """always devaluing one left and one right"""
+    nbox = len(boxes)
     all_pairs = [sorted([x,y])
                  for x in range(nbox)
                  for y in range(x+1, nbox)]
-    good_lr = [len(np.unique([ffi.boxes[i].Dir.name for i in x]))>1
+    good_lr = [len(np.unique([boxes[i].Dir.name for i in x]))>1
                for x in all_pairs]
     deval_idxs=[all_pairs[i]
                 for i, good in enumerate(good_lr)
@@ -123,14 +129,15 @@ def deval_2(seed, nbox=6):
     seed.shuffle(deval_idxs)
     return deval_idxs
 
-def deval_4(seed, nbox=6):
+def deval_4(boxes, seed):
     """devalue 2 left and 2 right at a time"""
+    nbox = len(boxes)
     all_pairs = [sorted([w,x,y,z])
                 for w in range(nbox)
                 for x in range(w+1, nbox)
                 for y in range(x+1, nbox)
                 for z in range(y+1, nbox)]
-    good_lr = [len([i for i in x if ffi.boxes[i].Dir.name == "Left"])==2
+    good_lr = [len([i for i in x if boxes[i].Dir.name == "Left"])==2
                for x in all_pairs]
     deval_idxs=[all_pairs[i]
                 for i, good in enumerate(good_lr)
