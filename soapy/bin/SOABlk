@@ -28,17 +28,18 @@ import sys
 import os
 import re
 from datetime import datetime
-from numpy import random
+from numpy import random, where
+from soapy import ENDDUR
 from soapy.task_types import PhaseType, TrialType, TimeTypes, TaskTime, Direction, TaskDur
 from soapy.instruct import show_instruction, INSTRUCTIONS
 from soapy.info import FabFruitInfo
-from soapy.task import FabFruitTask, core, event
+from soapy.task import FabFruitTask, core
 from soapy.lncdtasks import wait_for_scanner, wait_until, Filepath, first_key
 from soapy import read_img_list, timing_path
 from soapy.seeded import single_phase, update_boxes #, mkdir_seed
 from soapy.gui import ymd, SOADlg, DlgInfo
 from soapy.logstdout import default_logfile, log_stdout
-from soapy.block import ID_blk, slips_blk
+from soapy.block import ID_blk, slips_blk, block_out_header
 
 # save dir/files along side this script
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -64,7 +65,7 @@ info = {'id': '1', #sys.argv[1],
         'doit': len(sys.argv) > 3,
         'seed': 0}
 
-SEQUENCE = ['ID_start','ID_mprage','ID_end', 'OD', 'SOA','DD']
+SEQUENCE = ['ID_start','ID_mprage','ID_end', 'OD', 'SOA','DD', 'SURVEY']
 
 def main(argv, info={}):
     dlg = SOADlg()
@@ -84,19 +85,13 @@ def main(argv, info={}):
     log_stdout(default_logfile(info['outdir']))
 
 
-    # get box info
-    # and make sure it matches directory
-    seed = random.default_rng(info['seed'])
-    ffi = FabFruitInfo(seed=seed, alwaysTiming=False)
-    ffi.set_names(read_img_list('fruits'))
-    ffi = update_boxes(ffi, 'fruits', info['outdir'])
 
     from psychopy.visual import Window
+    print(info)
     if info.get('FullScreen',False):
         win = Window() 
     else:
         win = Window([800, 600]) #, screen=1)
-    task = FabFruitTask(win, ffi, timing_method=TimeTypes.block)
 
 
     # DD and second ID use same settings as ID_start and SOA
@@ -104,29 +99,73 @@ def main(argv, info={}):
     # so we change the seed a bit
     # NB. maybe bad for picking ID timing files. 
     #     better to use the same seed and increment index?
-    if info['run'] in ['ID_end', 'DD']:
+    if info['run'] in ['DD']:
         seed = random.default_rng(info['seed']+1)
+    else:
+        seed = random.default_rng(info['seed'])
 
 
     log_fname = os.path.join(info['outdir'],f"{info['run']}_%H.%M.%S.csv")
     log_fname = datetime.strftime(datetime.now(), log_fname)
     run_log = open(log_fname, 'w')
 
-    phase = PhaseType[re.match('(ID|OD|SOA|DD)', info['run'])[0]]
+    phase = PhaseType[re.match('(ID|OD|SOA|DD|SURVEY)', info['run'])[0]]
     print(phase)
     if info.get('Instructions',True):
         print(f"## Instructions for {phase}")
         show_instruction(win, phase, info['run'])
 
+    # mix between onset and block timing
+    if info['run'] in ['ID_mprage','SOA','DD']:
+        timing_method=TimeTypes.block
+        ffi = FabFruitInfo(seed=seed, alwaysTiming=False)
+        block_out_header(run_log)
+
+    else:
+        timing_method=TimeTypes.onset
+        if phase == PhaseType.SURVEY:
+            nMR=0
+        elif info['run'] == 'ID_end':
+            nMR=2
+        else: #OD, ID_start
+            nMR=1
+        ffi = single_phase(phase, info['seed'], 0, nMR, None, nbox=6)
+        
+        # need to truncate to first 2 block if ID
+        if phase == PhaseType.ID:
+            ffi.timing
+            rep_ends = ffi.timing.ttype == TrialType.SCORE
+            scnd_end = where(rep_ends)[0][1]+1
+            # 74 (SHOW, FBK, ITI)*12*2. + 2 x SCORE
+            ffi.timing = ffi.timing[:scnd_end]
+
+    ffi = update_boxes(ffi, 'fruits', info['outdir'])
+    task = FabFruitTask(win, ffi, timing_method=timing_method)
+    task.save_path = log_fname # only useful w/run()
+
     print(f"## RUNNING {info['run']}")
     if info['run'] in ['ID_start', 'ID_end']:
-        print("Not implemented yet!")
+        starttime = wait_for_scanner(win)
+        task.run(starttime)
+        task.save_progress()
+        task.iti()
+        core.wait(ENDDUR)
+
     elif info['run'] == 'ID_mprage':
         ID_blk(task, DURS, seed, fout=run_log)
+
     elif info['run'] == 'OD':
-        print("Not implemented yet!")
+        starttime = wait_for_scanner(win)
+        task.run(starttime)
+        task.save_progress()
+        task.iti()
+        core.wait(ENDDUR)
+
     elif info['run'] in ['SOA', 'DD']:
         slips_blk(task, DURS, seed, phase=phase, fout=run_log)
+
+    elif info['run'] in ['SURVEY']:
+        task.survey()
     else:
         print(f"## unkown run type {info['run']}")
 
@@ -143,4 +182,8 @@ if __name__ == "__main__":
         info['run'] = SEQUENCE[cur_idx+1]
         info = main(sys.argv, info)
         last_run = info.get('run',SEQUENCE[0])
+        try:
+            run_log.close()
+        except:
+            pass
 

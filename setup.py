@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="soapy",
-    version="0.0.5",  # 20200826 - prepare for first scan
+    version="0.1.0",  # 20201006 - mixed 'block' and 'onset' timing
     author="Will Foran",
     author_email="willforn+py@gmail.com",
     description="Slips of action/Fabulious Fruits task",
@@ -24,5 +24,5 @@ setuptools.setup(
         'typing',
     ],
     include_package_data=True,
-    scripts=['soapy/bin/SOA', 'soapy/bin/SOAMR'],
+    scripts=['soapy/bin/SOA', 'soapy/bin/SOAMR', 'soapy/bin/SOABlk'],
 )

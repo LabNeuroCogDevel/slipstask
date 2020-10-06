@@ -33,7 +33,7 @@ def single_phase(p: PhaseType, seed_init: int,
 
     # use psudeo-random times?
     if mr_end != 0:
-        timingfileseed = seed_init + mr_start
+        timingfileseed = seed_init
         timing = timing_path(p, nbox)
         random.default_rng(timingfileseed).shuffle(timing)
         timing = timing[mr_start:mr_end]

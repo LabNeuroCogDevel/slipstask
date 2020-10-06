@@ -37,7 +37,7 @@ def block_out_header(fout=None):
     fout.write('total_time, phase,ttype,blocknum,'+
                'trial,LR1,deval,onset,cor_side,block_score_raw,'+
                'fliptime_raw,resp_raw,rt_raw,score_raw,'+
-               'side_raw,fruit_outside,fruit_inside,extra')
+               'side_raw,fruit_outside,fruit_inside,extra\n')
 
 
 class EventOut:
@@ -96,6 +96,7 @@ class EventOut:
                 self.box.Dir, block_score, self.fliptime,
                 self.resp.resp_raw, self.resp.rt, self.resp.score,
                 self.resp.side, fruit_outside, fruit_inside, extra]]))
+            fout.write("\n")
 
 def reset_cnt(d):
     """quick struct for counting reps"""
