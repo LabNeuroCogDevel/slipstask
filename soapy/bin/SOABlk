@@ -7,10 +7,10 @@ TODO:
 
 
 1. More training trials
-The thought was we could do maybe 2 learning blocks at the start while acquiring BOLD, then a whole bunch of extra blocks (with faster timing) while they do the mprage (~6-8 min?), then 2 more blocks with fmri.  That way, we’d see the start and end of the learning phase, but still get them a lot of training trials.
+The thought was we could do maybe 2 learning blocks at the start while acquiring BOLD, then a whole bunch of extra blocks (with faster timing) while they do the mprage (~6-8 min?), then 2 more blocks with fmri.  That way, we'd see the start and end of the learning phase, but still get them a lot of training trials.
 
 2. Block design for SOA/DD phases, with variable # of devaluations
-Rather than the current event related design, which requires the variable and sometimes long ISIs, the thought was to do blocks of trials here with the timing matched to what we did behaviorally.  On top of that, we were thinking of varying how many cues are devalued in a given block, i.e., maybe 0, 2 or 4 (of 6)  This should produce variation among blocks in how many habitual responses people make due to task contrasts, as well as parametric contrasts within a devaluation size based on performance variability.  So, we’d want to repeat each block a bunch of times.  
+Rather than the current event related design, which requires the variable and sometimes long ISIs, the thought was to do blocks of trials here with the timing matched to what we did behaviorally.  On top of that, we were thinking of varying how many cues are devalued in a given block, i.e., maybe 0, 2 or 4 (of 6)  This should produce variation among blocks in how many habitual responses people make due to task contrasts, as well as parametric contrasts within a devaluation size based on performance variability.  So, we'd want to repeat each block a bunch of times.  
 
 We should discuss specific timing, but my thought was to aim for 16-20 min for each of DD/SOA.  If we did blocks of 1:20, with 0:40 OFF period in between, we could do something like 
 - 2 blocks with 0 devaluations (this is kind of a silly one just for a control, so 2 blocks is probably enough?)
