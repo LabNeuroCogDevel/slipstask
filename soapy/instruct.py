@@ -1,4 +1,4 @@
-from soapy.task_types import PhaseType
+from soapy.task_types import PhaseType, Direction
 from soapy import DEFAULT_PHASES, read_img_list
 from soapy.task import FabFruitTask
 from soapy.info import FabFruitInfo
@@ -6,11 +6,14 @@ from soapy.info import FabFruitInfo
 
 def ID_example(t, left=False, right=False):
     """draw boxes by example"""
-    t.draw_box("closed", 1, 5)
+    t.draw_box("closed", 1, 0)
+    t.show_arrows(Direction.No)
     if left:
         t.draw_box("open", 2, 4)
+        t.show_arrows(Direction.Left, True)
     if right:
         t.draw_box("open", None, 6)
+        t.show_arrows(Direction.Right, False)
 
 
 chartsec = "%s" % DEFAULT_PHASES[PhaseType.DD]['grid']
