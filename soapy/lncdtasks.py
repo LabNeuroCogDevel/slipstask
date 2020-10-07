@@ -38,7 +38,9 @@ def wait_for_scanner(win, keys:List[str] =["equal", "asciicircum"], msg:Optional
     from psychopy.visual import TextStim
     from psychopy.event import waitKeys
     if not msg:
-        msg=f'Get Ready!\nWaiting for the scanner\n{", ".join(keys)}'
+        msg=f'Get Ready!\nWaiting for the scanner'
+        # previously aslo mentioned the keys we are wating for
+        # \n{", ".join(keys)}'
     tx = TextStim(win, text=msg)
     tx.draw()
     win.flip()

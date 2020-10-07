@@ -56,15 +56,6 @@ DURS = {'score': 2,
         'OFF': 40,
         'mprage': 6.4*60}
 
-info = {'id': '1', #sys.argv[1],
-        'start': 'ID',# sys.argv[2],
-        'date': ymd(),
-        'FullScreen': False,
-        'Instructions': False,
-        'OnlyOne': True,
-        'doit': len(sys.argv) > 3,
-        'seed': 0}
-
 SEQUENCE = ['ID_start','ID_mprage','ID_end', 'OD', 'SOA','DD', 'SURVEY']
 
 def main(argv, info={}):
@@ -75,7 +66,10 @@ def main(argv, info={}):
         DlgInfo('id', info.get('id', 1000), isfixed='id' in info.keys()),
         DlgInfo('date', ymd(), isfixed=True),
         DlgInfo('FullScreen', info.get('FullScreen', True)),
-        DlgInfo('seed', info.get('seed',0),isfixed='id' in info.keys()),]
+        # 20201007 - unlikely to use seed. always have seed.txt anyway
+        # but we need the value in the dlg db. so just dont show it
+        DlgInfo('seed', info.get('seed',0),isfixed='id' in info.keys(), show=False),
+       ]
     info = dlg.set_data()
 
 

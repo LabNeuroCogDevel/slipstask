@@ -19,15 +19,18 @@ def show_error(msg) -> bool:
 
 class DlgInfo:
     """hold onto dialog inforamation"""
-    def __init__(self, name, val, choices=None, isfixed=False):
+    def __init__(self, name, val, choices=None, isfixed=False, show=True):
         self.name = name
         self.val = val
         self.choices = choices
         self.isfixed = isfixed
         self.handle = None
+        self.show = show
 
     def add(self, dlg):
         """add this info as a field in a dialog box"""
+        if not self.show:
+            return None
         if self.isfixed:
             self.handle = dlg.addFixedField(self.name, self.val)
         else:
@@ -117,10 +120,11 @@ class SOADlg:
         try:
             d['seed'] = int(d.get('seed',0))
         except ValueError:
-            return (False, "bad/no seed: must be a whole number")
+            return (False, "bad seed: must be a whole number")
 
         try:
             seed = mkdir_seed(d)
+            # update gui if we have seed there
             self.data[self.names.index('seed')].val = seed
         except Exception as err:
             return (False, f"{err}")
