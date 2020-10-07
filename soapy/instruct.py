@@ -76,12 +76,12 @@ PhaseType.SOA: [
     ["\nYou will still get points for opening boxes with good "+obj_type+"s inside\n"+
      "But do not even try to open a box with a spoiled "+obj_type+".\n"+
      "If you correctly open a box with spoiled "+obj_type+" inside, you'll lose points!"],
-    ["You'll have " + chartsec + " seconds to memorize the good/bad chart for each shipment.\n"+
+    ["You'll have " + chartsec + " seconds to see the good/bad chart for each shipment.\n"+
      "Then, you will only have " + respsec + " second to open or pass each box in the shipment.\n"],
     ["You'll see how well you did at the end of each shipment,\n" +
      "but you wont know if you're right or wrong until then."],
     ["\nRemember:\n " +
-     chartsec + "  seconds to memorize the chart\n " +
+     chartsec + "  seconds to see the chart\n " +
      respsec + " second to pick or pass\n " +
      "Don't open boxes where the outside label is X'ed out\n" +
      "When you're ready, click next."]
@@ -93,12 +93,12 @@ PhaseType.DD: [
     ["\nYou will still get points for opening boxes with good "+obj_type+"s inside\n"+
      "But, don't even try to open a damaged box.\n" +
      "If you open a damanged box correctly, you'll lose points!"],
-    ["\nYou'll have " + chartsec + " seconds to memorize the good/bad chart for each shipment.\n"+
+    ["\nYou'll have " + chartsec + " seconds to see the good/bad chart for each shipment.\n"+
      "Then, you will only have " + respsec + " second to open or pass each box in the shipment.\n"],
     ["You'll see how well you did at the end of each shipment,\n" +
      "but you wont know if you're right or wrong until then."],
     ["\nRemember:\n " +
-     chartsec + "  seconds to memorize the chart\n " +
+     chartsec + "  seconds to see the chart\n " +
      respsec + " second to pick or pass\n " +
      "Don't open boxes where the outside label is X'ed out\n" +
      "When you're ready, click next."]
