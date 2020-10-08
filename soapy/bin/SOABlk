@@ -33,7 +33,7 @@ from soapy import ENDDUR
 from soapy.task_types import PhaseType, TrialType, TimeTypes, TaskTime, Direction, TaskDur
 from soapy.instruct import show_instruction, INSTRUCTIONS
 from soapy.info import FabFruitInfo
-from soapy.task import FabFruitTask, core
+from soapy.task import FabFruitTask, core, event
 from soapy.lncdtasks import wait_for_scanner, wait_until, Filepath, first_key
 from soapy import read_img_list, timing_path
 from soapy.seeded import single_phase, update_boxes #, mkdir_seed
@@ -135,6 +135,13 @@ def main(argv, info={}):
     ffi = update_boxes(ffi, 'fruits', info['outdir'])
     task = FabFruitTask(win, ffi, timing_method=timing_method)
     task.save_path = log_fname # only useful w/run()
+    
+    # When debugging, it is useful to see the SRO
+    # fruit pairs and direction will be on the bottom when task.cheat=T
+    def toggle_cheat():
+       task.cheat = not task.cheat 
+
+    event.globalKeys.add(key='c', func=toggle_cheat)
 
     print(f"## RUNNING {info['run']}")
     if info['run'] in ['ID_start', 'ID_end']:

@@ -47,6 +47,7 @@ class FabFruitTask:
         self.boxes = info.boxes
         self.keys = keys
         self.save_path = None
+        self.cheat = False
         
         if timing_method != TimeTypes.block:
             self.set_times(timing_method)
@@ -273,6 +274,9 @@ class FabFruitTask:
         if len(show_boxes) == 1:
             self.show_arrows(Direction.No)
 
+        if self.cheat:
+            self.show_cheat()
+
         # START
         # NB. neg wait time treated like no wait
         wait_until(onset, verbose=True)
@@ -322,6 +326,9 @@ class FabFruitTask:
 
         # show correct side
         self.show_arrows(side, score>0)
+
+        if self.cheat:
+            self.show_cheat()
 
         wait_until(onset)
         return self.win.flip()
@@ -550,6 +557,34 @@ class FabFruitTask:
             self.events.addData('fliptime', e.fliptime)
 
         print("done")
+        
+
+    def show_cheat(self):
+        """ put SRO: fruit stim, outcome, and direction at bottom of the screen"""
+        bottom = -.9
+        a_h = self.arrowBox.pos[1]
+        w = -.9
+        for b in self.boxes:
+
+            self.fruit.setImage(b.Outcome.image)
+            self.fruit.pos = (w+.1, bottom)
+            self.fruit.draw()
+            w += .2
+
+            self.fruit.setImage(b.Stim.image)
+            self.fruit.pos = (w-.2, bottom)
+            self.fruit.draw()
+            w += .1
+
+            self.arrowBox.pos = (w-.25, bottom)
+            # better to compare to Direction.Left
+            # but interactive modules loaded in funny order
+            self.arrowBox.text = "<" if b.Dir.name == "Left" else ">"
+            self.arrowBox.color = "black"
+            self.arrowBox.draw()
+
+        # reset arrows for primary use
+        self.arrowBox.pos[1] = a_h
 
     def save_progress(self):
         """save progress. probably at an iti or at end"""
