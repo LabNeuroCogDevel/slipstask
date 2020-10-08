@@ -54,7 +54,7 @@ DURS = {'score': 2,
         'fbk': 1,
         'iti': 1,
         'OFF': 40,
-        'mprage': 6.4*60}
+        'mprage': 5*60}
 
 SEQUENCE = ['ID_start','ID_mprage','ID_end', 'OD', 'SOA','DD', 'SURVEY']
 
