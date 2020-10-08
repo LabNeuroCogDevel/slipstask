@@ -49,7 +49,7 @@ class EventOut:
     def __init__(self, phase, box, ft=0, event=TrialType.SHOW):
         self.phase = phase
         self.event = event
-        self.fliptime = 0
+        self.fliptime = ft
         self.box = box
         self.resp = None
     def read_resp(self, trl_info, isdeval=False):
@@ -248,9 +248,10 @@ def slips_blk(task, DURS, seed, phase=PhaseType.SOA, fout=None):
             event.read_resp(trl_info, box_idx in block_devaled_idxs)
             block_score += event.resp.score
             event.write(trl_num, block_score, bnum, starttime, fout, extra_col)
+            rt_fliptime = trl_info[0] + trl_info[2]
 
             # 1second iti matches javascript
-            fliptime = task.iti() # fliptime could be trl_info[0]
+            fliptime = task.iti(rt_fliptime)
             event = EventOut(phase, box, fliptime, TrialType.ITI)
             event.write(trl_num, block_score, bnum, starttime, fout, extra_col)
             next_flip = fliptime + DURS['iti']

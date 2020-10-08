@@ -59,7 +59,7 @@ def wait_until(resume_at: float, maxwait:int = 30, verbose:bool=False):
         raise ValueError(f"request to wait until {resume_at:.2f} is " +
                          f"{waittime:.2f} (>30 seconds) from now." +
                          "set maxwait to avoid error")
-    if waittime < 0 and resume_at != 0:
+    if waittime < -0.005 and resume_at != 0:
         print(f"WARNING: {waittime:.2f}s wait time: resume time {resume_at:.2f} is after current time {now:.2f}!")
     if verbose:
         print(f'  waiting {waittime:.2f} secs until {resume_at:.2f}')
