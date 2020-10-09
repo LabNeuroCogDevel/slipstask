@@ -258,6 +258,8 @@ def slips_blk(task, DURS, seed, phase=PhaseType.SOA, fout=None):
 
         fliptime = task.message(f"You scored {block_score} pnts\n\n" + 
                                 f"Block {bnum+1}/{len(deval_idxs)}!", next_flip)
+        event = EventOut(phase, None, fliptime, TrialType.SCORE)
+        event.write(trl_num, block_score, bnum, starttime, fout, extra_col)
         next_flip = fliptime + DURS['score']
 
         # moving to different number of devalued items. need OFF period
