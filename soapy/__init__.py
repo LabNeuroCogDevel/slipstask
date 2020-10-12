@@ -6,7 +6,9 @@ from soapy.task_types import \
 from soapy.lncdtasks import TaskTime, Filepath
 import soapy
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
+# 20201012WF .1.1 => add 'ver' col to SOADD. swap {inside/outside}_fruit columns
+
 # ## default task settings for each phase
 FIRST_ONSET: TaskTime = 3
 

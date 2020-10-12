@@ -1,5 +1,5 @@
 from psychopy import core
-from soapy import KEYS
+from soapy import KEYS, __version__ as task_version
 from soapy.task_types import PhaseType, TrialType, Direction,\
                              KeypressDict, TaskTime, TaskDur
 from soapy.box import Box
@@ -23,8 +23,10 @@ class ResponseOut:
         self.side = keys.get(resp) if resp else None
         self.score = box.score_raw(self.side, isdeval)
         self.deval = isdeval
+
     def __repr__(self):
         return f"{self.side} ({self.resp_raw}) @ {self.rt:.2f}s => {self.score} (deval? {self.deval})"
+
 
 def block_out_header(fout=None):
     """ write header for log run log file
@@ -37,7 +39,7 @@ def block_out_header(fout=None):
     fout.write('total_time, phase,ttype,blocknum,'+
                'trial,LR1,deval,onset,cor_side,block_score_raw,'+
                'fliptime_raw,resp_raw,rt_raw,score_raw,'+
-               'side_raw,fruit_outside,fruit_inside,extra\n')
+               'side_raw,fruit_outside,fruit_inside,extra,ver\n')
 
 
 class EventOut:
@@ -88,14 +90,14 @@ class EventOut:
                 fruit_inside = ""
                 fruit_outside = ""
             else:
-                fruit_inside = self.box.Stim.name
-                fruit_outside = self.box.Outcome.name
+                fruit_outside = self.box.Stim.name
+                fruit_inside = self.box.Outcome.name
             fout.write(",".join([str(x) for x in [total_time,
                 self.phase, self.event, bnum, tnum,
                 self.box.name, self.resp.deval, self.fliptime - starttime,
                 self.box.Dir, block_score, self.fliptime,
                 self.resp.resp_raw, self.resp.rt, self.resp.score,
-                self.resp.side, fruit_outside, fruit_inside, extra]]))
+                self.resp.side, fruit_outside, fruit_inside, extra, task_version]]))
             fout.write("\n")
 
 def reset_cnt(d):
