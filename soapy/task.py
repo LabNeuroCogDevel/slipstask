@@ -226,6 +226,9 @@ class FabFruitTask:
 
         self.textBox.draw()
         self.fruit.draw()
+        if self.cheat:
+            self.show_cheat()
+
         onset = self.win.flip()
         resp = event.waitKeys(keyList=self.keys.keys())
         resp = first_key(resp)
@@ -312,7 +315,7 @@ class FabFruitTask:
         self.textBox.pos = self.scoreBox.pos
         # yellow if correct
         # red if not
-        if(score >= 1):
+        if score >= 1:
             self.scoreBox.fillColor = 'yellow'
             self.textBox.color = 'black'
         else:
@@ -325,7 +328,7 @@ class FabFruitTask:
         self.textBox.draw()
 
         # show correct side
-        self.show_arrows(side, score>0)
+        self.show_arrows(side, score > 0)
 
         if self.cheat:
             self.show_cheat()
@@ -333,22 +336,23 @@ class FabFruitTask:
         wait_until(onset)
         return self.win.flip()
 
-    def fruit_fingers(self, stim: Fruit) -> Tuple[int, TaskDur, str, bool]:
-        """ overlay outcome fruits ontop of hand image for a given stim
-        @param stim - stim fruit. outcome pair will be among shown
-        @return index of response (thumb to pinky), RT, picked, correct """
-        self.textBox.text = "What is this label's pair"
-        self.textBox.pos = (0, .9)
-        self.fruit.pos = (0, .65)
-        self.fruit.setImage(stim.image)
-        self.textBox.draw()
-        self.fruit.draw()
-        self.hand.draw()
+    def fruit_and_four(self, this_outcome: Fruit):
+        """ used in fruit_finger for survey pair question
+        make a list of given fruit (correct answer) and 4 other (incorrect)
+        @param stim - fruit used as stim
+        @return show_fruits - fruits to present in survey/pair association test
 
-        print(f'testing {stim.box}')
-        # fruits to show
-        #  shuffle all outcomes but one we want to include
-        this_outcome = stim.box.Outcome
+        >>> from soapy import quick_task
+        >>> task = quick_task() #doctest:+ELLIPSIS
+        # ...
+        >>> outcome = task.boxes[0].Outcome
+        >>> fruits = task.fruit_and_four(outcome) #doctest:+ELLIPSIS
+        # what pairs ...
+        >>> outcome in fruits  # the answer should be in there
+        True
+        >>> len(set([f.name for f in fruits]))  # fruit for ea finger
+        5
+        """
         show_fruits = [f for f in self.fruits
                        if f.name != this_outcome.name and f.SO == SO.Outcome]
         self.info.seed.shuffle(show_fruits)
@@ -357,8 +361,15 @@ class FabFruitTask:
         # and put the correct answer in
         show_fruits.append(this_outcome)
         self.info.seed.shuffle(show_fruits)
-        print(f'{this_outcome.name}; showing {[f.name for f in show_fruits]}')
+        print(f'# what pairs to {this_outcome.name}; showing {[f.name for f in show_fruits]}')
+        return show_fruits
 
+    def fruits_to_fingertips(self, show_fruits: List[Fruit]):
+        """ Position each fruit at the end of a finger in hand.svg
+        @param show_fruits - list of 5 fruits to display
+        @sideeffect - draw to screen
+        For fruit_finger()
+        """
         # put a fruit on each finger
         fingure_ends = [
             [0.60, 0.55],  # thumb
@@ -374,11 +385,45 @@ class FabFruitTask:
             self.fruit.pos = [x, y]
             self.fruit.draw()
 
+    def fruit_fingers(self, stim: Fruit,
+                      show_fruits: Optional[List[Fruit]] = None) -> Tuple[int, TaskDur, str, bool]:
+        """ overlay outcome fruits ontop of hand image for a given stim
+        @param stim - stim fruit. outcome pair will be among shown
+        @return index of response (thumb to pinky), RT, picked, correct
+        """
+        self.textBox.text = "What is this label's pair"
+        self.textBox.pos = (0, .9)
+        self.fruit.pos = (0, .65)
+        self.fruit.setImage(stim.image)
+        self.textBox.draw()
+        self.fruit.draw()
+        self.hand.draw()
+
+        print(f'testing {stim.box}')
+        # fruits to show
+        #  shuffle all outcomes but one we want to include
+
+        this_outcome = stim.box.Outcome
+        if not show_fruits:
+            show_fruits = self.fruit_and_four(this_outcome)
+
+        self.fruits_to_fingertips(show_fruits)
+
+        if self.cheat:
+            self.show_cheat()
+
         onset = self.win.flip()
         (resp, rt) = wait_numkey(onset)
-        picked = show_fruits[resp].name
+        number_num_keys = len(NUM_KEYS)  # 5
+        if resp > -1:
+            rev_idx = number_num_keys - resp - 1
+            picked = show_fruits[rev_idx].name  # N.B keys are reversed!
+        else:
+            picked = "Error"
+            rev_idx = -1
         corr = picked == this_outcome.name
-        print(f"picked {picked}, is cor? {corr}")
+        print(f"picked {picked} (key={resp}=>{rev_idx}), is cor? {corr}")
+        resp = rev_idx
         return (resp, rt, picked, corr)
 
     def survey(self):

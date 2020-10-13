@@ -86,6 +86,22 @@ def read_img_list(objs_type: str) -> List[str]:
     return(names)
 
 
+def quick_task(win=None) -> 'FabFruitTask':
+    """bare min"""
+
+    from soapy.task import FabFruitTask
+    from soapy.seeded import update_boxes
+    from soapy.info import FabFruitInfo
+    from soapy.task_types import TimeTypes
+    if win is None:
+        from psychopy.visual import Window
+        win = Window([800, 600])
+    i = FabFruitInfo(alwaysTiming=False)
+    i = update_boxes(i, 'fruits', '/tmp/soapy')
+    task = FabFruitTask(win, i, timing_method=TimeTypes.block)
+    return task
+
+
 def example(task):
     """example on how to use task drawing"""
     task.draw_box('open', 1)

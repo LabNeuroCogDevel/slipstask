@@ -58,6 +58,9 @@ def update_boxes(ffi: FabFruitInfo, obj_type: str,
     # set fruits/animals/veggies. will use ffi.seed for random assignment
     ffi.set_names(read_img_list(obj_type))
 
+    if not os.path.isdir(outdir):
+        os.makedirs(outdir)
+
     boxfilename = os.path.join(outdir, 'boxes.txt')
     if os.path.isfile(boxfilename):
         print(f"# reading from {boxfilename}")
