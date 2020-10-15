@@ -1,0 +1,101 @@
+#+TITLE: Pilot Data: MR vs Behavioral 
+#+OPTIONS: toc:nil
+* behave ID 
+
+   
+#+begin_src R :session :file imgs/ID_online.png :results graphics file :exports results
+ library(ggplot2); library(dplyr); library(cowplot)
+ source('/Volumes/Hera/Projects/SlipsOfAction/scripts/visualize_behave.R')
+ break_idcols <- function(d, id='subjid')
+     d %>%
+         separate(id, c("subjID","vdate","age_sex")) %>%
+         mutate(age=as.numeric(age_sex %>% gsub('yo.$','',.)),
+                luna=subjID)
+
+ theme_set(theme_cowplot())
+ MRonline <- data.frame(psi=c('2fc57d6f63a9ee7e2f21a26fa522e3b6', '6d7fce9fee471194aa8b5b6e47267f03'), luna=c('','11793'))
+ d <- read.table('txt/task.tsv',sep="\t",comment.char="",head=T) %>% merge(read.csv('txt/ages.csv'))
+ x <- filter(d,grepl('ID',block)) %>% group_by(subjID,age) %>% mutate(n=1:n(), iscor = cor_dir==chose, cmcor=cumsum(iscor)) %>% filter(max(cmcor)>10,n<=96)
+ IDonline <- x%>%summarise(score=max(cmcor),n=max(n)) %>% mutate(MRsubj=subjID %in% MRonline$psi, from="online") %>%
+     merge(MRonline, by.x="subjID", by.y="psi", all=T)
+ cm <- ggplot(x) +aes(x=n,y=cmcor, group=subjID) +
+     geom_line() +
+     geom_point(data=x%>%filter(!iscor), aes(shape=iscor,color=iscor)) +
+     geom_label(data=IDonline, aes(x=n+20, y=score, label=age, fill=MRsubj),
+                position=position_jitter(height=0, width=15)) +
+     ggtitle('ID: cumm. perf. age labeled')
+
+ behscoreplot <- ggplot(IDonline) +
+     aes(x=age,y=score,color=MRsubj) +
+     geom_point() +
+     theme(legend.position="none" ) +
+     ggtitle('ID: total points')
+
+ plot_grid(cm, behscoreplot)
+#+end_src
+
+#+RESULTS:
+[[file:imgs/ID_online.png]]
+
+   Overall online preformance with two the MR pilot participants highlighted.
+  * Left plot trajectory has points at error trials. useful for assessing learning. many points at top == not learned?
+  * 20 yo is a top performer
+  * 12 yo is a bottom performer. other behavior agrees.
+
+* MR vs Online
+** ID
+
+#+begin_src R :session :results graphics file :file imgs/ID_vs.png :exports results
+IDmr <- lapply(subjs, function(x) ID_data(get_files(x))) %>% bind_rows 
+IDmr_smry <- IDmr %>%  group_by(id) %>%  summarise(score=max(cmscore),n=max(n), from="MR") %>% break_idcols('id')
+IDsmry <- bind_rows(IDonline, IDmr_smry)
+ggplot(IDsmry)  + aes(x=age,y=score/n, color=from, label=score) +
+    geom_text() +
+    geom_line(data=IDsmry %>% filter(!is.na(luna)),aes(group=luna, color=NULL)) +
+    ggtitle('ID total score / total trials') 
+#+end_src
+
+#+RESULTS:
+[[file:imgs/ID_vs.png]]
+
+  * comparing ID online (blue) vs MR (red)
+  * again 12 yo is bad. didn't learn associations
+  * two clusters. top learned well.
+  * harder to do well in MR (3 different phases, only one not locked to a timing structure)
+    * MR has more trials
+
+** SOA
+
+ #+begin_src R :session :file imgs/SOA_vs.png :results graphics file :exports results
+ soa_deval <- d %>%
+     filter(grepl("SOA",block), isdevalued=="true") %>%
+     group_by(subjID, age) %>%
+     summarise(n_noresp=sum(chose=="None"), n=n(), n_anyresp=n-n_noresp, from="online") %>%
+     mutate(MRsubj=subjID %in% MRonline$psi) %>%
+     merge(MRonline, by.x="subjID", by.y="psi", all=T)
+    
+
+ subjs <- Sys.glob('/Volumes/L/bea_res/Data/Tasks/SlipsOfAction/*/*/ID_mprage*.csv') %>% get_ids
+ mrsoa <- lapply(subjs, function(x) SOADD_data(get_files(x))) %>% bind_rows
+ mrsoa_deval <- mrsoa %>% filter(deval, grepl('SOA',phase)) %>% group_by(subjid) %>% summarise(n_noresp=sum(resp_type=="None"), n=n(), n_anyresp=n-n_noresp, from="MR") %>%
+     break_idcols
+
+ soa_all <- rbind(soa_deval %>% select(-MRsubj), mrsoa_deval %>% select(-age_sex, -vdate))
+ ggplot(soa_all)  +
+     aes(x=age,y=n_anyresp/n, color=from, label=n_anyresp) +
+     geom_point(data=soa_deval %>% filter(MRsubj), shape=1, size=5) +
+     geom_text() +
+     geom_line(data=soa_all %>% filter(!is.na(luna)),aes(group=luna, color=NULL)) +
+     ggtitle('SOA responses during devalued trials')
+ #+end_src
+
+ #+RESULTS:
+ [[file:imgs/SOA_vs.png]]
+
+   * higher ~n_anyresp/n~ means more "habit forming" when the task is understood. values too close to 1 should probably be ignored.
+   * 12 yo MR + online participant is bad at the task, not habit forming (probably?)
+   * 20 yo MR participant is too good. no errors. no habit.  -- reason why we moved to block. no habit behaviors
+
+
+
+
