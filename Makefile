@@ -18,7 +18,7 @@ analysis/txt/task.tsv: analysis/txt/res.json
 	#      3       6 a52a5e65fc3c43f409550dfad1f904f
 	#     26      12 a52a5e65fc3c43f409550dfad1f904f
 	#      1      36 a52a5e65fc3c43f409550dfad1f904f
-	git diff|sed -n s/^\+[^+]//p|cut -f1,3|sort |uniq -c|sort -k2,1|cut -f1|uniq -c|sort -k2n|egrep '\w{31}$$'
+	git diff analysis/txt/task.tsv|sed -n s/^\+[^+]//p|cut -f1,3|sort |uniq -c|sort -k2,1|cut -f1|uniq -c|sort -k2n
 
 test: tests/.res.tap tests/.pytests
 tests/.res.tap: $(wildcard tests/*js)

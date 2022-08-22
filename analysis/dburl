@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# DB URL from enviorn, .dburl, or heroku app
+[ ! -v DATABASE_URL ] && DATABASE_URL=""
+[ -n "$DATABASE_URL" ] && echo $DATABASE_URL && exit 0
+
+test -r $(dirname $0)/.dburl && DATABASE_URL=$(cat $_)
+[ -z "$DATABASE_URL" ] &&
+   command -v heroku >/dev/null &&
+   DATABASE_URL=$(heroku config:get DATABASE_URL --app ff-lncd)
+[ -z "$DATABASE_URL" ] &&
+  echo "missing DATABASE_URL cannot fetch data! fix: export DATABASE_URL=\$(heroku config:get DATABASE_URL)" >&2 &&
+  exit 1
+echo $DATABASE_URL

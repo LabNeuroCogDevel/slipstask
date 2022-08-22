@@ -1,4 +1,5 @@
 .#*
+.dburl
 .psiturk_history
 participants.db
 server.log
