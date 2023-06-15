@@ -7,7 +7,7 @@
    <body>
       <a href="https://labneurocogdevel.github.io/slipstask/practice.html" >practice</a>
       <!--<form method="GET" action="https://ff-lncd.herokuapp.com/exp">-->
-      <form method="GET" action="http://rhea.wpic.upmc.edu:8001/exp">
+      <form method="GET" action="http://rhea.wpic.upmc.edu:22362/exp">
 
       <label for="workerId">LunaID:</label>
       <input name=workerId type="text" size=14> </br>
@@ -22,7 +22,7 @@
 
    <small style="font-size: 8px; position: absolute; bottom:0; right:0">
       NB. 20221128 heroku phased out. hosted locally on rhea <br>
-      <pre>cd /opt/ni_tools/tasks/slipstask && PORT=8001 python3 herokuapp.py # particpants.db</pre> <br>
+      <pre>cd /opt/ni_tools/tasks/slipstask && PORT=22362 python3 herokuapp.py # particpants.db</pre> <br>
       consider: <ul>
          <li>building python3.6 w/32bit for local hosting on windows</li>
          <li>DATABASE_URL: save postgres server instead of sqlite3</li>

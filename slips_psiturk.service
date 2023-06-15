@@ -13,7 +13,7 @@ WantedBy=default.target
 
 [Service]
 WorkingDirectory=/opt/ni_tools/tasks/slipstask/
-Environment=PORT=8001
+Environment=PORT=22362
 Environment=PYTHONPATH=/opt/ni_tools/python/userbase/
 Environment=PYTHONUSERBASE=/opt/ni_tools/python/userbase/
 ExecStart=/usr/bin/python3 /opt/ni_tools/tasks/slipstask/herokuapp.py
