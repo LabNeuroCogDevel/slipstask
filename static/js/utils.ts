@@ -527,6 +527,7 @@ function mkSOAblocks(frts: Fruit[], boxes: Box[], so: SO, nblocks: number, nreps
 const surveyTextTrail = {
   type: 'survey-text',
   questions: [
+    {name: "understand", prompt: "How well do you feel like you understood the task (0=not at all, 5=fully)?"}, 
     {name: "side_strategy", prompt: "What stategy or strategies did you use to remember the correct way to open boxes?"}, 
     {name: "pair_strategy", prompt: "How did you remember the inside-outside fruit pairs of each box?"}, 
     {name: "effort", prompt: "Were you able to concentrate while playing the game? Did you have to take any breaks?"}, 

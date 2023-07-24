@@ -157,7 +157,7 @@ function add_version(data) {
 var Fruit = /** @class */ (function () {
     function Fruit(name) {
         this.name = name;
-        this.img = "static/images/" + name + ".png";
+        this.img = "static/images/".concat(name, ".png");
         this.direction = Dir.None;
         this.devalued_blocks = [];
     }
@@ -167,7 +167,7 @@ var Fruit = /** @class */ (function () {
     Fruit.prototype.render = function (disabled) {
         var boxtype = (this.SO == SO.Stim) ? "closed" : "open";
         var disabled_class = disabled ? "disabled" : "";
-        return ("<div class='box " + boxtype + " " + disabled_class + "'><img class=\"fruit\" src=" + this.img + "></div>");
+        return ("<div class='box ".concat(boxtype, " ").concat(disabled_class, "'><img class=\"fruit\" src=").concat(this.img, "></div>"));
     };
     /** render html for soa grid
      * @param soa_block block number (see if in devalued_blocks)
@@ -180,8 +180,8 @@ var Fruit = /** @class */ (function () {
      */
     Fruit.prototype.feedback = function (score) {
         //console.log('feedback', pushed_keynum, 'is', push_side, 'v', this.direction);
-        var img = (score > 0) ? "<img class=\"fruit\" src=" + this.img + ">" : "";
-        return ("<div class='feedback'>\n                <div class='score'>" + score + "</div><div class='box open'>" + img + "</div></div>");
+        var img = (score > 0) ? "<img class=\"fruit\" src=".concat(this.img, ">") : "";
+        return ("<div class='feedback'>\n                <div class='score'>".concat(score, "</div><div class='box open'>").concat(img, "</div></div>"));
     };
     /** slips of action score. works for Discrimination Devalue (baseline test) too
       * @param pushed_keynum  keycode pushed by participant
@@ -270,8 +270,8 @@ function mkBoxTrial(b, soa_block, block) {
             data.score = b.S.score(data.key_press, data.rt, soa_block);
             data.cor_dir = data.isdevalued ? Dir.None : b.S.direction;
             if (DEBUG)
-                console.log(data.stim + "/" + data.outcome + " is devl " + data.isdevalued + ": " +
-                    ("chose " + data.chose + " should be " + data.cor_dir + ". score " + data.score + " w/rt " + data.rt));
+                console.log("".concat(data.stim, "/").concat(data.outcome, " is devl ").concat(data.isdevalued, ": ") +
+                    "chose ".concat(data.chose, " should be ").concat(data.cor_dir, ". score ").concat(data.score, " w/rt ").concat(data.rt));
             save_data();
         }
     });
@@ -334,9 +334,9 @@ function mkScoreFbk(blkmax) {
                 var nscored = jsPsych.data.get().filterCustom(function (x) { return x.score !== null; }).count();
                 blkmax = nscored - sum_prevmaxs;
                 if (DEBUG)
-                    console.log("scoreFbk: not given block max. think it is " + nscored + " - " + sum_prevmaxs + " = " + blkmax);
+                    console.log("scoreFbk: not given block max. think it is ".concat(nscored, " - ").concat(sum_prevmaxs, " = ").concat(blkmax));
             }
-            return ("<h3>You scored " + thisscore + " of " + blkmax + " possible points this round.</h3> Your total score is " + totalscore);
+            return ("<h3>You scored ".concat(thisscore, " of ").concat(blkmax, " possible points this round.</h3> Your total score is ").concat(totalscore));
         },
         on_finish: function (data) {
             data.block = 'score';
@@ -368,7 +368,7 @@ function mkODTrial(devalued, valued) {
             data.valued = valued.name;
             // TODO: should we get -1 for bad choice?
             if (DEBUG)
-                console.log("picked " + data.chose + " for " + valued.name + ",", "should be " + valued.direction + " => " + data.score);
+                console.log("picked ".concat(data.chose, " for ").concat(valued.name, ","), "should be ".concat(valued.direction, " => ").concat(data.score));
         }
     });
 }
@@ -497,6 +497,7 @@ function mkSOAblocks(frts, boxes, so, nblocks, nreps) {
 var surveyTextTrail = {
     type: 'survey-text',
     questions: [
+        { name: "understand", prompt: "How well do you feel like you understood the task (0=not at all, 5=fully)?" },
         { name: "side_strategy", prompt: "What stategy or strategies did you use to remember the correct way to open boxes?" },
         { name: "pair_strategy", prompt: "How did you remember the inside-outside fruit pairs of each box?" },
         { name: "effort", prompt: "Were you able to concentrate while playing the game? Did you have to take any breaks?" },
@@ -518,7 +519,7 @@ function mkFrtSurvey(frt) {
             // TODO: hard coded left and right
             // maybe: Object.values(KEYS).indexOf('Left')
             return ("<div class='survey_arrow' onclick='simkey(37)'>←</div>" +
-                ("<img src='" + frt.img + "'/>") +
+                "<img src='".concat(frt.img, "'/>") +
                 "<div class='survey_arrow' onclick='simkey(39)'>→</div><br>");
         },
         on_finish: function (data) {
@@ -545,7 +546,7 @@ function simkey(key) {
 }
 function numberFrts(Frts) {
     return (Frts.map(function (f, i) {
-        return "<div class=\"survey_outfrt\" style=\"background-image:url('" + f.img + "')\" onclick=\"simkey(NUMKEYS[" + i + "])\"><p>" + (i + 1) + "</p></div>" + (i == 2 ? "<br>" : "");
+        return "<div class=\"survey_outfrt\" style=\"background-image:url('".concat(f.img, "')\" onclick=\"simkey(NUMKEYS[").concat(i, "])\"><p>").concat(i + 1, "</p></div>") + (i == 2 ? "<br>" : "");
     }).
         join("\n"));
 }
@@ -555,7 +556,7 @@ function mkPairSurvey(frt, boxes) {
         choices: NUMKEYS,
         //prompt: "<p>Which fruit is this fruits pair</p>",
         stimulus: function (trial) {
-            return ("<img src='" + frt.img + "'/> is paired with:<br>" + numberFrts(boxes.map(function (x) { return x.O; })));
+            return ("<img src='".concat(frt.img, "'/> is paired with:<br>") + numberFrts(boxes.map(function (x) { return x.O; })));
         },
         on_finish: function (data) {
             var chosefrt = boxes[NUMKEYS.indexOf(data.key_press)].O;
@@ -564,7 +565,7 @@ function mkPairSurvey(frt, boxes) {
             data.survey_chose = chosefrt.name;
             data.correct = frt.pair.name == chosefrt.name;
             if (DEBUG)
-                console.log(data.survey_prompt + " has pair " + frt.pair.name + ". chose " + data.suvery_chose + ". correct? " + data.correct);
+                console.log("".concat(data.survey_prompt, " has pair ").concat(frt.pair.name, ". chose ").concat(data.suvery_chose, ". correct? ").concat(data.correct));
         }
     });
 }
@@ -580,7 +581,7 @@ function mkConfSlider() {
         type: 'html-slider-response',
         stimulus: function (trial) {
             var prev = jsPsych.data.get().last().values()[0];
-            var show = "<img src='static/images/" + prev.survey_prompt + ".png'/> ";
+            var show = "<img src='static/images/".concat(prev.survey_prompt, ".png'/> ");
             var resp = "<br>opens from the " + prev.survey_chose;
             if (prev.survey_type == 'SO') {
                 resp = " is paired with <img src='static/images/" + prev.survey_chose + ".png' />";
@@ -635,9 +636,20 @@ function mkSurveyBlock(boxes) {
 // cheaters way of making the module
 if (typeof module !== "undefined") {
     module.exports = {
-        mkIDblocks: mkIDblocks, mkODblock: mkODblock, mkSOAblocks: mkSOAblocks, mkSurveyBlock: mkSurveyBlock,
-        mkBoxTrial: mkBoxTrial, mkIDFbk: mkIDFbk, mkBox: mkBox,
-        fruits: fruits, soa_assign: soa_assign, allBoxes: allBoxes, showSRO: showSRO,
-        Fruit: Fruit, Dir: Dir, SO: SO, KEYS: KEYS
+        mkIDblocks: mkIDblocks,
+        mkODblock: mkODblock,
+        mkSOAblocks: mkSOAblocks,
+        mkSurveyBlock: mkSurveyBlock,
+        mkBoxTrial: mkBoxTrial,
+        mkIDFbk: mkIDFbk,
+        mkBox: mkBox,
+        fruits: fruits,
+        soa_assign: soa_assign,
+        allBoxes: allBoxes,
+        showSRO: showSRO,
+        Fruit: Fruit,
+        Dir: Dir,
+        SO: SO,
+        KEYS: KEYS
     };
 }
