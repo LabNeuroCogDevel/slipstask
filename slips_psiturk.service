@@ -5,7 +5,7 @@
 # sudo journal -xe
 
 [Unit]
-Description=Slips of Action psiturk/flask python app on port 8001
+Description=Slips of Action psiturk/flask python app on port 22362
 
 [Install]
 # autostart on boot
@@ -16,5 +16,5 @@ WorkingDirectory=/opt/ni_tools/tasks/slipstask/
 Environment=PORT=22362
 Environment=PYTHONPATH=/opt/ni_tools/python/userbase/
 Environment=PYTHONUSERBASE=/opt/ni_tools/python/userbase/
-ExecStart=/usr/bin/python3 /opt/ni_tools/tasks/slipstask/herokuapp.py
+ExecStart=/opt/ni_tools/pyenv/shims/python /opt/ni_tools/tasks/slipstask/herokuapp.py
 Restart=on-failure
