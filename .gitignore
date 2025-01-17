@@ -12,3 +12,6 @@ package-lock.json
 __pycache__/
 *.egg-info/
 *.pyc
+
+timing/seeded/
+soapy/timing/

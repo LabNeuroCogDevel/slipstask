@@ -1,34 +1,3 @@
-,phase,ttype,blocknum,trial,LR1,deval,LR2,onset,dur,end,cor_side
-0,PhaseType.OD,TrialType.SHOW,1,0,R0,True,L0,3,2,5,L
-1,PhaseType.OD,TrialType.ITI,1,0,R0,False,L0,5,1,6,
-2,PhaseType.OD,TrialType.SHOW,1,1,L0,True,R0,6,2,8,L
-3,PhaseType.OD,TrialType.ITI,1,1,L0,False,R0,8,1,9,
-4,PhaseType.OD,TrialType.SHOW,1,2,R0,False,L0,9,2,11,R
-5,PhaseType.OD,TrialType.ITI,1,2,R0,False,L0,11,2,13,
-6,PhaseType.OD,TrialType.SHOW,1,3,L0,False,R0,13,2,15,L
-7,PhaseType.OD,TrialType.ITI,1,3,L0,False,R0,15,2,17,
-8,PhaseType.OD,TrialType.SHOW,1,4,R1,True,L0,17,2,19,L
-9,PhaseType.OD,TrialType.ITI,1,4,R1,False,L0,19,2,21,
-10,PhaseType.OD,TrialType.SHOW,1,5,L0,True,R1,21,2,23,L
-11,PhaseType.OD,TrialType.ITI,1,5,L0,False,R1,23,1,24,
-12,PhaseType.OD,TrialType.SHOW,1,6,R1,False,L0,24,2,26,R
-13,PhaseType.OD,TrialType.ITI,1,6,R1,False,L0,26,5,31,
-14,PhaseType.OD,TrialType.SHOW,1,7,L0,False,R1,31,2,33,L
-15,PhaseType.OD,TrialType.ITI,1,7,L0,False,R1,33,1,34,
-16,PhaseType.OD,TrialType.SHOW,1,8,R0,True,L1,34,2,36,L
-17,PhaseType.OD,TrialType.ITI,1,8,R0,False,L1,36,1,37,
-18,PhaseType.OD,TrialType.SHOW,1,9,L1,True,R0,37,2,39,L
-19,PhaseType.OD,TrialType.ITI,1,9,L1,False,R0,39,5,44,
-20,PhaseType.OD,TrialType.SHOW,1,10,R0,False,L1,44,2,46,R
-21,PhaseType.OD,TrialType.ITI,1,10,R0,False,L1,46,2,48,
-22,PhaseType.OD,TrialType.SHOW,1,11,L1,False,R0,48,2,50,L
-23,PhaseType.OD,TrialType.ITI,1,11,L1,False,R0,50,2,52,
-24,PhaseType.OD,TrialType.SHOW,1,12,R1,True,L1,52,2,54,L
-25,PhaseType.OD,TrialType.ITI,1,12,R1,False,L1,54,2,56,
-26,PhaseType.OD,TrialType.SHOW,1,13,L1,True,R1,56,2,58,L
-27,PhaseType.OD,TrialType.ITI,1,13,L1,False,R1,58,1,59,
-28,PhaseType.OD,TrialType.SHOW,1,14,R1,False,L1,59,2,61,R
-29,PhaseType.OD,TrialType.ITI,1,14,R1,False,L1,61,1,62,
-30,PhaseType.OD,TrialType.SHOW,1,15,L1,False,R1,62,2,64,L
-31,PhaseType.OD,TrialType.ITI,1,15,L1,False,R1,64,1,65,
-32,PhaseType.OD,TrialType.SCORE,1,-1,,False,,65,2,67,
+version https://git-lfs.github.com/spec/v1
+oid sha256:e8d2307fc5d9338759708ad71193c399bfd22e7558c4fedf790573439561a157
+size 1896
